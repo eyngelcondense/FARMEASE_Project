@@ -13,9 +13,9 @@ The system aims to:
 ## Features  
 - Online customer booking portal  
 - Event package and add-on selection  
-- Payment tracking (downpayment + balance)  
+- Payment tracking
 - Staff assignment and duty management  
-- Calendar-based event scheduling (max 2 events/day)  
+- Calendar-based event scheduling
 - Automated receipts and reporting  
 
 ---
@@ -35,7 +35,7 @@ The system aims to:
 
 ---
 
-## 📂 Project Structure  
+## Project Structure  
 ```plaintext
 /docs        → Flowcharts, diagrams, documentation  
 /frontend    → UI designs, customer & admin portal (View)  
