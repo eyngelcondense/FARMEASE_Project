@@ -22,8 +22,9 @@ The system aims to:
 
 ## Team Roles  
 - **Model (Database & Schema):** Angel, Ryan  
-- **Controller (API & Logic):** Ryan, Earlsin  
-- **View (Frontend Design):** Apple, Lady Jean  
+- **Controller (API & Logic):** Ryan, Earlsin, Bumanglag   
+- **View (Frontend Design):** Apple, Angel
+- **Documentation (Charts, Diagrams, Figures)**: Jean, Earlsin
 
 ---
 
