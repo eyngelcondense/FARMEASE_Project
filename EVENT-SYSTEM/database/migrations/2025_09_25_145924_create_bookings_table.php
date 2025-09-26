@@ -16,7 +16,11 @@ return new class extends Migration
             $table->id('clientID'); // Foreign key referencing clients table
             $table->string('eventType'); // Type of event (e.g., wedding, birthday)
             $table->date('eventDate'); // Date of the event
-            
+            $table->timestamp('startTime'); //time start
+            $table->int('duration'); // Duration in hours
+            $table->int('pax'); // Number of guests
+            $table->string('stauts');
+            $table->timestamp('createdAt');
         });
     }
 
