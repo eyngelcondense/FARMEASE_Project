@@ -12,13 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('clients', function (Blueprint $table) {
-            $table->id('clientID');
-            $table->string('fullName');
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->string('phoneNumber')->nullable();
-            $table->string('address')->nullable();
-            $table->timestamps('createdAt');
+            $table->id('clientID'); // Primary key
+            $table->string('fullName'); // Full name of the client
+            $table->string('email')->unique(); // Unique email address
+            $table->string('password'); // This is Hashed password
+            $table->string('phoneNumber')->nullable(); // Phone number, nullable
+            $table->string('address')->nullable(); // Address, nullable
+            $table->timestamp('createdAt')->useCurrent(); // Creation timestamp
 
         });
     }

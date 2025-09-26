@@ -12,8 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('bookings', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->id('bookigID'); // Primary key
+            $table->id('clientID'); // Foreign key referencing clients table
+            $table->string('eventType'); // Type of event (e.g., wedding, birthday)
+            $table->date('eventDate'); // Date of the event
+            
         });
     }
 
