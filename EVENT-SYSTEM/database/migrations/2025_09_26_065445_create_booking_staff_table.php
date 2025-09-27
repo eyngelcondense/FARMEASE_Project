@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('booking_add_ons', function (Blueprint $table) {
+        Schema::create('booking_staff', function (Blueprint $table) {
             $table->id('bookingId')->references('bookingId')->on('bookings');// Compund key
-            $table->id('addonId')->references('addonId')->on('add_ons');// Compound key referencing add_ons table
-            $table->integer('quantity')->default(1);// Quantity of the add-on
-            $table->text('notes')->nullable();// Additional notes, nullable
+            $table->id('staffId')->references('staffId')->on('staff');// Compound
+            $table->string('duty',50);
         });
     }
 
@@ -24,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('booking_add_ons');
+        Schema::dropIfExists('booking_staff');
     }
 };

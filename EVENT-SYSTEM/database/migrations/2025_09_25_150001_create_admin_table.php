@@ -12,8 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('admin', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->id('userId'); // Primary key
+            $table->string('username'); // Full name of the admin
+            $table->string('password');//hashed password
+            $table->string('role'); // Role of the admin (e.g., superadmin, editor)
+            $table->int('linkedId'); // ID linking to other tables if necessary
+            $table->timestamp('createdAt'); // Creation timestamp
+
+
         });
     }
 
