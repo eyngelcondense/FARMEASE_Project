@@ -12,8 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('booking_packages', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->id('bookingId')->references('bookingId')->on('bookings');// Compund key
+            $table->id('packageId')->references('packageId')->on('packages');// Compound key referencing packages table
+            $table->integer('quantity')->default(1);// Quantity of the package
+            $table->text('note')->nullable();// Additional notes, nullable
         });
     }
 

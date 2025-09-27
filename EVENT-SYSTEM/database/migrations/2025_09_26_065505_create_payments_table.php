@@ -12,8 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('payments', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->id('paymentId'); // Primary key
+            $table->id('bookingId')->references('bookingId')->on('bookings'); // Foreign key referencing bookings table
+            $table->decimal('amount', 10, 2);
+            $table->datetime('paymentDate'); // Date and time of payment
+            $table->string('method'); // Method of payment (e.g., credit card
+            $table->string('receiptNo',50)->nullable(); // Receipt or transaction details, nullable
+            $table->string('remarks'); // Additional remarks, nullable
         });
     }
 

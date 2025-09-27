@@ -12,8 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('booking_staff', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->id('bookingId')->references('bookingId')->on('bookings');// Compund key
+            $table->id('staffId')->references('staffId')->on('staff');// Compound
+            $table->string('duty',50);
         });
     }
 
