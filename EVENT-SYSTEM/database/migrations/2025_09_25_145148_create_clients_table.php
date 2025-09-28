@@ -11,15 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('clients', function (Blueprint $table) {
-            $table->id('clientId'); // Primary key
-            $table->string('fullName'); // Full name of the client
-            $table->string('email')->unique(); // Unique email address
-            $table->string('password'); // This is Hashed password
-            $table->string('phoneNumber')->nullable(); // Phone number, nullable
-            $table->string('address')->nullable(); // Address, nullable
-            $table->timestamp('createdAt')->useCurrent(); // Creation timestamp
-
+       Schema::create('clients', function (Blueprint $table) {
+            $table->id();// Primary key
+            $table->string('fullName');// Full name of the client
+            $table->string('email')->unique();// Unique email address
+            $table->string('password');// Hashed password
+            $table->string('phoneNumber')->nullable();// Phone number (optional)
+            $table->string('address')->nullable();// Address (optional)
+            $table->timestamps();// Timestamps for created_at and updated_at
         });
     }
 

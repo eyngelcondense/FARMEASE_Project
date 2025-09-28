@@ -12,16 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('bookings', function (Blueprint $table) {
-            $table->id('bookigId'); // Primary key
-            $table->id('clientId')->references('clientId')->on('clients'); // Foreign key referencing clients table
-            $table->string('eventType'); // Type of event (e.g., wedding, birthday)
-            $table->date('eventDate'); // Date of the event
-            $table->timestamp('startTime'); //time start
-            $table->int('duration'); // Duration in hours
-            $table->int('pax'); // Number of guests
-            $table->string('stauts');
-            $table->timestamp('createdAt');
+            $table->id(); // Primary key
+            $table->foreignId('client_id')->constrained()->onDelete('cascade');// Foreign key to clients table
+            $table->string('eventType'); // e.g., wedding, conference
+            $table->date('eventDate'); 
+            $table->time('startTime'); 
+            $table->unsignedInteger('duration'); // hours
+            $table->unsignedInteger('pax'); // attendees
+            $table->string('status'); 
+            $table->timestamps();
         });
+
+
     }
 
     /**
