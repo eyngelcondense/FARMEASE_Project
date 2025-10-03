@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('addonName', 100);// Add-on name
             $table->text('description')->nullable();// Add-on description
             $table->decimal('price', 10, 2);// Add-on price
-            $table->string('handleBy');// created_at and updated_at timestamps
+            $table->foreignId('admin_id')->constrained('admin')->onDelete('cascade');// Foreign key to admins table
+            $table->timestamps();// Timestamps for created_at and updated_at
         });
     }
 

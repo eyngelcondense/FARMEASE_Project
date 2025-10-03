@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('fullName');// Full name of the client
             $table->string('email')->unique();// Unique email address
             $table->string('password');// Hashed password
-            $table->string('phoneNumber')->nullable();// Phone number (optional)
+            $table->string('phoneNumber')->unique();// Phone number (optional)
             $table->string('address')->nullable();// Address (optional)
             $table->timestamps();// Timestamps for created_at and updated_at
         });
