@@ -15,7 +15,7 @@ class AdminTableSeeder extends Seeder
             'username' => 'superadmin',
             'password' => Hash::make('password123'), // It's important to hash passwords
             'role' => 'superadmin',
-            'linkedId' => 0, // Assuming 0 means no linked ID
+            'linkedId' => 0,
             'createdAt' => now()
         ]);
     }

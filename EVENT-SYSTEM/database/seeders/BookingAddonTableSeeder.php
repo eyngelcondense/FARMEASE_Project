@@ -12,6 +12,6 @@ class BookingAddonTableSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        
     }
 }

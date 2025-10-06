@@ -6,8 +6,7 @@ use Illuminate\Http\Request;
 
 class Registration extends Controller
 {
-    public function register(Request $request)
-    {
+    public function register(Request $request){
         // Validate the incoming request data
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',

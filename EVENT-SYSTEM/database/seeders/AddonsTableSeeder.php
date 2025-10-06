@@ -20,6 +20,14 @@ class AddonsTableSeeder extends Seeder
             'admin_id' => 1, // Assuming admin with ID 1 exists
             'created_at' => now(),
             'updated_at' => now()
+        ],
+        [
+            'addonName' => 'Extra Table and Chairs',
+            'description' => 'Additional table and chairs for guests',
+            'price' => 250.00,
+            'admin_id' => 1,
+            'created_at' => now(),
+            'updated_at' => now()
         ]);
     }
 }
