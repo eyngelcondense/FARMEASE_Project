@@ -12,9 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('booking_staff', function (Blueprint $table) {
-            $table->id('bookingId')->references('bookingId')->on('bookings');// Compund key
-            $table->id('staffId')->references('staffId')->on('staff');// Compound
-            $table->string('duty',50);
+            $table->foreignId('bookings_id')->constrained()->onDelete('cascade');
+            $table->foreignId('staff_id')->constrained()->onDelete('cascade');
+            $table->string('duty', 50);
+            $table->primary(['bookings_id', 'staff_id']);
         });
     }
 

@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('packages', function (Blueprint $table) {
-            $table->id('packageId');// Primary key
+            $table->id();// Primary key
             $table->string('packageName', 100);// Package name
             $table->text('packageDescription')->nullable();// Package description
             $table->decimal('basePrice', 8, 2);// Package price
-            $table->integer('packageDuration')->comment('Duration in days');// Package duration in days
+            $table->integer('packageDuration')->comment('Duration in Hours');// Package duration in days
             $table->decimal('overtimePrice',10,2);// created_at and updated_at timestamps
         });
     }

@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('payments', function (Blueprint $table) {
-            $table->id('paymentId'); // Primary key
-            $table->id('bookingId')->references('bookingId')->on('bookings'); // Foreign key referencing bookings table
+            $table->id(); // Primary key
+            $table->foreignId('bookings_id')->constrained()->onDelete('cascade'); // Foreign key referencing bookings table
             $table->decimal('amount', 10, 2);
             $table->datetime('paymentDate'); // Date and time of payment
             $table->string('method'); // Method of payment (e.g., credit card
