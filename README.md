@@ -30,9 +30,9 @@ The system aims to:
 
 ## Tech Stack (Planned)  
 - **Frontend:** HTML, CSS, JavaScript  
-- **Backend:** PHP (Laravel) *or* Node.js/Express  
+- **Backend:** PHP (Code Igniter 4)
 - **Database:** MySQL  
-- **Hosting:** Hostinger  
+- **Hosting:** Hostinger/CapitanHosting
 
 ---
 
