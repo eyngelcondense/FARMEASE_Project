@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateAdminTable extends Migration
+class CreateClientTable extends Migration
 {
     public function up()
     {
@@ -15,7 +15,11 @@ class CreateAdminTable extends Migration
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
-            'username' => [
+            'fullname' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '255',
+            ],
+            'email' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '255',
                 'unique'     => true,
@@ -24,9 +28,15 @@ class CreateAdminTable extends Migration
                 'type'       => 'VARCHAR',
                 'constraint' => '255',
             ],
-            'role' => [
+            'phone' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '20',
+                'unique'     => true,
+            ],
+            'address' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '255',
+                'null'       => true,
             ],
             'created_at' => [
                 'type' => 'DATETIME',
@@ -35,14 +45,15 @@ class CreateAdminTable extends Migration
             'updated_at' => [
                 'type' => 'DATETIME',
                 'null' => true,
-            ]
+            ],
         ]);
+
         $this->forge->addKey('id', true); // Primary key
-        $this->forge->createTable('admin'); // Table name
+        $this->forge->createTable('client');
     }
 
     public function down()
     {
-        $this->forge->dropTable('admin');
+        $this->forge->dropTable('client');
     }
 }
