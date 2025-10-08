@@ -53,3 +53,5 @@ Events::on('pre_system', static function (): void {
         }
     }
 });
+
+require APPPATH . 'Events/RegisterClientListener.php';
