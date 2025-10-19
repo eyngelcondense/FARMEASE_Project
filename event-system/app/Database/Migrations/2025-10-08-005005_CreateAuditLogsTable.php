@@ -43,7 +43,6 @@ class CreateAuditLogsTable extends Migration
             'timestamp' => [
                 'type'    => 'DATETIME',
                 'null'    => false,
-                'default' => null,
             ],
             'ip_address' => [
                 'type'       => 'VARCHAR',
@@ -52,16 +51,12 @@ class CreateAuditLogsTable extends Migration
             ]
         ]);
         $this->forge->addKey('id', true);
-        $this->forge->addForeignKey('admin_id', 'admin', 'id', 'CASCADE', 'CASCADE');
-        $this->forge->createTable('AuditLogs', false, [
-            'fields' => [
-                'timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP'
-            ]
-        ]);
+        $this->forge->addForeignKey('admin_id', 'admins', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->createTable('audit_logs', true);
     }
 
     public function down()
     {
-        $this->forge->droptable('AuditLogs');
+        $this->forge->dropTable('audit_logs', true);
     }
 }

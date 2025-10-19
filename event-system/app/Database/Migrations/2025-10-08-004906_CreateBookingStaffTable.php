@@ -27,12 +27,12 @@ class CreateBookingStaffTable extends Migration
         ]);
         $this->forge->addKey(['booking_id', 'staff_id'], true);
         $this->forge->addForeignKey('booking_id', 'bookings', 'id', 'CASCADE', 'CASCADE');
-        $this->forge->addForeignKey('staff_id', 'staff', 'id', 'CASCADE', 'CASCADE');
-        $this->forge->createTable('BookingStaff');
+        $this->forge->addForeignKey('staff_id', 'staffs', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->createTable('booking_staffs');
     }
 
     public function down()
     {
-        $this->forge->dropTable('BookingStaff');
+        $this->forge->dropTable('booking_staffs');
     }
 }

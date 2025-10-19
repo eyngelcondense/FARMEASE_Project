@@ -54,12 +54,12 @@ class CreateBookingTable extends Migration
         ]);
         
         $this->forge->addKey('id', true);
-        $this->forge->createTable('booking');
-        $this->forge->AddForeignKey('client_id', 'client', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('client_id', 'clients', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->createTable('bookings');
     }
 
     public function down()
     {
-        $this->forge->dropTable('booking');
+        $this->forge->dropTable('bookings');
     }
 }

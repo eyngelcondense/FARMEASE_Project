@@ -29,11 +29,11 @@ class CreateStaffTable extends Migration
             ]
         ]);
         $this->forge->addKey('id', true);
-        $this->forge->createTable('staff');
+        $this->forge->createTable('staffs');
     }
 
     public function down()
     {
-        $this->forge->dropTable('staff');
+        $this->forge->dropTable('staffs');
     }
 }
