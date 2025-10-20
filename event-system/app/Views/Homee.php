@@ -59,7 +59,7 @@
     .hero {
       position: relative;
       height: 70vh;
-      background: url('san isidroweas.jpg') center/cover no-repeat;
+      background: url('images/san isidroweas.jpg') center/cover no-repeat;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -238,7 +238,7 @@
 
   <!-- Header -->
   <div class="header-bar">
-    <img src="LOGO NG SAN ISIDRO.png" alt="San Isidro Labrador Logo">
+    <img src="images/LOGO NG SAN ISIDRO.png" alt="San Isidro Labrador Logo">
     <h5 class="mt-2 fw-semibold">San Isidro Labrador Resort and Leisure Farm</h5>
   </div>
 
@@ -279,19 +279,19 @@
       <div class="row g-4">
         <div class="col-md-4">
           <div class="feature-card">
-            <img src="san isidroweas.jpg">
+            <img src="images/san isidroweas.jpg">
             <h5>Package Lounge</h5>
           </div>
         </div>
         <div class="col-md-4">
           <div class="feature-card">
-            <img src="wed_eventspic.jpg" alt="">
+            <img src="images/wed_eventspic.jpg" alt="">
             <h5>Wedding Events</h5>
           </div>
         </div>
         <div class="col-md-4">
           <div class="feature-card">
-            <img src="priv_gathetingspic.jpg" alt="">
+            <img src="images/priv_gathetingspic.jpg" alt="">
             <h5>Private Gatherings</h5>
           </div>
         </div>
@@ -311,7 +311,7 @@
     <div class="container">
       <div class="row align-items-center">
         <div class="col-lg-6 mb-4 mb-lg-0">
-          <img src="pic 1.jpg" alt="Resort Image" class="img-fluid rounded">
+          <img src="images/pic 1.jpg" alt="Resort Image" class="img-fluid rounded">
         </div>
 
         <div class="col-lg-6">
@@ -319,7 +319,7 @@
             What Makes Us Special
           </h2>
           <div class="d-flex align-items-center mb-3">
-            <img src="divider.png" alt="Divider" style="height: 30px;">
+            <img src="images/divider.png" alt="Divider" style="height: 30px;">
           </div>
 
           <div class="accordion" id="specialAccordion">
@@ -408,14 +408,14 @@
           <h2 class="fw-bold" style="font-family: 'Times New Roman', serif;">
             San Isidro Labrador Resort and Leisure Farm
           </h2>
-          <img src="divider.png" alt="Divider" style="width: 80px; height: auto; display: block; margin-top: 5px;">
+          <img src="images/divider.png" alt="Divider" style="width: 80px; height: auto; display: block; margin-top: 5px;">
           <p class="mt-3">
             A serene haven nestled amidst nature’s beauty — perfect for those seeking relaxation, celebration, and meaningful experiences. Whether you’re planning a wedding, family outing, or corporate retreat, our resort offers a unique blend of elegance and tranquility.
           </p>
           <a href="#" class="btn btn-custom">Read More</a>
         </div>
         <div class="col-lg-6 mt-4 mt-lg-0">
-          <img src="pic 2.jpg" alt="Resort" class="img-fluid rounded">
+          <img src="images/pic 2.jpg" alt="Resort" class="img-fluid rounded">
         </div>
       </div>
     </div>
@@ -437,12 +437,12 @@
     <div class="container">
       <h3>Recent Events</h3>
       <div class="row g-3 event-gallery">
-        <div class="col-md-4 col-sm-6"><img src="pic 3.jpg" alt=""></div>
-        <div class="col-md-4 col-sm-6"><img src="pic 4.jpg" alt=""></div>
-        <div class="col-md-4 col-sm-6"><img src="pic 5.jpg" alt=""></div>
-        <div class="col-md-4 col-sm-6"><img src="pic 6.jpg" alt=""></div>
-        <div class="col-md-4 col-sm-6"><img src="pic 7.jpg" alt=""></div>
-        <div class="col-md-4 col-sm-6"><img src="pic 8.jpg" alt=""></div>
+        <div class="col-md-4 col-sm-6"><img src="images/pic 3.jpg" alt=""></div>
+        <div class="col-md-4 col-sm-6"><img src="images/pic 4.jpg" alt=""></div>
+        <div class="col-md-4 col-sm-6"><img src="images/pic 5.jpg" alt=""></div>
+        <div class="col-md-4 col-sm-6"><img src="images/pic 6.jpg" alt=""></div>
+        <div class="col-md-4 col-sm-6"><img src="images/pic 7.jpg" alt=""></div>
+        <div class="col-md-4 col-sm-6"><img src="images/pic 8.jpg" alt=""></div>
       </div>
     </div>
   </section>
