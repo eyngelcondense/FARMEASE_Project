@@ -1,6 +1,5 @@
 <?php
-// Start a session (useful for login, user data, etc.)
-session_start();
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -123,7 +122,7 @@ session_start();
     .hero {
       position: relative;
       height: 70vh;
-      background: url('san isidroweas.jpg') center/cover no-repeat;
+      background: url('images/san isidroweas.jpg') center/cover no-repeat;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -244,7 +243,7 @@ session_start();
 
     /* Call to Action */
     .cta {
-      background: url('pool_night.jpg') center/cover no-repeat;
+      background: url('images/pool_night.jpg') center/cover no-repeat;
       color: white;
       text-align: center;
       padding: 50px 0;
@@ -290,13 +289,24 @@ session_start();
     footer a:hover {
       color: white;
     }
+
+    /* remove contact and email styles */
+    .contact-info a {
+        text-decoration: none;
+        color: inherit;
+      }
+
+    .contact-info a:hover {
+      color: #d9534f;
+    }
+
   </style>
 </head>
 
 <body>
   <!-- Header -->
   <div class="header-bar">
-    <img src="LOGO NG SAN ISIDRO.png" alt="Logo">
+    <img src="images/LOGO NG SAN ISIDRO.png" alt="Logo">
     <h5>San Isidro Labrador Resort and Leisure Farm</h5>
 
     <!-- Profile Button -->
@@ -312,8 +322,8 @@ session_start();
       <button class="close-btn" onclick="toggleSidebar()">&times;</button>
       <h3>Welcome!</h3>
       <p>Access your account or create one to explore our resort’s full features, including event bookings and packages.</p>
-      <a href="Login.php" class="btn btn-custom w-100 mb-3">Login</a>
-      <a href="Signup.php" class="btn btn-outline-dark w-100">Sign Up</a>
+      <a href="/login" class="btn btn-custom w-100 mb-3">Login</a>
+      <a href="/register" class="btn btn-outline-dark w-100">Sign Up</a>
       <hr class="my-4">
       <p style="font-size: 14px;">Need help? <a href="#" style="color:#c19a6b;">Contact Support</a></p>
     </div>
@@ -362,9 +372,9 @@ session_start();
     <div class="container">
       <h2 class="text-center mb-4">A Glimpse of Paradise</h2>
       <div class="row g-3">
-        <div class="col-md-4"><img src="pic 2.jpg" class="img-fluid"></div>
-        <div class="col-md-4"><img src="pic 7.jpg" class="img-fluid"></div>
-        <div class="col-md-4"><img src="pic 9.jpg" class="img-fluid"></div>
+        <div class="col-md-4"><img src="images/pic 2.jpg" class="img-fluid"></div>
+        <div class="col-md-4"><img src="images/pic 7.jpg" class="img-fluid"></div>
+        <div class="col-md-4"><img src="images/pic 9.jpg" class="img-fluid"></div>
       </div>
     </div>
   </section>
@@ -394,18 +404,26 @@ session_start();
   <section class="contact-section" style="background-color: #fff; padding: 60px 0;">
     <div class="container text-center" style="font-family: 'Times New Roman', Times, serif;">
       <h2><strong>Get in Touch With Us</strong></h2>
-      <img src="divider.png" alt="Divider" class="d-block mx-auto" style="width:100px;"> 
+      <img src="images/divider.png" alt="Divider" class="d-block mx-auto" style="width:100px;"> 
       <br>
-      <div class="map-container mt-4">
+      <!-- <div class="map-container mt-4">
         <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3861.737084666372!2d120.73654697499172!3d14.019296486657689!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33bd808d6f540739%3A0x6578b16532152cb5!2sSan%20Isidro%20Labrador%20Resort%20and%20Leisure%20Farm!5e0!3m2!1sen!2sph!4v1729323644107!5m2!1sen!2sph" allowfullscreen loading="lazy"></iframe>
-      </div>
+      </div> -->
+      <div id="map" style="height:400px; width:100%;"></div>
       <div class="mt-4">
         <h3>Contact Us</h3>
         <p><strong>San Isidro Labrador Resort and Leisure Farm</strong><br>
-        <i class="fa-solid fa-location-dot"></i> Bolboc, Tuy, Batangas, Philippines 4214</p>
+        <a href="https://maps.app.goo.gl/kUs7fnS3QdL6kayE8" target="_blank" style="text-decoration: none; color: inherit;"><i class="fa-solid fa-location-dot"></i><span>Bolboc, Tuy, Batangas, Philippines 4214</span></a>
+        </p> 
         <h3>Contact Details</h3>
-        <p><i class="fa-solid fa-phone"></i> +63 967 007 1971<br>
-        <i class="fa-solid fa-envelope"></i> sanisidroresort@gmail.com</p>
+        <p class="contact-info">
+          <a href="tel:+639670071971">
+            <i class="fa-solid fa-phone"></i> +63 967 007 1971
+          </a><br>
+          <a href="mailto:sanisidroresort@gmail.com">
+            <i class="fa-solid fa-envelope"></i> sanisidroresort@gmail.com
+          </a>
+        </p>
       </div>
     </div>
   </section>
@@ -415,7 +433,7 @@ session_start();
     <div class="cta-content">
       <h2>Ready to Discover More?</h2>
       <p>Login now to access our full website — view our event packages, amenities, and booking options.</p>
-      <a href="Login.php" class="btn-login">Login to Explore</a>
+      <a href="/login" class="btn-login">Login to Explore</a>
     </div>
   </section>
 
@@ -435,6 +453,26 @@ session_start();
       document.getElementById("sidebar").classList.toggle("active");
       document.getElementById("overlay").classList.toggle("active");
     }
+  </script>
+  
+<!-- GOOGLE MAPS API -->
+  <script>
+    function initMap() {
+      const location = { lat: 14.020154488284867, lng: 120.7426161715031 };
+      const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 15,
+        center: location,
+      });
+      const marker = new google.maps.Marker({
+        position: location,
+        map: map,
+        title: "San Isidro Labrador Resort and Leisure Farm",
+      });
+    }
+  </script>
+
+  <script async
+    src="https://maps.googleapis.com/maps/api/js?key=<?= esc($apiKey) ?>&callback=initMap">
   </script>
 
   <script src="bootstrap5/js/bootstrap.bundle.min.js"></script>

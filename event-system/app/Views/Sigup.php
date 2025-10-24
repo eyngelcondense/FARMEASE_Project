@@ -106,7 +106,7 @@
 
   <div class="signup-container">
     <div class="logo">
-      <img src="LOGO NG SAN ISIDRO.png" alt="Logo" style="width: 130px;">
+      <img src="images/LOGO NG SAN ISIDRO.png" alt="Logo" style="width: 130px;">
       <div class="brand-name" style="font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif">SAN ISIDRO LABRADOR</div>
       <small>RESORT AND LEISURE FARM</small>
     </div>

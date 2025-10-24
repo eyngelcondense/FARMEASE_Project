@@ -133,7 +133,7 @@
   <div class="header-bar"></div>
   <div class="login-container">
     <div class="login-card">
-      <img src="LOGO NG SAN ISIDRO.png" alt="San Isidro Labrador Logo" style="width: 130px;">
+      <img src="images/LOGO NG SAN ISIDRO.png" alt="San Isidro Labrador Logo" style="width: 130px;">
       <div class="brand-name" style="font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; color: #7c6a43;">SAN ISIDRO LABRADOR</div>
       <small>RESORT AND LEISURE FARM</small> <br>
       <h1 style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">Welcome Back</h1>
