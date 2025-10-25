@@ -34,10 +34,12 @@ class CreatePackageTable extends Migration
                 'default'    => '0.00',
             ]
         ]);
+        $this->forge->addKey('id', true);
+        $this->forge->createTable('packages');
     }
 
     public function down()
     {
-        $this->forge->dropTable('package');
+        $this->forge->dropTable('packages');
     }
 }

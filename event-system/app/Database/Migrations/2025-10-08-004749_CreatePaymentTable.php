@@ -42,12 +42,12 @@ class CreatePaymentTable extends Migration
             ],
         ]);
         $this->forge->addKey('id', true);
-        $this->forge->createTable('payment');
-        $this->forge->addForeignKey('booking_id', 'booking', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('booking_id', 'bookings', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->createTable('payments');
     }
 
     public function down()
     {
-        $this->forge->dropTable('payment');
+        $this->forge->dropTable('payments');
     }
 }

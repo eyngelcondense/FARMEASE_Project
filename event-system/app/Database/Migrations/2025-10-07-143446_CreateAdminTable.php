@@ -10,39 +10,33 @@ class CreateAdminTable extends Migration
     {
         $this->forge->addField([
             'id' => [
-                'type'           => 'BIGINT',
+                'type'           => 'INT',
                 'constraint'     => 11,
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
-            'username' => [
+            'user_id' => [
+                'type'       => 'INT',
+                'constraint' => 11,
+                'unsigned'   => true,
+            ],
+            'position' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '255',
                 'unique'     => true,
             ],
-            'password' => [
+            'permission' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '255',
-            ],
-            'role' => [
-                'type'       => 'VARCHAR',
-                'constraint' => '255',
-            ],
-            'created_at' => [
-                'type' => 'DATETIME',
-                'null' => true,
-            ],
-            'updated_at' => [
-                'type' => 'DATETIME',
-                'null' => true,
             ]
         ]);
         $this->forge->addKey('id', true); // Primary key
-        $this->forge->createTable('admin'); // Table name
+        $this->forge->addForeignKey('user_id','users','id','CASCADE','CASCADE');
+        $this->forge->createTable('admins'); // Table name
     }
 
     public function down()
     {
-        $this->forge->dropTable('admin');
+        $this->forge->dropTable('admins');
     }
 }
