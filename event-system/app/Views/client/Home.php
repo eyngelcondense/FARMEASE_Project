@@ -251,7 +251,9 @@
 
       <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
         <ul class="navbar-nav">
-          <li class="nav-item"><a class="nav-link active" href="Homee.php">HOME</a></li>
+          <li class="nav-item">
+            <a class="nav-link active" href="<?= site_url('logout') ?>">HOME</a>
+          </li>
           <li class="nav-item"><a class="nav-link" href="packages.php">PACKAGES</a></li>
           <li class="nav-item"><a class="nav-link" href="events.php">EVENTS</a></li>
           <li class="nav-item"><a class="nav-link" href="testimonials.php">TESTIMONIALS</a></li>
