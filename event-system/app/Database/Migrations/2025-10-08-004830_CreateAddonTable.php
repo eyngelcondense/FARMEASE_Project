@@ -30,11 +30,11 @@ class CreateAddonTable extends Migration
             ]
         ]);
         $this->forge->addKey('id', true);
-        $this->forge->createTable('addon');
+        $this->forge->createTable('addons');
     }
 
     public function down()
     {
-        $this->forge->dropTable('addon');
+        $this->forge->dropTable('addons');
     }
 }

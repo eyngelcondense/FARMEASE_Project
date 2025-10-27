@@ -34,6 +34,8 @@ class Filters extends BaseFilters
         'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
+        'session' => \CodeIgniter\Shield\Filters\SessionAuth::class,
+        'authredirect' => \App\Filters\AuthRedirect::class,
     ];
 
     /**

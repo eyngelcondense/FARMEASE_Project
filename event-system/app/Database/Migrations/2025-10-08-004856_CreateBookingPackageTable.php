@@ -32,12 +32,12 @@ class CreateBookingPackageTable extends Migration
         $this->forge->addKey(['booking_id', 'package_id'], true);
         $this->forge->addForeignKey('booking_id', 'bookings', 'id', 'CASCADE', 'CASCADE');
         $this->forge->addForeignKey('package_id', 'packages', 'id', 'CASCADE', 'CASCADE');
-        $this->forge->createTable('BookingPackage');
+        $this->forge->createTable('booking_packages');
 
     }
 
     public function down()
     {
-        $this->forge->dropTable('BookingPackage');
+        $this->forge->dropTable('booking_packages');
     }
 }

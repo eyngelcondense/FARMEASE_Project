@@ -10,10 +10,15 @@ class CreateClientTable extends Migration
     {
         $this->forge->addField([
             'id' => [
-                'type'           => 'BIGINT',
+                'type'           => 'INT',
                 'constraint'     => 11,
                 'unsigned'       => true,
                 'auto_increment' => true,
+            ],
+            'user_id' => [
+                'type'       => 'INT',
+                'constraint' => 11,
+                'unsigned'   => true,
             ],
             'fullname' => [
                 'type'       => 'VARCHAR',
@@ -23,10 +28,6 @@ class CreateClientTable extends Migration
                 'type'       => 'VARCHAR',
                 'constraint' => '255',
                 'unique'     => true,
-            ],
-            'password' => [
-                'type'       => 'VARCHAR',
-                'constraint' => '255',
             ],
             'phone' => [
                 'type'       => 'VARCHAR',
@@ -49,11 +50,12 @@ class CreateClientTable extends Migration
         ]);
 
         $this->forge->addKey('id', true); // Primary key
-        $this->forge->createTable('client');
+        $this->forge->addForeignKey('user_id','users','id','CASCADE','CASCADE');
+        $this->forge->createTable('clients');
     }
 
     public function down()
     {
-        $this->forge->dropTable('client');
+        $this->forge->dropTable('clients');
     }
 }

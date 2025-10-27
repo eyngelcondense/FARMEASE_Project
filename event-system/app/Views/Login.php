@@ -139,7 +139,8 @@
       <h1 style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">Welcome Back</h1>
       <p class="subtitle">Log in to continue your journey with us</p>
 
-      <form id="loginForm" method="POST" action="">
+      <form id="loginForm" method="POST" action="<?= site_url('login') ?>">
+        <?= csrf_field() ?>
         <div class="mb-3">
           <div class="input-group">
             <span class="input-group-text"><i class="bi bi-envelope"></i></span>
@@ -178,7 +179,7 @@
 
   <footer>
     Phone: 0912-345-6789 | Email: sanisidro@gmail.com
-  </footer>
+  </footer> 
 
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -186,11 +187,10 @@
   <script>
     // Redirect to signup page when "Sign up" button is clicked
     document.getElementById("signupBtn").addEventListener("click", function() {
-      window.location.href = "Signup.php"; // changed to PHP version
+      window.location.href = "/register";
     });
 
     document.getElementById("loginForm").addEventListener("submit", function(event) {
-      event.preventDefault(); // Prevent actual form submission
 
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value.trim();
