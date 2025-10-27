@@ -121,7 +121,7 @@
 
   <!-- Header -->
   <div class="header-bar">
-    <img src="LOGO NG SAN ISIDRO.png" alt="San Isidro Labrador Logo">
+    <img src="images/LOGO NG SAN ISIDRO.png" alt="San Isidro Labrador Logo">
     <h5 class="mt-2 fw-semibold">San Isidro Labrador Resort and Leisure Farm</h5>
   </div>
 
@@ -134,7 +134,7 @@
 
       <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
         <ul class="navbar-nav">
-          <li class="nav-item"><a class="nav-link active" href="Homee.php">HOME</a></li>
+          <li class="nav-item"><a class="nav-link active" href="<?= site_url('home')?>">HOME</a></li>
           <li class="nav-item"><a class="nav-link" href="packages.php">PACKAGES</a></li>
           <li class="nav-item"><a class="nav-link" href="events.php">EVENTS</a></li>
           <li class="nav-item"><a class="nav-link" href="testimonials.php">TESTIMONIALS</a></li>
@@ -155,7 +155,7 @@
   <!-- Contact & Inquiry Section -->
   <div class="container contact-section">
     <h2 class="section-title">Get in Touch With Us</h2>
-    <img src="divider.png" alt="Divider" class="d-block mx-auto" style="width:100px;"> 
+    <img src="images/divider.png" alt="Divider" class="d-block mx-auto" style="width:100px;"> 
     <br>
 
     <div class="row align-items-start">
@@ -184,7 +184,7 @@
           <i class="fa-solid fa-envelope"></i> Email: sanisidroresort@gmail.com
         </p>
 
-        <img src="san isidroweas.jpg" alt="Resort Image">
+        <img src="images/san isidroweas.jpg" alt="Resort Image">
       </div>
 
       <!-- RIGHT COLUMN: INQUIRY FORM -->
