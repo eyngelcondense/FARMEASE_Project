@@ -154,7 +154,7 @@
 </head>
 
 <body>
-
+  
   <div class="header-bar"></div>
   <div class="login-container">
     <div class="login-card">
@@ -192,8 +192,7 @@
           </div>
         </div>
 
-        <a href="<?= site_url('forgot-password') ?>" class="forgot">Forgot password?</a>
-
+        <a href="#" class="forgot">Forgot password?</a>
 
         <button type="submit" class="btn-login">Log in</button>
         <button type="button" class="btn-signup" id="signupBtn">Sign up</button>
