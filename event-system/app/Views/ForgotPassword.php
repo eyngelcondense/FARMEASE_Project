@@ -134,7 +134,7 @@
 </head>
 
 <body>
-  <a href="login.php" class="back-arrow"><i class="bi bi-arrow-left"></i></a>
+  <a href="Login.php" class="back-arrow"><i class="bi bi-arrow-left"></i></a>
   <div class="header-bar"></div>
 
   <div class="forgot-container">
@@ -155,7 +155,7 @@
         <button type="submit" class="btn-reset">Send Reset Link</button>
       </form>
 
-      <a href="login.php" class="back-link">Back to Login</a>
+      <a href="Login.php" class="back-link">Back to Login</a>
     </div>
   </div>
 
