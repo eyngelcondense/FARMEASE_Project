@@ -10,14 +10,13 @@
 # at the beginning of the line.
 #--------------------------------------------------------------------
 
-#GOOGLE_MAPS_API_KEY = "AIzaSyDFyO7SREaFQwLZ1fIX0EjInXwOflI1qVQ"
-
 #--------------------------------------------------------------------
 # ENVIRONMENT
 #--------------------------------------------------------------------
 
 CI_ENVIRONMENT = development
 app.forceGlobalSecureRequests = false
+GOOGLE_MAPS_API_KEY = AIzaSyDFyO7SREaFQwLZ1fIX0EjInXwOflI1qVQ
 
 #--------------------------------------------------------------------
 # APP
@@ -33,13 +32,13 @@ app.forceGlobalSecureRequests = false
 # DATABASE
 #--------------------------------------------------------------------
 
-database.default.hostname = localhost
-database.default.database = FARMEASE_VRBMS
+database.default.hostname = db
+database.default.database = farmease
 database.default.username = root
-database.default.password = 
+database.default.password = root
 database.default.DBDriver = MySQLi
 # database.default.DBPrefix =
-database.default.port = 3306
+database.default.port = 3308
 
 # If you use MySQLi as tests, first update the values of Config\Database::$tests.
 # database.tests.hostname = localhost

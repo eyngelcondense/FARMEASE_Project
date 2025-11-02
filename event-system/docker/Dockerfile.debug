@@ -1,0 +1,3 @@
+FROM alpine
+
+COPY php.ini /tmp/php.ini
