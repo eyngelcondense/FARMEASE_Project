@@ -255,9 +255,9 @@
             <a class="nav-link active" href="<?= site_url('logout') ?>">HOME</a>
           </li>
           <li class="nav-item"><a class="nav-link" href="packages.php">PACKAGES</a></li>
-          <li class="nav-item"><a class="nav-link" href="events.php">EVENTS</a></li>
+          <li class="nav-item"><a class="nav-link" href="gallery.php">VIDEOS/GALLERIES</a></li>
           <li class="nav-item"><a class="nav-link" href="testimonials.php">TESTIMONIALS</a></li>
-          <li class="nav-item"><a class="nav-link" href="<?= site_url('booking') ?>">BOOKING</a></li>
+          <li class="nav-item"><a class="nav-link" href="booking.php">CONTACT</a></li>
         </ul>
       </div>
     </div>

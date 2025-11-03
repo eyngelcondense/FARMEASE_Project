@@ -34,6 +34,30 @@
       background-color: #b2a187;
     }
 
+    back-arrow {
+      position: fixed !important;
+      top: 15px !important;
+      left: 20px !important;
+      font-size: 1.8rem;
+      color: #7c6a43;
+      text-decoration: none;
+      z-index: 9999 !important;
+      transition: all 0.2s ease;
+    }
+
+    .back-arrow:hover {
+      color: #6a5938;
+      transform: translateX(-3px);
+    }
+
+    @media (max-width: 576px) {
+      .back-arrow {
+        top: 10px !important;
+        left: 10px !important;
+        font-size: 1.6rem;
+      }
+    }
+
     .logo {
       text-align: center;
       margin-top: 40px;
@@ -108,6 +132,11 @@
 </head>
 
 <body>
+  <!-- Back Arrow -->
+  <a href="javascript:history.back()" class="back-arrow">
+    <i class="bi bi-arrow-left"></i>
+  </a>
+
   <div class="header-bar"></div>
 
   <div class="signup-container">
