@@ -126,10 +126,35 @@
     .alert {
       margin-top: 15px;
     }
+
+    .back-arrow {
+      position: fixed !important;
+      top: 15px !important;
+      left: 20px !important;
+      font-size: 1.8rem;
+      color: #7c6a43;
+      text-decoration: none;
+      z-index: 9999 !important;
+      transition: all 0.2s ease;
+    }
+
+    .back-arrow:hover {
+      color: #6a5938;
+      transform: translateX(-3px);
+    }
+
+    @media (max-width: 576px) {
+      .back-arrow {
+        top: 10px !important;
+        left: 10px !important;
+        font-size: 1.6rem;
+      }
+    }
   </style>
 </head>
 
 <body>
+  
   <div class="header-bar"></div>
   <div class="login-container">
     <div class="login-card">

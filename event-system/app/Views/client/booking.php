@@ -134,11 +134,11 @@
 
       <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
         <ul class="navbar-nav">
-          <li class="nav-item"><a class="nav-link active" href="<?= site_url('home')?>">HOME</a></li>
+          <li class="nav-item"><a class="nav-link active" href="Home.php">HOME</a></li>
           <li class="nav-item"><a class="nav-link" href="packages.php">PACKAGES</a></li>
-          <li class="nav-item"><a class="nav-link" href="events.php">EVENTS</a></li>
+          <li class="nav-item"><a class="nav-link" href="gallery.php">VIDEOS/GALLERIES</a></li>
           <li class="nav-item"><a class="nav-link" href="testimonials.php">TESTIMONIALS</a></li>
-          <li class="nav-item"><a class="nav-link" href="booking.php">BOOKING</a></li>
+          <li class="nav-item"><a class="nav-link" href="booking.php">CONTACT</a></li>
         </ul>
       </div>
     </div>
