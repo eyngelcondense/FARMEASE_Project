@@ -225,10 +225,10 @@ class Auth extends ShieldAuth
     public array $usernameValidationRules = [
         'label' => 'Auth.username',
         'rules' => [
-            'required',
-            'max_length[30]',
-            'min_length[3]',
-            'regex_match[/\A[a-zA-Z0-9\.]+\z/]',
+            // 'required',
+            // 'max_length[30]',
+            // 'min_length[3]',
+            // 'regex_match[/\A[a-zA-Z0-9\.]+\z/]',
         ],
     ];
 
@@ -284,9 +284,11 @@ class Auth extends ShieldAuth
      * Fields that are available to be used as credentials for login.
      */
     public array $validFields = [
-        // 'email',
-        'username',
+        'email',
+        //'username',
     ];
+    public array $identityFields = ['email'];
+
 
     /**
      * --------------------------------------------------------------------
