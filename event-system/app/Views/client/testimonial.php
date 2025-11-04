@@ -246,7 +246,7 @@
   <!-- Testimonials Header -->
   <section class="testimonials-header">
     <h1>Client Testimonials</h1>
-    <img src="decor.png" alt="Divider" class="divider">
+    <img src="images/divider.png" alt="Divider" class="divider">
     <p>San Isidro Labrador Resort and Leisure Farm is gearing up to be the premiere location for your once-in-a-lifetime event</p>
   </section>
 
