@@ -338,6 +338,13 @@
         gap: 10px;
       }
     }
+
+    button:focus,
+    .modal-close:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(122, 106, 88, 0.4); /* subtle brown glow */
+    }
+
   </style>
 
 
@@ -402,38 +409,29 @@
     <img src="images/divider.png" alt="Decorative Divider">
   </div>
 
-  <!-- Description Section -->
-  <section class="description-section">
-    <div class="container">
-      <div class="row">
-        <div class="col-12">
-          <p>
-            Body text for your whole article or post. We'll put in some lorem ipsum to show how a filled-out page might look:
-          </p>
-          <p>
-            Excepteur efficient emerging, minim veniam anim aute carefully curated Ginza conversation exquisite perfect nostrud nisi intricate Content. Qui international first-class nulla ut. Punctual adipisicing, essential lovely queen tempor eiusmod irure. Exclusive izakaya charming Scandinavian impeccable aute quality of life soft power pariatur Melbourne occaecat discerning. Qui wardrobe aliquip, et Porter destination Toto remarkable officia Helsinki excepteur Basset hound. Zürich sleepy perfect consectetur.
-          </p>
-          <p>
-            Exquisite sophisticated iconic cutting-edge laborum deserunt Addis Ababa esse bureaux cupidatat id minim. Sharp classic the best commodo nostrud delightful. Conversation aute Rochester id. Qui sunt remarkable deserunt intricate airport handsome K-pop excepteur classic esse Asia-Pacific laboris.
-          </p>
-        </div>
+ <!-- Description Section -->
+<section class="description-section py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <p>
+          At <strong>San Isidro Labrador Resort and Leisure Farm</strong>, we believe that the most beautiful celebrations begin with a setting that inspires. Surrounded by nature’s calm and kissed by golden sunsets, our resort provides the ideal canvas for your most unforgettable moments.
+        </p>
+        <p>
+          Each of our <strong>packages</strong> is crafted to bring together elegance, comfort, and personalized service. From breathtaking outdoor ceremonies and charming indoor receptions to relaxing leisure stays, we offer a complete experience designed to match your vision and personality.
+        </p>
+        <p>
+          Whether you dream of a fairy-tale wedding, a joyful reunion, or a serene corporate retreat, our team ensures that every detail is handled with care — so you can focus on what truly matters: celebrating, connecting, and creating memories that last a lifetime.
+        </p>
+        <p>
+          Discover how <strong>San Isidro Labrador Resort and Leisure Farm</strong> can turn your special moments into timeless stories. Because here, every celebration is more than a day — it’s an experience to remember.
+        </p>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Images Section -->
-  <section class="images-section">
-    <div class="container">
-      <div class="image-container">
-        <div class="image-left">
-          <img src="pink1.jpg" alt="Package Image 1">
-        </div>
-        <div class="image-right">
-          <img src="pink2.jpg" alt="Package Image 2">
-        </div>
-      </div>
-    </div>
-  </section>
+
 
   <!-- Logo Section -->
   <section class="logo-section">
@@ -452,35 +450,35 @@
         <!-- Café Package -->
         <div class="col-lg-2 col-md-4 col-6">
           <div class="package-image-wrapper">
-            <img src="cafe.jpg" alt="Café Package" class="package-img" onclick="openModal('cafe.jpg', 'Café 2nd Floor Venue')">
+            <img src="images/cafe.jpeg" alt="Café Package" class="package-img" onclick="openModal('images/cafe.jpeg', 'Café 2nd Floor Venue')">
           </div>
         </div>
 
         <!-- Playground Package -->
         <div class="col-lg-2 col-md-4 col-6">
           <div class="package-image-wrapper">
-            <img src="playground.jpg" alt="Playground Package" class="package-img" onclick="openModal('playground.jpg', 'Playground')">
+            <img src="images/playground.jpeg" alt="Playground Package" class="package-img" onclick="openModal('images/playground.jpeg', 'Playground')">
           </div>
         </div>
 
         <!-- Venue Package -->
         <div class="col-lg-2 col-md-4 col-6">
           <div class="package-image-wrapper">
-            <img src="venue.jpg" alt="Venue Package" class="package-img" onclick="openModal('venue.jpg', 'Venue')">
+            <img src="images/venue.jpeg" alt="Venue Package" class="package-img" onclick="openModal('images/venue.jpeg', 'Venue')">
           </div>
         </div>
 
         <!-- Prep Package -->
         <div class="col-lg-2 col-md-4 col-6">
           <div class="package-image-wrapper">
-            <img src="prep.jpg" alt="Prep & Photoshoot Package" class="package-img" onclick="openModal('prep.jpg', 'Prep & Photoshoot')">
+            <img src="images/prep.jpeg" alt="Prep & Photoshoot Package" class="package-img" onclick="openModal('images/prep.jpeg', 'Prep & Photoshoot')">
           </div>
         </div>
 
         <!-- Meeting Package -->
         <div class="col-lg-2 col-md-4 col-6">
           <div class="package-image-wrapper">
-            <img src="meeting.jpg" alt="Meeting Package" class="package-img" onclick="openModal('meeting.jpg', 'Meeting Room')">
+            <img src="images/meeting.jpeg" alt="Meeting Package" class="package-img" onclick="openModal('images/meeting.jpeg', 'Meeting Room')">
           </div>
         </div>
 
