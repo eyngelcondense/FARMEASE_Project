@@ -254,10 +254,18 @@
           <li class="nav-item">
             <a class="nav-link active" href="<?= site_url('logout') ?>">HOME</a>
           </li>
-          <li class="nav-item"><a class="nav-link" href="packages.php">PACKAGES</a></li>
-          <li class="nav-item"><a class="nav-link" href="gallery.php">VIDEOS/GALLERIES</a></li>
-          <li class="nav-item"><a class="nav-link" href="testimonials.php">TESTIMONIALS</a></li>
-          <li class="nav-item"><a class="nav-link" href="booking.php">CONTACT</a></li>
+          <li class="nav-item">
+            <a class="nav-link active" href="<?= site_url('packages') ?>">PACKAGES</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="<?= site_url('gallery') ?>">VIDEO/GALLERIES</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="<?= site_url('testimonials') ?>">TESTIMONIALS</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="<?= site_url('contact') ?>">CONTACT</a>
+          </li>
         </ul>
       </div>
     </div>

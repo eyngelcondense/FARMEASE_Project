@@ -36,6 +36,8 @@ class Filters extends BaseFilters
         'performance'   => PerformanceMetrics::class,
         'session' => \CodeIgniter\Shield\Filters\SessionAuth::class,
         'authredirect' => \App\Filters\AuthRedirect::class,
+        'redirectIfAuthenticated' => \App\Filters\RedirectIfAuthenticated::class,
+        'group' => \CodeIgniter\Shield\Filters\GroupFilter::class,
     ];
 
     /**
