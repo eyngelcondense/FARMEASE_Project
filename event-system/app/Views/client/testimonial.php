@@ -390,11 +390,21 @@
       </button>
       <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
         <ul class="navbar-nav">
-          <li class="nav-item"><a class="nav-link" href="#">HOME</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">PACKAGES</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">VIDEOS/GALLERIES</a></li>
-          <li class="nav-item"><a class="nav-link active" href="#">TESTIMONIALS</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">CONTACT</a></li>
+          <li class="nav-item">
+            <a class="nav-link active" href="<?= site_url('home') ?>">HOME</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="<?= site_url('packages') ?>">PACKAGES</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="<?= site_url('gallery') ?>">VIDEO/GALLERIES</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="<?= site_url('testimonials') ?>">TESTIMONIALS</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="<?= site_url('contact') ?>">CONTACT</a>
+          </li>
         </ul>
       </div>
     </div>

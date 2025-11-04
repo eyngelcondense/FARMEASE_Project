@@ -7,7 +7,7 @@ use CodeIgniter\Router\RouteCollection;
  */
 
 //landing page route
-$routes->get('/', 'LandingController::index', ['filter' => 'redirectIfAuthenticated']);
+$routes->get('/', 'ClientController::landing', ['filter' => 'redirectIfAuthenticated']);
 
 $routes->group('', ['namespace' => 'App\Controllers\Auth'], static function ($routes) {
     $routes->get('login', 'LoginController::loginView', ['filter' => 'redirectIfAuthenticated']);
@@ -19,12 +19,16 @@ $routes->group('', ['namespace' => 'App\Controllers\Auth'], static function ($ro
 });
 
 $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:client'], static function ($routes) {
-    $routes->get('home', 'HomeController::index');
-    $routes->get('booking', 'BookingController::index');
+    $routes->get('home', 'ClientController::home');
+    $routes->get('booking', 'ClientController::booking');
+    $routes->get('packages', 'ClientController::packages');
+    $routes->get('gallery', 'ClientController::gallery');
+    $routes->get('testimonials', 'ClientController::testimonials');
+    $routes->get('contact', 'ClientController::contact');
 });
 
 $routes->group('', ['filter' => 'group:admin'], static function ($routes) {
     $routes->get('dashboard', 'Admin\DashboardController::index');
 });
 
-$routes->get('landing', 'LandingController::index');
+$routes->get('landing', 'ClientController::landing');
