@@ -293,7 +293,7 @@
 
   <!-- Top Divider -->
   <div class="top-divider">
-    <img src="decor.png" alt="Decorative Divider">
+    <img src="images/divider.png" alt="Decorative Divider">
   </div>
 
   <!-- Gallery Hero Section -->
@@ -313,7 +313,7 @@
   <!-- Garden Cafe Section -->
   <section class="gallery-section" data-category="all">
     <div class="section-divider">
-      <img src="decor.png" alt="Decorative Divider">
+      <img src="images/divider.png" alt="Decorative Divider">
     </div>
     <h2 class="section-title">Garden Cafe</h2>
     <div class="container">
@@ -343,7 +343,7 @@
   <!-- Rooms Section -->
   <section class="gallery-section" data-category="all">
     <div class="section-divider">
-      <img src="decor.png" alt="Decorative Divider">
+      <img src="images/divider.png" alt="Decorative Divider">
     </div>
     <h2 class="section-title">Rooms</h2>
     <div class="container">
@@ -373,7 +373,7 @@
   <!-- Garden Venue Section -->
   <section class="gallery-section" data-category="all">
     <div class="section-divider">
-      <img src="decor.png" alt="Decorative Divider">
+      <img src="images/divider.png" alt="Decorative Divider">
     </div>
     <h2 class="section-title">Garden Venue</h2>
     <div class="container">
