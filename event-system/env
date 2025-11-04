@@ -17,7 +17,6 @@
 CI_ENVIRONMENT = development
 app.forceGlobalSecureRequests = false
 GOOGLE_MAPS_API_KEY = AIzaSyDFyO7SREaFQwLZ1fIX0EjInXwOflI1qVQ
-
 #--------------------------------------------------------------------
 # APP
 #--------------------------------------------------------------------
@@ -32,13 +31,16 @@ GOOGLE_MAPS_API_KEY = AIzaSyDFyO7SREaFQwLZ1fIX0EjInXwOflI1qVQ
 # DATABASE
 #--------------------------------------------------------------------
 
-database.default.hostname = db
-database.default.database = farmease
-database.default.username = root
-database.default.password = root
+# .env file snippet
+database.default.hostname = farmease-db
+database.default.database = farmease_vrbms
+database.default.username = docker-user
+database.default.password = farmease-pass
+# Use MySQLi driver
 database.default.DBDriver = MySQLi
 # database.default.DBPrefix =
-database.default.port = 3308
+database.default.port = 3306
+database.default.DBEncrypt = false
 
 # If you use MySQLi as tests, first update the values of Config\Database::$tests.
 # database.tests.hostname = localhost
