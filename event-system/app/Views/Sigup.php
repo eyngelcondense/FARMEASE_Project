@@ -34,20 +34,31 @@
       background-color: #b2a187;
     }
 
-    back-arrow {
-      position: fixed !important;
-      top: 15px !important;
-      left: 20px !important;
-      font-size: 1.8rem;
-      color: #7c6a43;
+    /* Back Button */
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 25px;
+      background-color: #7c6a43;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 10px 18px;
+      font-size: 1rem;
+      font-weight: 600;
       text-decoration: none;
-      z-index: 9999 !important;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
       transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 1000;
     }
 
-    .back-arrow:hover {
-      color: #6a5938;
+    .back-btn:hover {
+      background-color: #6a5938;
       transform: translateX(-3px);
+      color: #fff;
     }
 
     @media (max-width: 576px) {
@@ -80,7 +91,7 @@
       margin: 40px auto;
       background: #fff;
       text-align: center;
-      padding: 30px;
+      padding: 20px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.05);
       flex: 1;
@@ -121,23 +132,20 @@
     }
 
     footer {
-      text-align: center;
       padding: 15px 0;
       font-size: 0.85rem;
       background-color: #b2a187;
-      color: #4b4b4b;
-      margin-top: auto;
     }
   </style>
 </head>
 
 <body>
-  <!-- Back Arrow -->
-  <a href="javascript:history.back()" class="back-arrow">
-    <i class="bi bi-arrow-left"></i>
-  </a>
-
   <div class="header-bar"></div>
+  
+  <!-- Back btn -->
+    <a href="javascript:history.back()" class="back-btn">
+    <i class="bi bi-arrow-left"></i> Back
+  </a>
 
   <div class="signup-container">
     <div class="logo">
@@ -187,7 +195,6 @@
   </div>
 
   <footer>
-    Phone: 0912-345-6789 | Email: sanisidro@gmail.com
   </footer>
 
   <!-- Validation by JS - not the actual logic -->

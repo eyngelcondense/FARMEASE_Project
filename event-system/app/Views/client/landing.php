@@ -273,22 +273,6 @@
       margin-top: 10px;
     }
 
-    /* Footer */
-    footer {
-      background-color: #b2a187;
-      color: white;
-      text-align: center;
-      padding: 10px;
-      font-size: 0.9rem;
-    }
-    footer a {
-      color: #f5e3c6;
-      text-decoration: none;
-      margin: 0 6px;
-    }
-    footer a:hover {
-      color: white;
-    }
 
     /* remove contact and email styles */
     .contact-info a {
@@ -437,16 +421,9 @@
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer style="font-family: 'Times New Roman', Times, serif;">
-    <div class="social-icons mb-2">
-      <a href="https://www.facebook.com/sanisidrofarmresort" target="_blank"><i class="fa-brands fa-facebook"></i></a>
-      <a href="https://www.tiktok.com/@sanisidrofarmph" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
-      <a href="https://www.instagram.com/sanisidrofarmph" target="_blank"><i class="fa-brands fa-instagram"></i></a>
-    </div>
-    © 2025 San Isidro Labrador Resort and Leisure Farm. All rights reserved.<br>
-    Website developed by <strong>Farmease</strong>.
-  </footer>
+  <?php
+    include ('footer.php');
+  ?>
 
   <script>
     function toggleSidebar() {

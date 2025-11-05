@@ -116,32 +116,42 @@
     }
 
     footer {
-      text-align: center;
       padding: 15px 0;
       font-size: 0.85rem;
       background-color: #b2a187;
-      color: #4b4b4b;
     }
 
     .alert {
       margin-top: 15px;
     }
 
-    .back-arrow {
-      position: fixed !important;
-      top: 15px !important;
-      left: 20px !important;
-      font-size: 1.8rem;
-      color: #7c6a43;
+    /* Back Button */
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 25px;
+      background-color: #7c6a43;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 10px 18px;
+      font-size: 1rem;
+      font-weight: 600;
       text-decoration: none;
-      z-index: 9999 !important;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
       transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 1000;
     }
 
-    .back-arrow:hover {
-      color: #6a5938;
+    .back-btn:hover {
+      background-color: #6a5938;
       transform: translateX(-3px);
+      color: #fff;
     }
+
 
     @media (max-width: 576px) {
       .back-arrow {
@@ -154,15 +164,21 @@
 </head>
 
 <body>
-  
+
   <div class="header-bar"></div>
+  
+  <!-- Back btn -->
+    <a href="javascript:history.back()" class="back-btn">
+    <i class="bi bi-arrow-left"></i> Back
+  </a>
+
   <div class="login-container">
     <div class="login-card">
       <img src="images/LOGO NG SAN ISIDRO.png" alt="San Isidro Labrador Logo" style="width: 130px;">
       <div class="brand-name" style="font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; color: #7c6a43;">SAN ISIDRO LABRADOR</div>
-      <small>RESORT AND LEISURE FARM</small> <br>
+      <small style="display: block; margin-bottom: 20px;">RESORT AND LEISURE FARM</small> <br>
       <h1 style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">Welcome Back</h1>
-      <p class="subtitle">Log in to continue your journey with us</p>
+      <p class="subtitle" style="margin-bottom: 30px;">Log in to continue your journey with us</p>
 
       <form id="loginForm" method="POST" action="<?= site_url('login') ?>">
         <?= csrf_field() ?>
@@ -203,7 +219,6 @@
   </div>
 
   <footer>
-    Phone: 0912-345-6789 | Email: sanisidro@gmail.com
   </footer> 
 
   <!-- Bootstrap Icons -->

@@ -7,25 +7,28 @@ use CodeIgniter\Router\RouteCollection;
  */
 
 //landing page route
-$routes->get('/', 'LandingController::index');
-
-
+$routes->get('/', 'ClientController::landing', ['filter' => 'redirectIfAuthenticated']);
 
 $routes->group('', ['namespace' => 'App\Controllers\Auth'], static function ($routes) {
-    $routes->get('login', 'LoginController::loginView');
+    $routes->get('login', 'LoginController::loginView', ['filter' => 'redirectIfAuthenticated']);
     $routes->post('login', 'LoginController::loginAction');
-    $routes->get('register', 'RegisterController::registerView');
+    $routes->get('register', 'RegisterController::registerView', ['filter' => 'redirectIfAuthenticated']);
     $routes->post('register', 'RegisterController::registerAction');
     $routes->get('logout', 'LoginController::logout');
     
 });
 
-$routes->group('client', ['filter' => 'group:client'], static function ($routes) {
-    $routes->get('home', 'Client\HomeController::index');
+$routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:client'], static function ($routes) {
+    $routes->get('home', 'ClientController::home');
+    $routes->get('booking', 'ClientController::booking');
+    $routes->get('packages', 'ClientController::packages');
+    $routes->get('gallery', 'ClientController::gallery');
+    $routes->get('testimonials', 'ClientController::testimonials');
+    $routes->get('contact', 'ClientController::contact');
 });
-$routes->group('admin', ['filter' => 'group:admin'], static function ($routes) {
+
+$routes->group('', ['filter' => 'group:admin'], static function ($routes) {
     $routes->get('dashboard', 'Admin\DashboardController::index');
 });
 
-$routes->get('home', 'HomeController::index', ['filter' => 'authredirect']);
-$routes->get('landing', 'LandingController::index');
+$routes->get('landing', 'ClientController::landing');

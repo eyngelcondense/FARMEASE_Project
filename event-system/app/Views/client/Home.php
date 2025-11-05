@@ -1,22 +1,9 @@
 <?php
-// You can use this later to manage user sessions or dynamic data
-// session_start();
+ $title = "Welcome | San Isidro Labrador Resort and Leisure Farm";
+ include ('header.php');
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>San Isidro Labrador Resort and Leisure Farm</title>
 
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="bootstrap5/css/bootstrap.min.css">
 
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css" crossorigin="anonymous">
 
   <style>
     body {
@@ -24,35 +11,6 @@
       background-color: #f8f6f3;
       color: #3b2a18;
       overflow-x: hidden;
-    }
-
-    /* Header */
-    .header-bar {
-      background-color: #b2a187;
-      padding: 10px 0;
-      text-align: center;
-      font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-    }
-
-    .header-bar img {
-      height: 80px;
-    }
-
-    .navbar {
-      background-color: #ffffff;
-      border-top: 1px solid #ddd;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .navbar-nav .nav-link {
-      color: #3b2a18;
-      font-weight: 500;
-      margin: 0 12px;
-      transition: color 0.3s;
-    }
-
-    .navbar-nav .nav-link:hover {
-      color: #c19a6b;
     }
 
     /* Hero Section */
@@ -232,36 +190,7 @@
       text-decoration: underline;
     }
   </style>
-</head>
 
-<body>
-
-  <!-- Header -->
-  <div class="header-bar">
-    <img src="images/LOGO NG SAN ISIDRO.png" alt="San Isidro Labrador Logo">
-    <h5 class="mt-2 fw-semibold">San Isidro Labrador Resort and Leisure Farm</h5>
-  </div>
-
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg">
-    <div class="container">
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link active" href="<?= site_url('logout') ?>">HOME</a>
-          </li>
-          <li class="nav-item"><a class="nav-link" href="packages.php">PACKAGES</a></li>
-          <li class="nav-item"><a class="nav-link" href="gallery.php">VIDEOS/GALLERIES</a></li>
-          <li class="nav-item"><a class="nav-link" href="testimonials.php">TESTIMONIALS</a></li>
-          <li class="nav-item"><a class="nav-link" href="booking.php">CONTACT</a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
 
   <!-- Hero Section -->
   <section class="hero">
@@ -449,16 +378,7 @@
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer>
-    <p>© 2025 San Isidro Labrador Resort and Leisure Farm. All rights reserved.</p>
-    <div>
-      <a href="https://www.facebook.com/sanisidrofarmresort"><i class="fa-brands fa-facebook"></i> Facebook</a> | 
-      <a href="https://www.instagram.com/sanisidrofarmph"><i class="fa-brands fa-instagram"></i> Instagram</a> | 
-      <a href="#"><i class="fa-solid fa-phone"></i> Contact Us</a>
-    </div>
-  </footer>
+  <?php
+    include ('footer.php');
+  ?>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>

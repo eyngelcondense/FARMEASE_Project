@@ -1,89 +1,14 @@
 <?php
-           
+ $title = "Gallery | San Isidro Labrador Resort and Leisure Farm";
+ include ('header.php');
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gallery - San Isidro Labrador Resort and Leisure Farm</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css" crossorigin="anonymous">
-  
   <style>
     body {
       font-family: 'Poppins', sans-serif;
       background-color: #f8f6f3;
       color: #3b2a18;
       overflow-x: hidden;
-    }
-
-    /* Header */
-    .header-bar {
-      background-color: #b2a187;
-      padding: 5px 0;
-    }
-
-    .header-container {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 50px;
-    }
-
-    .header-logo {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .header-logo img {
-      height: 70px;
-    }
-
-    .header-logo-text {
-      text-align: left;
-      font-family: 'Times New Roman', Times, serif;
-    }
-
-    .header-logo-text h5 {
-      margin: 0;
-      font-size: 1rem;
-      color: #8b6f47;
-      letter-spacing: 2px;
-    }
-
-    .header-logo-text p {
-      margin: 0;
-      font-size: 0.7rem;
-      color: #8b6f47;
-    }
-
-    .navbar {
-      background-color: #ffffff;
-      border-top: 1px solid #ddd;
-      border-bottom: 1px solid #ddd;
-      padding: 0;
-    }
-
-    .navbar-nav {
-      margin: 0 auto;
-    }
-
-    .navbar-nav .nav-link {
-      color: #3b2a18;
-      font-weight: 600;
-      margin: 0 20px;
-      padding: 15px 0;
-      transition: color 0.3s;
-      font-size: 0.95rem;
-    }
-
-    .navbar-nav .nav-link:hover,
-    .navbar-nav .nav-link.active {
-      color: #c19a6b;
     }
 
     /* Top Divider */
@@ -306,57 +231,6 @@
       font-weight: 500;
     }
 
-    /* Footer */
-    footer {
-      background-color: #f8f6f3;
-      padding: 30px 0 0;
-      text-align: center;
-      font-size: 0.95rem;
-      color: #3b2a18;
-    }
-
-    .footer-content {
-      padding: 20px 0;
-    }
-
-    .footer-content p {
-      margin: 5px 0;
-      color: #3b2a18;
-    }
-
-    .footer-icons {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin: 20px 0;
-    }
-
-    .footer-icons a {
-      color: #7a6a58;
-      font-size: 1.8rem;
-      transition: color 0.3s;
-    }
-
-    .footer-icons a:hover {
-      color: #3b2a18;
-    }
-
-    .footer-bottom {
-      background-color: #b2a187;
-      padding: 12px 0;
-      color: #3b2a18;
-      font-size: 0.9rem;
-      margin-top: 20px;
-    }
-
-    .footer-bottom a {
-      color: #3b2a18;
-      text-decoration: none;
-    }
-
-    .footer-bottom a:hover {
-      text-decoration: underline;
-    }
 
     /* Responsive */
     @media (max-width: 768px) {
@@ -415,43 +289,11 @@
       display: none;
     }
   </style>
-</head>
-<body>
 
-  <!-- Header -->
-  <div class="header-bar">
-    <div class="header-container">
-      <div class="header-logo">
-        <img src="LOGO NG SAN ISIDRO.png" alt="San Isidro Labrador Logo">
-        <div class="header-logo-text">
-          <h5>SAN ISIDRO LABRADOR</h5>
-          <p>RESORT AND LEISURE FARM</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg">
-    <div class="container-fluid">
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item"><a class="nav-link" href="#">HOME</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">PACKAGES</a></li>
-          <li class="nav-item"><a class="nav-link active" href="#">VIDEOS/GALLERIES</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">TESTIMONIALS</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">CONTACT</a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
 
   <!-- Top Divider -->
   <div class="top-divider">
-    <img src="decor.png" alt="Decorative Divider">
+    <img src="images/divider.png" alt="Decorative Divider">
   </div>
 
   <!-- Gallery Hero Section -->
@@ -471,7 +313,7 @@
   <!-- Garden Cafe Section -->
   <section class="gallery-section" data-category="all">
     <div class="section-divider">
-      <img src="decor.png" alt="Decorative Divider">
+      <img src="images/divider.png" alt="Decorative Divider">
     </div>
     <h2 class="section-title">Garden Cafe</h2>
     <div class="container">
@@ -501,7 +343,7 @@
   <!-- Rooms Section -->
   <section class="gallery-section" data-category="all">
     <div class="section-divider">
-      <img src="decor.png" alt="Decorative Divider">
+      <img src="images/divider.png" alt="Decorative Divider">
     </div>
     <h2 class="section-title">Rooms</h2>
     <div class="container">
@@ -531,7 +373,7 @@
   <!-- Garden Venue Section -->
   <section class="gallery-section" data-category="all">
     <div class="section-divider">
-      <img src="decor.png" alt="Decorative Divider">
+      <img src="images/divider.png" alt="Decorative Divider">
     </div>
     <h2 class="section-title">Garden Venue</h2>
     <div class="container">
@@ -569,29 +411,9 @@
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer>
-    <div class="footer-content">
-      <p>© 2025 San Isidro Labrador Resort and Leisure Farm. All rights reserved.</p>
-      <p>Website developed by kunganomanteamname</p>
-      
-      <div class="footer-icons">
-        <a href="https://www.facebook.com/sanisidrofarmresort" target="_blank">
-          <i class="fa-brands fa-facebook"></i>
-        </a>
-        <a href="https://www.youtube.com/@sanisidrolabrador" target="_blank">
-          <i class="fa-brands fa-youtube"></i>
-        </a>
-        <a href="https://www.instagram.com/sanisidrofarmph" target="_blank">
-          <i class="fa-brands fa-instagram"></i>
-        </a>
-      </div>
-    </div>
-    
-    <div class="footer-bottom">
-      Phone: 0912 345 6789 | Email: <a href="mailto:sanisidro@gmail.com">sanisidro@gmail.com</a>
-    </div>
-  </footer>
+  <?php
+    include ('footer.php');
+  ?>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
@@ -690,5 +512,3 @@
       }
     });
   </script>
-</body>
-</html>
