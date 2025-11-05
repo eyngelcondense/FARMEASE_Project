@@ -7,7 +7,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manage Venues and Packages - San Isidro Labrador Resort</title>
+  <title>Payments - San Isidro Labrador Resort</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css">
@@ -80,55 +80,6 @@
       font-weight: 600;
       line-height: 1.3;
       color: white;
-    }
-
-    .quick-add-btn {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background-color: #3b2a18;
-      border: none;
-      color: white;
-      padding: 10px 12px;
-      border-radius: 8px;
-      width: 100%;
-      font-size: 13px;
-      font-weight: 500;
-      transition: all 0.3s;
-      margin-top: 15px;
-      cursor: pointer;
-    }
-
-    .quick-add-btn:hover {
-      background-color: #2a1f12;
-    }
-
-    .quick-add-btn-icon {
-      width: 28px;
-      height: 28px;
-      background-color: white;
-      color: #3b2a18;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      flex-shrink: 0;
-    }
-
-    .quick-add-text {
-      text-align: left;
-      flex: 1;
-    }
-
-    .quick-add-text-title {
-      font-weight: 600;
-      font-size: 13px;
-    }
-
-    .quick-add-text-sub {
-      font-size: 10px;
-      opacity: 0.8;
     }
 
     .nav-section {
@@ -227,56 +178,83 @@
     .page-header h1 {
       font-size: 22px;
       font-weight: 600;
-      color: #3b2a18;
+      color: #8f8472;
       margin: 0;
     }
 
-    /* Add Button */
-    .add-event-btn {
-      background-color: #3b2a18;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 500;
-      display: inline-flex;
+    /* Filter Section */
+    .filter-section {
+      display: flex;
       align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      transition: all 0.3s;
+      gap: 15px;
       margin-bottom: 25px;
+      flex-wrap: wrap;
     }
 
-    .add-event-btn:hover {
-      background-color: #2a1f12;
-    }
-
-    .add-event-btn i {
-      width: 24px;
-      height: 24px;
-      background-color: white;
-      color: #3b2a18;
-      border-radius: 50%;
+    .filter-item {
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 12px;
+      gap: 8px;
     }
 
-    .add-event-text {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
+    .filter-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #3b2a18;
     }
 
-    .add-event-text-title {
-      font-weight: 600;
+    .filter-dropdown {
+      padding: 8px 35px 8px 15px;
+      border: 1px solid #d4cfc5;
+      border-radius: 8px;
+      background-color: white;
+      font-size: 13px;
+      color: #3b2a18;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%233b2a18' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      min-width: 150px;
     }
 
-    .add-event-text-sub {
-      font-size: 10px;
-      opacity: 0.8;
+    .filter-dropdown:focus {
+      outline: none;
+      border-color: #8f8472;
+    }
+
+    .search-box-payments {
+      position: relative;
+      flex: 1;
+      max-width: 350px;
+    }
+
+    .search-box-payments input {
+      width: 100%;
+      padding: 8px 15px 8px 40px;
+      border: 1px solid #d4cfc5;
+      border-radius: 8px;
+      background-color: white;
+      font-size: 13px;
+      color: #3b2a18;
+    }
+
+    .search-box-payments input::placeholder {
+      color: #a89b88;
+    }
+
+    .search-box-payments input:focus {
+      outline: none;
+      border-color: #8f8472;
+    }
+
+    .search-box-payments i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #a89b88;
+      font-size: 14px;
     }
 
     /* Table Card */
@@ -285,20 +263,22 @@
       border-radius: 12px;
       padding: 30px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      overflow-x: auto;
     }
 
     /* Table */
-    .venues-table {
+    .payments-table {
       width: 100%;
       border-collapse: separate;
       border-spacing: 0;
+      min-width: 900px;
     }
 
-    .venues-table thead {
+    .payments-table thead {
       background-color: #e8e3db;
     }
 
-    .venues-table thead th {
+    .payments-table thead th {
       padding: 15px 20px;
       text-align: left;
       font-size: 14px;
@@ -307,71 +287,70 @@
       border: none;
     }
 
-    .venues-table thead th:first-child {
+    .payments-table thead th:first-child {
       border-radius: 8px 0 0 8px;
     }
 
-    .venues-table thead th:last-child {
+    .payments-table thead th:last-child {
       border-radius: 0 8px 8px 0;
     }
 
-    .venues-table tbody tr {
+    .payments-table tbody tr {
       border-bottom: 1px solid #f0ede8;
       transition: background-color 0.3s;
     }
 
-    .venues-table tbody tr:hover {
+    .payments-table tbody tr:hover {
       background-color: #faf8f5;
     }
 
-    .venues-table tbody tr:last-child {
+    .payments-table tbody tr:last-child {
       border-bottom: none;
     }
 
-    .venues-table tbody td {
+    .payments-table tbody td {
       padding: 18px 20px;
       font-size: 13px;
-      color: #5a4a3a;
+      color: #8f8472;
     }
 
-    .venue-name {
+    .payment-id {
+      font-weight: 500;
+      color: #8f8472;
+    }
+
+    .client-name {
       font-weight: 500;
       color: #3b2a18;
     }
 
-    /* Action Buttons */
-    .action-buttons {
-      display: flex;
-      gap: 8px;
+    .amount {
+      font-weight: 600;
+      color: #3b2a18;
     }
 
-    .btn-edit,
-    .btn-delete {
-      padding: 6px 16px;
+    /* Status Badges */
+    .status-badge {
+      display: inline-block;
+      padding: 5px 12px;
       border-radius: 6px;
       font-size: 12px;
       font-weight: 500;
-      border: none;
-      cursor: pointer;
-      transition: all 0.3s;
     }
 
-    .btn-edit {
-      background-color: #3b2a18;
-      color: white;
+    .status-paid {
+      background-color: #d4edda;
+      color: #155724;
     }
 
-    .btn-edit:hover {
-      background-color: #2a1f12;
+    .status-pending {
+      background-color: #fff3cd;
+      color: #856404;
     }
 
-    .btn-delete {
-      background-color: #d9534f;
-      color: white;
-    }
-
-    .btn-delete:hover {
-      background-color: #c9302c;
+    .status-refunded {
+      background-color: #f8d7da;
+      color: #721c24;
     }
 
     /* Mobile Menu Toggle */
@@ -407,12 +386,6 @@
         margin-left: 0;
         padding: 20px 15px;
       }
-      .table-card {
-        overflow-x: auto;
-      }
-      .venues-table {
-        min-width: 700px;
-      }
       .mobile-menu-toggle {
         display: flex;
       }
@@ -422,9 +395,15 @@
       .page-header h1 {
         font-size: 18px;
       }
-      .add-event-btn {
+      .filter-section {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .filter-dropdown {
         width: 100%;
-        justify-content: center;
+      }
+      .search-box-payments {
+        max-width: 100%;
       }
     }
   </style>
@@ -460,7 +439,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="admin-venues-packages.php" class="nav-link active" data-page="venues">
+          <a href="admin-venues-packages.php" class="nav-link" data-page="venues">
             <i class="fas fa-map-marker-alt"></i>
             Manage Venues and Packages
           </a>
@@ -472,7 +451,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="admin-payments.php" class="nav-link" data-page="payments">
+          <a href="admin-payments.php" class="nav-link active" data-page="payments">
             <i class="fas fa-credit-card"></i>
             Payments
           </a>
@@ -533,78 +512,90 @@
   <main class="main-content">
     <!-- Page Header -->
     <div class="page-header">
-      <h1>Manage Venues and Packages</h1>
+      <h1>Payments</h1>
     </div>
 
-    <!-- Add Event Button -->
-    <button class="add-event-btn" onclick="addNewVenue()">
-      <i class="fas fa-plus"></i>
-      <div class="add-event-text">
-        <span class="add-event-text-title">Add Quick Event</span>
-        <span class="add-event-text-sub">Events</span>
+    <!-- Filter Section -->
+    <div class="filter-section">
+      <div class="filter-item">
+        <span class="filter-label">Today</span>
+        <select class="filter-dropdown" id="dateFilter" onchange="filterPayments()">
+          <option value="today">Today</option>
+          <option value="week">This Week</option>
+          <option value="month">This Month</option>
+          <option value="all">All Time</option>
+        </select>
       </div>
-    </button>
 
-    <!-- Venues Table -->
+      <div class="filter-item">
+        <select class="filter-dropdown" id="statusFilter" onchange="filterPayments()">
+          <option value="all">All Payments</option>
+          <option value="paid">Paid</option>
+          <option value="pending">Pending</option>
+          <option value="refunded">Refunded</option>
+        </select>
+      </div>
+
+      <div class="search-box-payments">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search ..." id="searchInput" onkeyup="searchPayments()">
+      </div>
+    </div>
+
+    <!-- Payments Table -->
     <div class="table-card">
-      <table class="venues-table">
+      <table class="payments-table" id="paymentsTable">
         <thead>
           <tr>
-            <th>Venue</th>
-            <th>Category</th>
-            <th>Type</th>
-            <th>Rate</th>
-            <th></th>
+            <th>Payment ID</th>
+            <th>Client</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Amount</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td class="venue-name">Enclosed Venue</td>
-            <td>Enclosed</td>
-            <td>Basic</td>
-            <td>Php 15,000</td>
-            <td>
-              <div class="action-buttons">
-                <button class="btn-edit" onclick="editVenue(1)">Edit</button>
-                <button class="btn-delete" onclick="deleteVenue(1)">Delete</button>
-              </div>
-            </td>
+          <tr data-status="paid" data-date="2025-05-25">
+            <td class="payment-id">001</td>
+            <td class="client-name">Apple Templa</td>
+            <td>25 May 2025</td>
+            <td><span class="status-badge status-paid">Paid</span></td>
+            <td class="amount">Php 15, 000</td>
           </tr>
-          <tr>
-            <td class="venue-name">Open Venue</td>
-            <td>Open</td>
-            <td>Premium</td>
-            <td>Php 10,000</td>
-            <td>
-              <div class="action-buttons">
-                <button class="btn-edit" onclick="editVenue(2)">Edit</button>
-                <button class="btn-delete" onclick="deleteVenue(2)">Delete</button>
-              </div>
-            </td>
+          <tr data-status="pending" data-date="2025-06-12">
+            <td class="payment-id">002</td>
+            <td class="client-name">Earlsin Combenido</td>
+            <td>12 June 2025</td>
+            <td><span class="status-badge status-pending">Pending</span></td>
+            <td class="amount">Php 10, 000</td>
           </tr>
-          <tr>
-            <td class="venue-name">Playground</td>
-            <td>Open</td>
-            <td>Premium</td>
-            <td>Php 5,000</td>
-            <td>
-              <div class="action-buttons">
-                <button class="btn-edit" onclick="editVenue(3)">Edit</button>
-                <button class="btn-delete" onclick="deleteVenue(3)">Delete</button>
-              </div>
-            </td>
+          <tr data-status="refunded" data-date="2025-01-13">
+            <td class="payment-id">003</td>
+            <td class="client-name">Jean Iwayan</td>
+            <td>13 January 2025</td>
+            <td><span class="status-badge status-refunded">Refunded</span></td>
+            <td class="amount">Php 5, 000</td>
           </tr>
-          <tr>
-            <td class="venue-name">Cafe 2nd Floor</td>
-            <td>Open</td>
-            <td>Premium</td>
-            <td>Php 20,000</td>
-            <td>
-              <div class="action-buttons">
-                <button class="btn-edit" onclick="editVenue(4)">Edit</button>
-                <button class="btn-delete" onclick="deleteVenue(4)">Delete</button>
-              </div>
-            </td>
+          <tr data-status="paid" data-date="2025-01-21">
+            <td class="payment-id">004</td>
+            <td class="client-name">Ryan Magnaye</td>
+            <td>21 January 2025</td>
+            <td><span class="status-badge status-paid">Paid</span></td>
+            <td class="amount">Php 20, 000</td>
+          </tr>
+          <tr data-status="pending" data-date="2025-02-13">
+            <td class="payment-id">005</td>
+            <td class="client-name">Gilbert Bumanglag</td>
+            <td>13 February 2025</td>
+            <td><span class="status-badge status-pending">Pending</span></td>
+            <td class="amount">Php 20, 000</td>
+          </tr>
+          <tr data-status="pending" data-date="2025-03-25">
+            <td class="payment-id">006</td>
+            <td class="client-name">Johnmoreen Rol</td>
+            <td>25 March 2025</td>
+            <td><span class="status-badge status-pending">Pending</span></td>
+            <td class="amount">Php 10, 000</td>
           </tr>
         </tbody>
       </table>
@@ -631,22 +622,95 @@
       }
     });
 
-    // Add New Venue Function
-    function addNewVenue() {
-      alert('Add New Venue functionality\n\nThis will open a modal or redirect to an add venue form.\n\nYour backend developer will implement the actual form and database insertion.');
-    }
+    // Filter Payments Function
+    function filterPayments() {
+      const statusFilter = document.getElementById('statusFilter').value;
+      const dateFilter = document.getElementById('dateFilter').value;
+      const table = document.getElementById('paymentsTable');
+      const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
 
-    // Edit Venue Function
-    function editVenue(id) {
-      alert(`Edit Venue ID: ${id}\n\nThis will open a modal or redirect to an edit form with venue details.\n\nYour backend developer will implement the actual edit functionality.`);
-    }
+      for (let i = 0; i < rows.length; i++) {
+        let showRow = true;
+        const row = rows[i];
+        const status = row.getAttribute('data-status');
+        const date = new Date(row.getAttribute('data-date'));
+        const today = new Date();
 
-    // Delete Venue Function
-    function deleteVenue(id) {
-      if (confirm('Are you sure you want to delete this venue?')) {
-        alert(`Delete Venue ID: ${id}\n\nYour backend developer will implement the actual deletion from database.`);
+        // Status filter
+        if (statusFilter !== 'all' && status !== statusFilter) {
+          showRow = false;
+        }
+
+        // Date filter
+        if (dateFilter === 'today') {
+          if (date.toDateString() !== today.toDateString()) {
+            showRow = false;
+          }
+        } else if (dateFilter === 'week') {
+          const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+          if (date < weekAgo || date > today) {
+            showRow = false;
+          }
+        } else if (dateFilter === 'month') {
+          if (date.getMonth() !== today.getMonth() || date.getFullYear() !== today.getFullYear()) {
+            showRow = false;
+          }
+        }
+
+        row.style.display = showRow ? '' : 'none';
       }
     }
+
+    // Search Payments Function
+    function searchPayments() {
+      const input = document.getElementById('searchInput');
+      const filter = input.value.toUpperCase();
+      const table = document.getElementById('paymentsTable');
+      const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+      for (let i = 0; i < rows.length; i++) {
+        const cells = rows[i].getElementsByTagName('td');
+        let found = false;
+
+        for (let j = 0; j < cells.length; j++) {
+          const cellText = cells[j].textContent || cells[j].innerText;
+          if (cellText.toUpperCase().indexOf(filter) > -1) {
+            found = true;
+            break;
+          }
+        }
+
+        rows[i].style.display = found ? '' : 'none';
+      }
+    }
+
+    // Add click event to table rows for viewing payment details
+    document.querySelectorAll('.payments-table tbody tr').forEach(row => {
+      row.style.cursor = 'pointer';
+      row.addEventListener('click', function() {
+        const paymentId = this.querySelector('.payment-id').textContent;
+        const clientName = this.querySelector('.client-name').textContent;
+        const amount = this.querySelector('.amount').textContent;
+        const status = this.getAttribute('data-status');
+        
+        alert(`Payment Details:\n\nPayment ID: ${paymentId}\nClient: ${clientName}\nAmount: ${amount}\nStatus: ${status.toUpperCase()}\n\nYour backend developer will implement:\n- Full payment details modal\n- Receipt download\n- Payment history\n- Refund processing (if needed)`);
+      });
+    });
+
+    // Add animation to status badges on load
+    window.addEventListener('load', () => {
+      const badges = document.querySelectorAll('.status-badge');
+      badges.forEach((badge, index) => {
+        badge.style.opacity = '0';
+        badge.style.transform = 'scale(0.8)';
+        badge.style.transition = 'all 0.3s ease';
+        
+        setTimeout(() => {
+          badge.style.opacity = '1';
+          badge.style.transform = 'scale(1)';
+        }, 50 + (index * 50));
+      });
+    });
   </script>
 </body>
 </html>
