@@ -1,44 +1,10 @@
 <?php
-// You can include server-side logic here if needed later (e.g., form handling)
-// Example:
-// if ($_SERVER["REQUEST_METHOD"] == "POST") { ... }
+ $title = "Booking | San Isidro Labrador Resort and Leisure Farm";
+ include ('header.php');
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Booking & Contact | San Isidro Labrador Resort</title>
-  <!-- Bootstrap CSS Link -->
-  <link rel="stylesheet" href="bootstrap5/css/bootstrap.min.css">
-  <!-- Font Awesome 6 -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css" crossorigin="anonymous">
 
   <style>
-    .header-bar {
-      background-color: #b2a187;
-      padding: 10px 0;
-      text-align: center;
-      font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-    }
-    .header-bar img { height: 80px; }
-    .navbar {
-      background-color: #ffffff;
-      border-top: 1px solid #ddd;
-      border-bottom: 1px solid #ddd;
-    }
-    .navbar-nav .nav-link {
-      color: #3b2a18;
-      font-weight: 500;
-      margin: 0 12px;
-      transition: color 0.3s;
-    }
-    .navbar-nav .nav-link:hover { color: #c19a6b; }
-    body {
-      font-family: "Times New Roman", serif;
-      background-color: #f8f6f3;
-      color: #3b2a18;
-    }
+    
     .section-title {
       text-align: center;
       font-weight: bold;
@@ -97,52 +63,9 @@
       background-color: #3b2a18;
       color: #fff;
     }
-    footer {
-      background-color:#b2a187;
-      color: #fff;
-      text-align: center;
-      padding: 20px;
-      font-size: 14px;
-    }
-    footer a {
-      color: #f5e3c6;
-      text-decoration: none;
-    }
-    footer a:hover { text-decoration: underline; }
-    .social-icons i {
-      color: #fff;
-      margin: 0 8px;
-      font-size: 18px;
-    }
     .social-icons i:hover { color: #e3cfa3; }
   </style>
-</head>
-<body>
 
-  <!-- Header -->
-  <div class="header-bar">
-    <img src="images/LOGO NG SAN ISIDRO.png" alt="San Isidro Labrador Logo">
-    <h5 class="mt-2 fw-semibold">San Isidro Labrador Resort and Leisure Farm</h5>
-  </div>
-
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg">
-    <div class="container">
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item"><a class="nav-link active" href="Home.php">HOME</a></li>
-          <li class="nav-item"><a class="nav-link" href="packages.php">PACKAGES</a></li>
-          <li class="nav-item"><a class="nav-link" href="gallery.php">VIDEOS/GALLERIES</a></li>
-          <li class="nav-item"><a class="nav-link" href="testimonials.php">TESTIMONIALS</a></li>
-          <li class="nav-item"><a class="nav-link" href="booking.php">CONTACT</a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
 
   <!-- Google Maps Embed -->
   <div class="map-container mt-4">
@@ -245,19 +168,11 @@
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer>
-    <div class="social-icons mb-2">
-      <a href="https://www.facebook.com/sanisidrofarmresort" target="_blank" title="Facebook"><i class="fa-brands fa-facebook"></i></a>
-      <a href="https://www.tiktok.com/@sanisidrofarmph" target="_blank" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
-      <a href="https://www.instagram.com/sanisidrofarmph" target="_blank" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
-    </div>
-    © 2025 San Isidro Labrador Resort and Leisure Farm. All rights reserved.<br>
-    Website developed by <strong>Farmease</strong>.
-  </footer>
+ <?php
+    include ('footer.php');
+  ?>
 
   <!-- Bootstrap JS -->
   <script src="bootstrap5/js/bootstrap.bundle.min.js"></script>
 
-</body>
-</html>
+
