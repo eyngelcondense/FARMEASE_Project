@@ -30,11 +30,11 @@ class LoginController extends ShieldLogin
         }
 
         $credentials = [
-            'username' => $this->request->getPost('email'),
+            'email' => $this->request->getPost('email'),
             'password' => $this->request->getPost('password'),
         ];
 
-        $auth = auth();
+        $auth = service('auth');
 
         // Try to log in
         $result = $auth->attempt($credentials);
