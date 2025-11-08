@@ -369,9 +369,14 @@
           <div class="package-card">
             <img src="images/san isidroweas.jpg" alt="Package 1">
             <div class="package-card-body">
-              <h5>Package sample</h5>
-              <p>Explanation</p>
-              <button class="btn-inquiry">Make an inquiry</button>
+              <h5>Cafe Meetings</h5>
+              <p><strong>Your Perfect Café Meeting Awaits </strong></p>
+              <p>Host your next meeting in our exclusive 2nd floor space – where productivity meets comfort. Up to 50 guests, 3 hours of privacy, and ₱20,000 worth of delicious refreshments included.
+                Ready to elevate your meetings? <br>Make an inquiry and let's get started! ☕✨</p>
+              <a href="<?= site_url('contact') ?>" 
+                class="btn btn-inquiry <?= (service('uri')->getSegment(1) == 'contact') ? 'active' : '' ?>">
+                Make an Inquiry
+            </a>
             </div>
           </div>
         </div>
@@ -381,9 +386,14 @@
           <div class="package-card">
             <img src="images/wed_eventspic.jpg" alt="Package 2">
             <div class="package-card-body">
-              <h5>Package sample</h5>
-              <p>Explanation</p>
-              <button class="btn-inquiry">Make an inquiry</button>
+              <h5>Special Occasions</h5>
+              <p><strong>Celebrate Life's Beautiful Moments</strong></p>
+                <p>From weddings to milestones, make your special occasions truly unforgettable at San Isidro Labrador Resort and Leisure Farm. Our picturesque venue and dedicated team are here to bring your dream celebration to life. <br>
+                Let us be part of your story. Make an inquiry today! 💐✨</p>
+              <a href="<?= site_url('contact') ?>" 
+                class="btn btn-inquiry <?= (service('uri')->getSegment(1) == 'contact') ? 'active' : '' ?>">
+                Make an Inquiry
+            </a>
             </div>
           </div>
         </div>
@@ -391,11 +401,19 @@
         <!-- Package Card 3 -->
         <div class="col-lg-4 col-md-6">
           <div class="package-card">
-            <img src="images/priv_gathetingspic.jpg" alt="Package 3">
+            <img src="images/IMG_7373.jpeg" alt="Package 3">
             <div class="package-card-body">
-              <h5>Package sample</h5>
-              <p>Explanation</p>
-              <button class="btn-inquiry">Make an inquiry</button>
+              <h5>Venues</h5>
+              <p><strong>Your Dream Reception Awaits</strong></p>
+              <p>Picture your perfect celebration under our elegant chandeliers and open skies. 
+                Our stunning event space blends natural beauty with sophisticated elegance – the 
+                ideal setting for weddings, debuts, and grand celebrations. <br>
+                Turn your vision into reality. Make an inquiry and let's plan something extraordinary! ✨
+              </p>
+              <a href="<?= site_url('contact') ?>" 
+                class="btn btn-inquiry <?= (service('uri')->getSegment(1) == 'contact') ? 'active' : '' ?>">
+                Make an Inquiry
+            </a>
             </div>
           </div>
         </div>
