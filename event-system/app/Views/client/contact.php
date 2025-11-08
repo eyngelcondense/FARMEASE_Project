@@ -3,6 +3,9 @@
  include ('header.php');
 ?>
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
   <style>
     
     .section-title {
@@ -112,33 +115,19 @@
 
       <!-- RIGHT COLUMN: INQUIRY FORM -->
       <div class="col-md-6 inquiry-form">
-        <h2><strong>Inquire Now!</strong></h2>
+        <h2><strong>Book Now!</strong></h2>
         <form method="POST" action="submit_inquiry.php">
           <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label">First name</label>
-              <input type="text" class="form-control" name="fname" placeholder="Enter first name" required>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Last name</label>
-              <input type="text" class="form-control" name="lname" placeholder="Enter last name" required>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Email address</label>
-              <input type="email" class="form-control" name="email" placeholder="Enter email" required>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Contact Number</label>
-              <input type="tel" class="form-control" name="contact" placeholder="09XX-XXX-XXXX" required>
-            </div>
+            
             <div class="col-md-6">
               <label class="form-label">Type of Event</label>
               <input type="text" class="form-control" name="event_type" placeholder="e.g., Birthday, Wedding">
             </div>
             <div class="col-md-6">
               <label class="form-label">Event Date</label>
-              <input type="date" class="form-control" name="event_date">
+              <input type="date" class="form-control" name="event_date" id="event_date" required>
             </div>
+
             <div class="col-md-6">
               <label class="form-label">Number of Expected Guests</label>
               <input type="number" class="form-control" name="guests" placeholder="e.g., 50">
@@ -151,12 +140,20 @@
               <label class="form-label">Select Package</label>
               <select class="form-select" name="package">
                 <option selected disabled>Select Package</option>
+                <option>Cafe 2nd Floor Venue</option>
                 <option>Playground</option>
-                <option>Day Tour</option>
-                <option>Overnight Stay</option>
-                <option>Exclusive Private Event</option>
+                <option>Enclosed Venue</option>
+                <option>Prep & Photoshoot</option>
+                <option>Cafe Meetings</option>
               </select>
             </div>
+            <div class="col-12">
+              <label class="form-label">Category</label>
+              <select class="form-select" name="category" id="category" disabled>
+                <option selected disabled>Select a package first</option>
+              </select>
+            </div>
+
             <div class="col-12">
               <label class="form-label">Your message</label>
               <textarea class="form-control" name="message" rows="3" placeholder="Enter your question or message"></textarea>
@@ -167,6 +164,83 @@
       </div>
     </div>
   </div>
+
+  <script>
+document.addEventListener("DOMContentLoaded", function() {
+
+  const packageSelect = document.querySelector("select[name='package']");
+  const categorySelect = document.getElementById("category");
+
+  packageSelect.addEventListener("change", function() {
+    const selected = this.value;
+    
+    // Reset category dropdown
+    categorySelect.innerHTML = "";
+    categorySelect.disabled = false;
+
+    let options = [];
+
+    if (selected === "Prep & Photoshoot" || selected === "Cafe Meeting (2nd Floor)") {
+      options = ["Basic", "Premium"];
+    }
+
+    else if (selected === "Playground") {
+      options = ["Exclusive", "Non-Exclusive"];
+    }
+
+    else if (selected === "Cafe Meetings") {
+      options = ["Exclusive"];
+    }
+
+    else {
+      // Disable if no category needed
+      categorySelect.disabled = true;
+      categorySelect.innerHTML = '<option disabled selected>No category required</option>';
+      return;
+    }
+
+    // Populate category dropdown
+    options.forEach(opt => {
+      const optionElement = document.createElement("option");
+      optionElement.textContent = opt;
+      optionElement.value = opt;
+      categorySelect.appendChild(optionElement);
+    });
+  });
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const dateInput = document.getElementById("event_date");
+
+    fetch("get_booked_dates.php")
+        .then(response => response.json())
+        .then(bookedDates => {
+            
+            // Disable manually via input event
+            dateInput.addEventListener("change", function() {
+
+                const selected = this.value;
+
+                if (bookedDates.includes(selected)) {
+                    this.value = "";
+                    alert("Sorry, this date is already booked. Please choose another date.");
+                }
+            });
+
+            // Disable visually using min/max/step validation
+            dateInput.addEventListener("input", () => {
+                if (bookedDates.includes(dateInput.value)) {
+                    dateInput.setCustomValidity("This date is already booked.");
+                } else {
+                    dateInput.setCustomValidity("");
+                }
+            });
+        });
+});
+</script>
+
 
  <?php
     include ('footer.php');
