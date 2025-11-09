@@ -12,7 +12,7 @@ class LoginController extends ShieldLogin
      */
     public function loginView(): string
     {
-        return view('login');
+        return view('auth/login');
     }
 
     /**
@@ -30,11 +30,11 @@ class LoginController extends ShieldLogin
         }
 
         $credentials = [
-            'username' => $this->request->getPost('email'),
+            'email' => $this->request->getPost('email'),
             'password' => $this->request->getPost('password'),
         ];
 
-        $auth = auth();
+        $auth = service('auth');
 
         // Try to log in
         $result = $auth->attempt($credentials);

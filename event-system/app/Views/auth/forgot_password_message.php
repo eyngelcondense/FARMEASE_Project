@@ -6,6 +6,7 @@
   <title>Forgot Password | San Isidro Labrador</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link rel="icon" type="image/png" href="images/LOGO NG SAN ISIDRO.png"/>
 
   <style>
     body {
@@ -134,7 +135,6 @@
 </head>
 
 <body>
-  <a href="Login.php" class="back-arrow"><i class="bi bi-arrow-left"></i></a>
   <div class="header-bar"></div>
 
   <div class="forgot-container">
@@ -142,20 +142,11 @@
       <img src="images/LOGO NG SAN ISIDRO.png" alt="San Isidro Labrador Logo">
       <div style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; color:#7c6a43;">SAN ISIDRO LABRADOR</div>
       <small>RESORT AND LEISURE FARM</small>
-      <h1>Forgot Password</h1>
-      <p class="subtitle">Enter your registered email, and we’ll send you a reset link.</p>
+      <h1>Email Sent successfully</h1>
+      <p class="subtitle">Login Link Has Been Sent to your Email<br>
+        You may now close this window</p>
 
-      <form method="POST" action="">
-        <div class="mb-3">
-          <div class="input-group">
-            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-            <input type="email" class="form-control" placeholder="Email Address" required>
-          </div>
-        </div>
-        <button type="submit" class="btn-reset">Send Reset Link</button>
-      </form>
-
-      <a href="Login.php" class="back-link">Back to Login</a>
+      <a href="<?= site_url('/')?>" class="back-link">Back to Home</a>
     </div>
   </div>
 
