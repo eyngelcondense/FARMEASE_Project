@@ -189,6 +189,26 @@
     footer a:hover {
       text-decoration: underline;
     }
+
+    .hidden-content {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.btn:hover {
+  background-color: #a07d54 !important;
+  transition: background-color 0.3s ease;
+}
   </style>
 
 
@@ -234,7 +254,10 @@
   <section class="packageview-section">
     <h2>We Plan Your Special Day</h2>
     <p>The perfect place to have your events with the people that matter</p>
-    <button class="btn btn-dark">View Packages</button>
+    <a href="<?= site_url('packages') ?>" 
+      class="btn btn-dark <?= (service('uri')->getSegment(1) == 'packages') ? 'active' : '' ?>">
+      View Packages
+    </a>
   </section>
 
   <!-- Special Section -->
@@ -324,42 +347,82 @@
               </div>
             </div>
           </div>
-
-          <a href="#" class="btn btn-custom mt-4">Contact Us Today!</a>
         </div>
       </div>
     </div>
   </section>
 
   <!-- About Section -->
-  <section class="about-section">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-lg-6">
-          <h2 class="fw-bold" style="font-family: 'Times New Roman', serif;">
-            San Isidro Labrador Resort and Leisure Farm
-          </h2>
-          <img src="images/divider.png" alt="Divider" style="width: 80px; height: auto; display: block; margin-top: 5px;">
+<section class="about-section">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <h2 class="fw-bold" style="font-family: 'Times New Roman', serif;">
+          San Isidro Labrador Resort and Leisure Farm
+        </h2>
+        <img src="images/divider.png" alt="Divider" style="width: 80px; height: auto; display: block; margin-top: 5px;">
+        
+        <!-- Visible Content -->
+        <div class="visible-content">
           <p class="mt-3">
-            A serene haven nestled amidst nature’s beauty — perfect for those seeking relaxation, celebration, and meaningful experiences. Whether you’re planning a wedding, family outing, or corporate retreat, our resort offers a unique blend of elegance and tranquility.
+            A serene haven nestled amidst nature's beauty — perfect for those seeking relaxation, celebration, and meaningful experiences. Whether you're planning a wedding, family outing, or corporate retreat, our resort offers a unique blend of elegance and tranquility.
           </p>
-          <a href="#" class="btn btn-custom">Read More</a>
+          <p>
+            Set against the backdrop of lush greenery and open skies, San Isidro Labrador provides an idyllic escape from the hustle and bustle of city life. Our beautifully landscaped grounds feature charming event spaces, from our elegant chandelier-lit pavilions to our picturesque outdoor gardens, each thoughtfully designed to create unforgettable moments.
+          </p>
         </div>
-        <div class="col-lg-6 mt-4 mt-lg-0">
-          <img src="images/pic 2.jpg" alt="Resort" class="img-fluid rounded">
+
+        <!-- Hidden Content -->
+        <div class="hidden-content" id="moreContent" style="display: none;">
+          <p>
+            We pride ourselves on delivering exceptional service and attention to detail, ensuring every event is tailored to your vision. Our versatile venues can accommodate intimate gatherings and grand celebrations alike, with modern amenities seamlessly integrated into our natural setting. From romantic weddings under the stars to productive business meetings in our exclusive café spaces, we provide the perfect atmosphere for every occasion.
+          </p>
+          <p>
+            Experience the warmth of countryside hospitality combined with refined sophistication. At San Isidro Labrador, we don't just host events — we create memories that last a lifetime. Discover why countless guests have chosen us as their destination for life's most precious moments.
+          </p>
         </div>
+
+        <!-- Read More Button -->
+        <button class="btn mt-3" id="readMoreBtn" onclick="toggleContent()" 
+                style="background-color: #b8956a; color: white; padding: 10px 30px; border: none; border-radius: 5px;">
+          Read More
+        </button>
+      </div>
+      
+      <div class="col-lg-6 mt-4 mt-lg-0">
+        <img src="images/pic 2.jpg" alt="Resort" class="img-fluid rounded">
       </div>
     </div>
-  </section>
+  </div>
+</section>
+
+  <!-- JavaScript for Toggle -->
+  <script>
+  function toggleContent() {
+    const moreContent = document.getElementById('moreContent');
+    const btn = document.getElementById('readMoreBtn');
+    
+    if (moreContent.style.display === 'none') {
+      moreContent.style.display = 'block';
+      btn.style.display = 'none';
+    } else {
+      moreContent.style.display = 'none';
+      btn.textContent = 'Read More';
+    }
+  }
+  </script>
 
   <!-- Booking Section -->
   <section class="booking-section py-4">
     <div class="container d-flex justify-content-between align-items-center flex-wrap">
       <div>
         <h3 class="fw-bold mb-1">Book your preferred date in advance</h3>
-        <p class="mb-0 text-muted">"Tagline nila here"</p>
+        <p class="mb-0 text-muted"><strong>"At San Isidro, Where Nature Meets Grandeur"</strong></p>
       </div>
-      <a href="#" class="btn btn-book-now mt-3 mt-sm-0">BOOK NOW</a>
+      <a href="<?= site_url('contact') ?>" 
+        class="btn btn-book-now <?= (service('uri')->getSegment(1) == 'contact') ? 'active' : '' ?>">
+        BOOK NOW
+      </a>
     </div>
   </section>
 
