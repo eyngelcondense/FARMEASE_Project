@@ -29,15 +29,35 @@ class LoginController extends ShieldLogin
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        $credentials = [
-            'email' => $this->request->getPost('email'),
-            'password' => $this->request->getPost('password'),
-        ];
+        $email = $this->request->getPost('email');
+        $password = $this->request->getPost('password');
 
         $auth = service('auth');
 
-        // Try to log in
-        $result = $auth->attempt($credentials);
+        // =============================================
+        // MANUAL ACTIVE CHECK (without findByCredentials)
+        // =============================================
+        $db = \Config\Database::connect();
+        $user = $db->table('users')
+                ->join('auth_identities', 'users.id = auth_identities.user_id')
+                ->where('auth_identities.secret', $email)
+                ->where('auth_identities.type', 'email_password')
+                ->get()
+                ->getRow();
+
+        if ($user && $user->active == 0) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Your account is not activated. Please check your email for the activation link.');
+        }
+
+        // =============================================
+        // ATTEMPT LOGIN WITH SHIELD
+        // =============================================
+        $result = $auth->attempt([
+            'email' => $email,
+            'password' => $password
+        ]);
 
         if (! $result->isOK()) {
             return redirect()->back()->withInput()->with('error', 'Invalid email or password.');
