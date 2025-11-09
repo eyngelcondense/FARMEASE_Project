@@ -303,11 +303,12 @@
           <form method="POST" action="submit_inquiry.php">
             <div class="row g-3">
               
-              <div class="col-md-6">
+              
+              <div class="col-md-6 mt-4">
                 <label class="form-label">Type of Event</label>
                 <input type="text" class="form-control" name="event_type" placeholder="e.g., Birthday, Wedding">
               </div>
-              <div class="col-md-6">
+              <div class="col-md-6 mt-4">
                 <label class="form-label">Event Date</label>
                 <input type="date" class="form-control" name="event_date" id="event_date" required>
               </div>
