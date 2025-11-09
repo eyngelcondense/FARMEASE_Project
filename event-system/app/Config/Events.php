@@ -5,6 +5,7 @@ namespace Config;
 use CodeIgniter\Events\Events;
 use CodeIgniter\Exceptions\FrameworkException;
 use CodeIgniter\HotReloader\HotReloader;
+use CodeIgniter\Shield\Entities\User;
 
 /*
  * --------------------------------------------------------------------
@@ -52,6 +53,10 @@ Events::on('pre_system', static function (): void {
             });
         }
     }
+});
+
+Events::on('magicLogin', static function (User $user) {
+    session()->setTempdata('magicLogin', true, 300);
 });
 
 require APPPATH . 'Events/RegisterClientListener.php';
