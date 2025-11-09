@@ -1,14 +1,5 @@
 <?php
-  $message = session('message');
-  $error = session('error');
-  $errors = session('errors');
-  echo $message ? '<div class="alert alert-success" role="alert">'.$message.'</div>' : '';
-  echo $error ? '<div class="alert alert-danger" role="alert">'.$error.'</div>' : '';
-  if (is_array($errors)) {
-      foreach ($errors as $err) {
-          echo '<div class="alert alert-danger" role="alert">'.$err.'</div>';
-      }
-  }
+  
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -184,17 +175,26 @@
   <div class="header-bar"></div>
   
   <!-- Back btn -->
+    
+  <div class="login-container">
     <a href="<?= site_url('/')?>" class="back-btn">
       <i class="fa-solid fa-chevron-left"></i>
   </a>
 
-  <div class="login-container">
     <div class="login-card">
       <img src="images/LOGO NG SAN ISIDRO.png" alt="San Isidro Labrador Logo" style="width: 130px;">
       <div class="brand-name" style="font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; color: #7c6a43;">SAN ISIDRO LABRADOR</div>
       <small style="display: block; margin-bottom: 20px;">RESORT AND LEISURE FARM</small> <br>
       <h1 style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">Welcome Back</h1>
       <p class="subtitle" style="margin-bottom: 30px;">Log in to continue your journey with us</p>
+
+      <?php if (session()->has('error')): ?>
+            <div class="alert alert-danger"><?= session('error') ?></div>
+        <?php endif; ?>
+
+        <?php if (session()->has('message')): ?>
+            <div class="alert alert-success"><?= session('message') ?></div>
+        <?php endif; ?>
 
       <form id="loginForm" method="POST" action="<?= site_url('login') ?>">
         <?= csrf_field() ?>
