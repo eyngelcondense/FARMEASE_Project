@@ -16,6 +16,8 @@ $routes->group('', ['namespace' => 'App\Controllers\Auth'], static function ($ro
     $routes->post('login', 'LoginController::loginAction');
     $routes->get('register', 'RegisterController::registerView', ['filter' => 'redirectIfAuthenticated']);
     $routes->post('register', 'RegisterController::registerAction');
+    $routes->get('register-success', 'RegisterController::registerSuccess');
+    $routes->get('activate-account', 'RegisterController::activateAccount');
     $routes->get('logout', 'LoginController::logout');
     $routes->get('forgot-password', 'ForgotPasswordController::forgotPasswordView', ['filter' => 'redirectIfAuthenticated'], ['as' => 'forgot_password']);
     $routes->post('forgot-password', 'ForgotPasswordController::sendResetLink');
