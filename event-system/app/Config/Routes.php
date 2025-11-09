@@ -39,8 +39,11 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:client'
     $routes->get('contact', 'ClientController::contact');
 });
 
-$routes->group('', ['filter' => 'group:admin'], static function ($routes) {
-    $routes->get('dashboard', 'Admin\DashboardController::index');
+$routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin'], static function ($routes) {
+    $routes->get('dashboard', 'AdminController::dashboardView');
+    $routes->get('admin-bookings', 'AdminController::bookingsView');
+    $routes->get('admin-payments', 'AdminController::paymentsView');
+    $routes->get('venue-packages', 'AdminController::venueView');
 });
 
 $routes->get('landing', 'ClientController::landing', ['filter' => 'redirectIfAuthenticated']);
