@@ -24,8 +24,8 @@ $routes->group('', ['namespace' => 'App\Controllers\Auth'], static function ($ro
     $routes->post('set-password', 'ResetPasswordController::setPasswordAction');
     $routes->get('auth-link/login', 'MagicLinkController::login');
     $routes->get('auth-link/show', 'CodeIgniter\Shield\Controllers\MagicLinkController::show');
-$routes->post('auth-link/verify', 'CodeIgniter\Shield\Controllers\MagicLinkController::verify');
-$routes->get('auth-link/login', 'CodeIgniter\Shield\Controllers\MagicLinkController::login');
+    $routes->get('reset-password', 'ForgotPasswordController::resetPasswordView');
+    $routes->post('reset-password', 'ForgotPasswordController::handleResetPassword');
 
 });
 service('auth')->routes($routes);
@@ -43,4 +43,4 @@ $routes->group('', ['filter' => 'group:admin'], static function ($routes) {
     $routes->get('dashboard', 'Admin\DashboardController::index');
 });
 
-$routes->get('landing', 'ClientController::landing');
+$routes->get('landing', 'ClientController::landing', ['filter' => 'redirectIfAuthenticated']);

@@ -61,10 +61,8 @@ public function registerAction(): RedirectResponse
     return redirect()->to('/home');
 }
 
-
-
     public function registerView(): string
     {
-        return view('sigup');
+        return view('auth/register');
     }
 }
