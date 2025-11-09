@@ -190,25 +190,27 @@
       text-decoration: underline;
     }
 
+    /* About Section Button */
     .hidden-content {
-  animation: fadeIn 0.5s ease-in;
-}
+      animation: fadeIn 0.5s ease-in;
+    }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-.btn:hover {
-  background-color: #a07d54 !important;
-  transition: background-color 0.3s ease;
-}
+    .btn:hover {
+      background-color: #a07d54 !important;
+      transition: background-color 0.3s ease;
+    }
+
   </style>
 
 
@@ -382,8 +384,8 @@
           </p>
         </div>
 
-        <!-- Read More Button -->
-        <button class="btn mt-3" id="readMoreBtn" onclick="toggleContent()" 
+        <!-- Toggle Button -->
+        <button class="btn mt-3" id="toggleBtn" onclick="toggleContent()" 
                 style="background-color: #b8956a; color: white; padding: 10px 30px; border: none; border-radius: 5px;">
           Read More
         </button>
@@ -396,21 +398,23 @@
   </div>
 </section>
 
-  <!-- JavaScript for Toggle -->
-  <script>
-  function toggleContent() {
-    const moreContent = document.getElementById('moreContent');
-    const btn = document.getElementById('readMoreBtn');
-    
-    if (moreContent.style.display === 'none') {
-      moreContent.style.display = 'block';
-      btn.style.display = 'none';
-    } else {
-      moreContent.style.display = 'none';
-      btn.textContent = 'Read More';
-    }
+ <!-- JavaScript for Toggle -->
+<script>
+function toggleContent() {
+  const moreContent = document.getElementById('moreContent');
+  const btn = document.getElementById('toggleBtn');
+  
+  if (moreContent.style.display === 'none') {
+    moreContent.style.display = 'block';
+    btn.textContent = 'See Less';
+  } else {
+    moreContent.style.display = 'none';
+    btn.textContent = 'Read More';
+    // Optional: Scroll back to the section
+    document.querySelector('.about-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
-  </script>
+}
+</script>
 
   <!-- Booking Section -->
   <section class="booking-section py-4">
