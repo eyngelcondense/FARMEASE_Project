@@ -11,6 +11,8 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+  <link rel="icon" type="image/png" href="images/LOGO NG SAN ISIDRO.png"/>
   
   <style>
     * {
@@ -665,13 +667,18 @@
 </head>
 <body>
 
+<!-- Mobile Menu Toggle -->
+<button class="mobile-menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('active')" style="position: fixed; top: 15px; left: 15px; z-index: 1100; width: 40px; height: 40px; border: none; background-color: #8f8472; color: white; border-radius: 8px; display: none;">
+  <i class="fas fa-bars"></i>
+</button>
+
   <!-- Left Sidebar -->
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="sidebar-logo">
         <div class="sidebar-logo-icon">
           <!-- Replace with your logo image -->
-          <img src="LOGO NG SAN ISIDRO.png" alt="San Isidro Logo">
+          <img src="images/LOGO NG SAN ISIDRO.png" alt="San Isidro Logo">
           <!-- If no image, shows icon fallback -->
           <!-- <i class="fas fa-tree"></i> -->
         </div>
@@ -695,25 +702,25 @@
       </div>
       <ul class="nav-menu">
         <li class="nav-item">
-          <a href="#" class="nav-link active">
+          <a href="<?= site_url('dashboard')?>" class="nav-link active">
             <i class="fas fa-th-large"></i>
             Dashboard
           </a>
         </li>
         <li class="nav-item">
-          <a href="#" class="nav-link">
+          <a href="<?= site_url('venue-packages')?>" class="nav-link">
             <i class="fas fa-map-marker-alt"></i>
             Manage Venues and Packages
           </a>
         </li>
         <li class="nav-item">
-          <a href="#" class="nav-link">
+          <a href="<?= site_url('admin-bookings')?>" class="nav-link">
             <i class="fas fa-calendar-check"></i>
             Bookings
           </a>
         </li>
         <li class="nav-item">
-          <a href="#" class="nav-link">
+          <a href="<?= site_url('admin-payments')?>" class="nav-link">
             <i class="fas fa-credit-card"></i>
             Payments
           </a>
@@ -761,7 +768,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="#" class="nav-link">
+          <a href="<?= site_url('logout')?>" class="nav-link">
             <i class="fas fa-sign-out-alt"></i>
             Logout
           </a>
@@ -790,9 +797,9 @@
         <div class="search-box">
           <i class="fas fa-search"></i>
           <input type="text" placeholder="Search ...">
-        </div>
+        </div >
         <button class="icon-btn">
-          <i class="fas fa-bell"></i>
+          <i class="fas fa-bell" href=''></i>
         </button>
         <button class="icon-btn">
           <i class="fas fa-shopping-bag"></i>
