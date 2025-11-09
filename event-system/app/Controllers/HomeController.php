@@ -10,6 +10,10 @@ class HomeController extends BaseController
 {
     public function index(): string
     {
+        if (session('magicLogin')) {
+            return redirect()->route('set_password');
+        }
+        
         return view('client/home');
     }
 }

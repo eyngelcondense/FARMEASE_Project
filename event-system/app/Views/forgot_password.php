@@ -1,3 +1,17 @@
+<?php
+  $message = session('message');
+  $error = session('error');
+  $errors = session('errors');
+  echo $message ? '<div class="alert alert-success" role="alert">'.$message.'</div>' : '';
+  echo $error ? '<div class="alert alert-danger" role="alert">'.$error.'</div>' : '';
+  if (is_array($errors)) {
+      foreach ($errors as $err) {
+          echo '<div class="alert alert-danger" role="alert">'.$err.'</div>';
+      }
+  }
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -139,25 +153,36 @@
 
   <div class="forgot-container">
     <div class="forgot-card">
-      <img src="images/LOGO NG SAN ISIDRO.png" alt="San Isidro Labrador Logo">
-      <div style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; color:#7c6a43;">SAN ISIDRO LABRADOR</div>
-      <small>RESORT AND LEISURE FARM</small>
-      <h1>Forgot Password</h1>
-      <p class="subtitle">Enter your registered email, and we’ll send you a reset link.</p>
+        <img src="images/LOGO NG SAN ISIDRO.png" alt="San Isidro Labrador Logo">
+        <div style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; color:#7c6a43;">SAN ISIDRO LABRADOR</div>
+        <small>RESORT AND LEISURE FARM</small>
+        <h1>Forgot Password</h1>
+        <p class="subtitle">Enter your registered email, and we'll send you a reset link.</p>
 
-      <form method="POST" action="">
-        <div class="mb-3">
-          <div class="input-group">
-            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-            <input type="email" class="form-control" placeholder="Email Address" required>
-          </div>
-        </div>
-        <button type="submit" class="btn-reset">Send Reset Link</button>
-      </form>
+        <!-- Display error/success messages -->
+        <?php if (session()->has('error')): ?>
+            <div class="alert alert-danger"><?= session('error') ?></div>
+        <?php endif; ?>
 
-      <a href="Login.php" class="back-link">Back to Login</a>
+        <?php if (session()->has('success')): ?>
+            <div class="alert alert-success"><?= session('success') ?></div>
+        <?php endif; ?>
+
+        <form method="POST" action="<?= site_url('forgot-password') ?>">
+            <?= csrf_field() ?>
+            
+            <div class="mb-3">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                    <input name="email" id="email" type="email" class="form-control" placeholder="Email Address" required value="<?= old('email') ?>">
+                </div>
+            </div>
+            <button type="submit" class="btn-reset">Send Reset Link</button>
+        </form>
+
+        <a href="<?= site_url('login') ?>" class="back-link">Back to Login</a>
     </div>
-  </div>
+</div>
 
   <footer>
     Phone: 0912-345-6789 | Email: sanisidro@gmail.com
