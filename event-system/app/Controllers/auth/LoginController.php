@@ -48,20 +48,15 @@ class LoginController extends ShieldLogin
 
         // Redirect user based on role/group
         if ($user->inGroup('admin')) {
-            return redirect()->to('/admin/dashboard');
+            return redirect()->to('/dashboard');
         } elseif ($user->inGroup('staff')) {
             return redirect()->to('/staff/dashboard');
         } elseif ($user->inGroup('client')) {
             return redirect()->to('/home');
         }
-
-        // Default fallback
         return redirect()->to('/');
     }
 
-    /**
-     * Handle logout
-     */
     public function logout(): RedirectResponse
         {
             auth()->logout();
