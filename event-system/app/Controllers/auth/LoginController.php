@@ -12,7 +12,7 @@ class LoginController extends ShieldLogin
      */
     public function loginView(): string
     {
-        return view('login');
+        return view('auth/login');
     }
 
     /**

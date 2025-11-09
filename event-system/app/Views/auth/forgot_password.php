@@ -148,7 +148,6 @@
 </head>
 
 <body>
-  <a href="Login.php" class="back-arrow"><i class="bi bi-arrow-left"></i></a>
   <div class="header-bar"></div>
 
   <div class="forgot-container">
