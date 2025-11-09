@@ -16,6 +16,8 @@ $routes->group('', ['namespace' => 'App\Controllers\Auth'], static function ($ro
     $routes->post('login', 'LoginController::loginAction');
     $routes->get('register', 'RegisterController::registerView', ['filter' => 'redirectIfAuthenticated']);
     $routes->post('register', 'RegisterController::registerAction');
+    $routes->get('register-success', 'RegisterController::registerSuccess');
+    $routes->get('activate-account', 'RegisterController::activateAccount');
     $routes->get('logout', 'LoginController::logout');
     $routes->get('forgot-password', 'ForgotPasswordController::forgotPasswordView', ['filter' => 'redirectIfAuthenticated'], ['as' => 'forgot_password']);
     $routes->post('forgot-password', 'ForgotPasswordController::sendResetLink');
@@ -39,8 +41,11 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:client'
     $routes->get('contact', 'ClientController::contact');
 });
 
-$routes->group('', ['filter' => 'group:admin'], static function ($routes) {
-    $routes->get('dashboard', 'Admin\DashboardController::index');
+$routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin'], static function ($routes) {
+    $routes->get('dashboard', 'AdminController::dashboardView');
+    $routes->get('admin-bookings', 'AdminController::bookingsView');
+    $routes->get('admin-payments', 'AdminController::paymentsView');
+    $routes->get('venue-packages', 'AdminController::venueView');
 });
 
 $routes->get('landing', 'ClientController::landing', ['filter' => 'redirectIfAuthenticated']);
