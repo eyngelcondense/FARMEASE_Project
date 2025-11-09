@@ -1,15 +1,4 @@
 <?php
-  $message = session('message');
-  $error = session('error');
-  $errors = session('errors');
-  echo $message ? '<div class="alert alert-success" role="alert">'.$message.'</div>' : '';
-  echo $error ? '<div class="alert alert-danger" role="alert">'.$error.'</div>' : '';
-  if (is_array($errors)) {
-      foreach ($errors as $err) {
-          echo '<div class="alert alert-danger" role="alert">'.$err.'</div>';
-      }
-  }
-
 ?>
 
 <!DOCTYPE html>

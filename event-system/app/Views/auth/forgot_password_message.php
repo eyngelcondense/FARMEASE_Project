@@ -6,6 +6,7 @@
   <title>Forgot Password | San Isidro Labrador</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link rel="icon" type="image/png" href="images/LOGO NG SAN ISIDRO.png"/>
 
   <style>
     body {
@@ -134,7 +135,6 @@
 </head>
 
 <body>
-  <a href="Login.php" class="back-arrow"><i class="bi bi-arrow-left"></i></a>
   <div class="header-bar"></div>
 
   <div class="forgot-container">
@@ -143,7 +143,8 @@
       <div style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; color:#7c6a43;">SAN ISIDRO LABRADOR</div>
       <small>RESORT AND LEISURE FARM</small>
       <h1>Email Sent successfully</h1>
-      <p class="subtitle">Login Link Has Been Sent to your Email</p>
+      <p class="subtitle">Login Link Has Been Sent to your Email<br>
+        You may now close this window</p>
 
       <a href="<?= site_url('/')?>" class="back-link">Back to Home</a>
     </div>
