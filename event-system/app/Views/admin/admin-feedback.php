@@ -1,4 +1,5 @@
 <?php
+
 ?>
 
 <!DOCTYPE html>
@@ -6,7 +7,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manage Venues and Packages - San Isidro Labrador Resort</title>
+  <title>Feedback/Testimonials - San Isidro Labrador Resort</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css">
@@ -213,168 +214,145 @@
       background-color: #f5f3f0;
     }
 
-    /* Page Header Card */
-    .page-header-card {
-      background-color: white;
-      border-radius: 10px;
-      padding: 22px 25px;
-      margin-bottom: 22px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    /* Page Header */
+    .page-header {
+      margin-bottom: 12px;
     }
 
-    .page-header-card h1 {
+    .page-header h1 {
       font-size: 20px;
+      font-weight: 600;
+      color: #3b2a18;
+      margin: 0 0 8px 0;
+    }
+
+    .page-subtitle {
+      font-size: 14px;
+      font-weight: 400;
+      color: #8b7d6b;
+      margin: 0 0 30px 0;
+    }
+
+    /* Testimonials Grid */
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .testimonial-card {
+      background-color: #e8dcc8;
+      border-radius: 10px;
+      padding: 30px 25px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 200px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .testimonial-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .testimonial-quote {
+      font-size: 15px;
+      font-style: italic;
+      color: #3b2a18;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      flex: 1;
+    }
+
+    .testimonial-author {
+      font-size: 14px;
       font-weight: 600;
       color: #3b2a18;
       margin: 0;
     }
 
-    /* Add Event Button */
-    .add-event-btn {
+    /* Action Buttons (Hidden by default, shown on hover) */
+    .testimonial-actions {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      display: flex;
+      gap: 8px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .testimonial-card:hover .testimonial-actions {
+      opacity: 1;
+    }
+
+    .action-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: none;
+      font-size: 13px;
+    }
+
+    .btn-edit-testimonial {
+      background-color: rgba(255,255,255,0.9);
+      color: #3b2a18;
+    }
+
+    .btn-edit-testimonial:hover {
+      background-color: #3b2a18;
+      color: white;
+    }
+
+    .btn-delete-testimonial {
+      background-color: rgba(217,83,79,0.9);
+      color: white;
+    }
+
+    .btn-delete-testimonial:hover {
+      background-color: #c9302c;
+    }
+
+    /* Add Testimonial Button */
+    .add-testimonial-section {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 25px;
+    }
+
+    .add-testimonial-btn {
       display: inline-flex;
       align-items: center;
       gap: 10px;
       background-color: #3b2a18;
       border: none;
       color: white;
-      padding: 10px 12px;
+      padding: 12px 20px;
       border-radius: 8px;
-      font-size: 13px;
-      font-weight: 500;
-      transition: all 0.3s;
-      cursor: pointer;
-      margin-bottom: 20px;
-    }
-
-    .add-event-btn:hover {
-      background-color: #2a1f12;
-    }
-
-    .add-event-btn-icon {
-      width: 28px;
-      height: 28px;
-      background-color: white;
-      color: #3b2a18;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       font-size: 14px;
-      flex-shrink: 0;
-    }
-
-    .add-event-text {
-      text-align: left;
-      flex: 1;
-    }
-
-    .add-event-text-title {
-      font-weight: 600;
-      font-size: 13px;
-      display: block;
-    }
-
-    .add-event-text-sub {
-      font-size: 10px;
-      opacity: 0.8;
-      display: block;
-    }
-
-    /* Table Card */
-    .table-card {
-      background-color: white;
-      border-radius: 10px;
-      padding: 25px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-      overflow-x: auto;
-    }
-
-    /* Table */
-    .venues-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      min-width: 800px;
-    }
-
-    .venues-table thead {
-      background-color: #e8e3db;
-    }
-
-    .venues-table thead th {
-      padding: 12px 18px;
-      text-align: left;
-      font-size: 13px;
-      font-weight: 600;
-      color: #3b2a18;
-      border: none;
-    }
-
-    .venues-table thead th:first-child {
-      border-radius: 8px 0 0 8px;
-    }
-
-    .venues-table thead th:last-child {
-      border-radius: 0 8px 8px 0;
-    }
-
-    .venues-table tbody tr {
-      border-bottom: 1px solid #f0ede8;
-      transition: background-color 0.3s;
-    }
-
-    .venues-table tbody tr:hover {
-      background-color: #faf8f5;
-    }
-
-    .venues-table tbody tr:last-child {
-      border-bottom: none;
-    }
-
-    .venues-table tbody td {
-      padding: 15px 18px;
-      font-size: 13px;
-      color: #5a4a3a;
-    }
-
-    .venue-name {
       font-weight: 500;
-      color: #3b2a18;
-    }
-
-    /* Action Buttons */
-    .action-buttons {
-      display: flex;
-      gap: 8px;
-    }
-
-    .btn-edit,
-    .btn-delete {
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 500;
-      border: none;
-      cursor: pointer;
       transition: all 0.3s;
+      cursor: pointer;
     }
 
-    .btn-edit {
-      background-color: #3b2a18;
-      color: white;
-    }
-
-    .btn-edit:hover {
+    .add-testimonial-btn:hover {
       background-color: #2a1f12;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
-    .btn-delete {
-      background-color: #d9534f;
-      color: white;
-    }
-
-    .btn-delete:hover {
-      background-color: #c9302c;
+    .add-testimonial-btn i {
+      font-size: 16px;
     }
 
     /* Mobile Menu Toggle */
@@ -413,12 +391,14 @@
       .mobile-menu-toggle {
         display: flex;
       }
+      .testimonials-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 768px) {
-      .add-event-btn {
-        width: 100%;
-        justify-content: center;
+      .testimonial-card {
+        padding: 25px 20px;
       }
     }
   </style>
@@ -457,25 +437,25 @@
       </div>
       <ul class="nav-menu">
         <li class="nav-item">
-          <a href="<?= site_url('dashboard')?>" class="nav-link" data-page="dashboard">
+          <a href="admin-dashboard.php" class="nav-link" data-page="dashboard">
             <i class="fas fa-th-large"></i>
             Dashboard
           </a>
         </li>
         <li class="nav-item">
-          <a href="<?= site_url('venue-packages')?>" class="nav-link active" data-page="venues">
+          <a href="admin-venues-packages.php" class="nav-link" data-page="venues">
             <i class="fas fa-map-marker-alt"></i>
             Manage Venues and Packages
           </a>
         </li>
         <li class="nav-item">
-          <a href="<?= site_url('bookings')?>" class="nav-link" data-page="bookings">
+          <a href="admin-bookings.php" class="nav-link" data-page="bookings">
             <i class="fas fa-calendar-check"></i>
             Bookings
           </a>
         </li>
         <li class="nav-item">
-          <a href="<?= site_url('admin-payments')?>" class="nav-link" data-page="payments">
+          <a href="admin-payments.php" class="nav-link" data-page="payments">
             <i class="fas fa-credit-card"></i>
             Payments
           </a>
@@ -496,7 +476,7 @@
       </div>
       <ul class="nav-menu">
         <li class="nav-item">
-          <a href="admin-feedback.php" class="nav-link" data-page="feedback">
+          <a href="admin-feedback.php" class="nav-link active" data-page="feedback">
             <i class="fas fa-comment-dots"></i>
             Feedback and Inquiries
           </a>
@@ -523,7 +503,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="<?= site_url('logout')?>" class="nav-link" data-page="logout">
+          <a href="logout.php" class="nav-link" data-page="logout">
             <i class="fas fa-sign-out-alt"></i>
             Logout
           </a>
@@ -534,85 +514,77 @@
 
   <!-- Main Content Area -->
   <div class="main-layout">
-    <!-- Page Header Card -->
-    <div class="page-header-card">
-      <h1>Manage Venues and Packages</h1>
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1>Feedback/Testimonials</h1>
+      <p class="page-subtitle">See what clients say about their experience</p>
     </div>
 
-    <!-- Add Event Button -->
-    <button class="add-event-btn" onclick="addNewVenue()">
-      <div class="add-event-btn-icon">
+    <!-- Add Testimonial Button -->
+    <div class="add-testimonial-section">
+      <button class="add-testimonial-btn" onclick="addTestimonial()">
         <i class="fas fa-plus"></i>
-      </div>
-      <div class="add-event-text">
-        <span class="add-event-text-title">Add Quick Event</span>
-        <span class="add-event-text-sub">Events</span>
-      </div>
-    </button>
+        Add Testimonial
+      </button>
+    </div>
 
-    <!-- Venues Table -->
-    <div class="table-card">
-      <table class="venues-table">
-        <thead>
-          <tr>
-            <th>Venue</th>
-            <th>Category</th>
-            <th>Type</th>
-            <th>Rate</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="venue-name">Enclosed Venue</td>
-            <td>Enclosed</td>
-            <td>Basic</td>
-            <td>Php 15,000</td>
-            <td>
-              <div class="action-buttons">
-                <button class="btn-edit" onclick="editVenue(1)">Edit</button>
-                <button class="btn-delete" onclick="deleteVenue(1)">Delete</button>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td class="venue-name">Open Venue</td>
-            <td>Open</td>
-            <td>Premium</td>
-            <td>Php 10,000</td>
-            <td>
-              <div class="action-buttons">
-                <button class="btn-edit" onclick="editVenue(2)">Edit</button>
-                <button class="btn-delete" onclick="deleteVenue(2)">Delete</button>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td class="venue-name">Playground</td>
-            <td>Open</td>
-            <td>Premium</td>
-            <td>Php 5,000</td>
-            <td>
-              <div class="action-buttons">
-                <button class="btn-edit" onclick="editVenue(3)">Edit</button>
-                <button class="btn-delete" onclick="deleteVenue(3)">Delete</button>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td class="venue-name">Cafe 2nd Floor</td>
-            <td>Open</td>
-            <td>Premium</td>
-            <td>Php 20,000</td>
-            <td>
-              <div class="action-buttons">
-                <button class="btn-edit" onclick="editVenue(4)">Edit</button>
-                <button class="btn-delete" onclick="deleteVenue(4)">Delete</button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Testimonials Grid -->
+    <div class="testimonials-grid">
+      <!-- Testimonial 1 -->
+      <div class="testimonial-card">
+        <div class="testimonial-actions">
+          <button class="action-btn btn-edit-testimonial" onclick="editTestimonial(1)">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button class="action-btn btn-delete-testimonial" onclick="deleteTestimonial(1)">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+        <p class="testimonial-quote">"The place is magical! Perfect for weddings and quiet retreats."</p>
+        <p class="testimonial-author">Apple Template, October 10, 2025</p>
+      </div>
+
+      <!-- Testimonial 2 -->
+      <div class="testimonial-card">
+        <div class="testimonial-actions">
+          <button class="action-btn btn-edit-testimonial" onclick="editTestimonial(2)">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button class="action-btn btn-delete-testimonial" onclick="deleteTestimonial(2)">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+        <p class="testimonial-quote">"A hidden gem in Batangas! The scenery was breathtaking."</p>
+        <p class="testimonial-author">Earlsin Comenudo, November 1, 2025</p>
+      </div>
+
+      <!-- Testimonial 3 -->
+      <div class="testimonial-card">
+        <div class="testimonial-actions">
+          <button class="action-btn btn-edit-testimonial" onclick="editTestimonial(3)">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button class="action-btn btn-delete-testimonial" onclick="deleteTestimonial(3)">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+        <p class="testimonial-quote">"Ganda yarn!?"</p>
+        <p class="testimonial-author">Lady Jean, December 25, 2025</p>
+      </div>
+
+      <!-- Testimonial 4 -->
+      <div class="testimonial-card">
+        <div class="testimonial-actions">
+          <button class="action-btn btn-edit-testimonial" onclick="editTestimonial(4)">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button class="action-btn btn-delete-testimonial" onclick="deleteTestimonial(4)">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+        <p class="testimonial-quote">"Perfect!"</p>
+        <p class="testimonial-author">Eyngelcondense, January 13, 2025</p>
+      </div>
     </div>
   </div>
 
@@ -636,22 +608,39 @@
       }
     });
 
-    // Add New Venue Function
-    function addNewVenue() {
-      alert('Add New Venue functionality\n\nThis will open a modal or redirect to an add venue form.');
+    // Add testimonial
+    function addTestimonial() {
+      alert('Add New Testimonial\n\nYour backend developer will implement:\n- Open modal/form\n- Input fields: Client name, Date, Quote\n- Save to database\n- Refresh testimonials grid');
     }
 
-    // Edit Venue Function
-    function editVenue(id) {
-      alert(`Edit Venue ID: ${id}\n\nThis will open a modal or redirect to an edit form with venue details.`);
+    // Edit testimonial
+    function editTestimonial(id) {
+      event.stopPropagation();
+      alert(`Edit Testimonial ID: ${id}\n\nYour backend developer will implement:\n- Open edit modal\n- Pre-fill form with existing data\n- Update database\n- Refresh display`);
     }
 
-    // Delete Venue Function
-    function deleteVenue(id) {
-      if (confirm('Are you sure you want to delete this venue?')) {
-        alert(`Delete Venue ID: ${id}\n\nVenue will be deleted from database.`);
+    // Delete testimonial
+    function deleteTestimonial(id) {
+      event.stopPropagation();
+      if (confirm('Are you sure you want to delete this testimonial?')) {
+        alert(`Delete Testimonial ID: ${id}\n\nYour backend developer will implement:\n- Remove from database\n- Remove card from grid\n- Show success message`);
       }
     }
+
+    // Add animation to testimonial cards on load
+    window.addEventListener('load', () => {
+      const cards = document.querySelectorAll('.testimonial-card');
+      cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'all 0.5s ease';
+        
+        setTimeout(() => {
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, 100 + (index * 100));
+      });
+    });
   </script>
 </body>
 </html>
