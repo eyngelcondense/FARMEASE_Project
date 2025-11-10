@@ -34,9 +34,6 @@ class LoginController extends ShieldLogin
 
         $auth = service('auth');
 
-        // =============================================
-        // MANUAL ACTIVE CHECK (without findByCredentials)
-        // =============================================
         $db = \Config\Database::connect();
         $user = $db->table('users')
                 ->join('auth_identities', 'users.id = auth_identities.user_id')
@@ -51,9 +48,6 @@ class LoginController extends ShieldLogin
                 ->with('error', 'Your account is not activated. Please check your email for the activation link.');
         }
 
-        // =============================================
-        // ATTEMPT LOGIN WITH SHIELD
-        // =============================================
         $result = $auth->attempt([
             'email' => $email,
             'password' => $password
@@ -66,7 +60,6 @@ class LoginController extends ShieldLogin
         // Logged in successfully
         $user = $auth->user();
 
-        // Redirect user based on role/group
         if ($user->inGroup('admin')) {
             return redirect()->to('/dashboard');
         } elseif ($user->inGroup('staff')) {
