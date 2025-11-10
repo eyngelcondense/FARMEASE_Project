@@ -21,7 +21,7 @@
 
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #e8e3db;
+      background-color: #f5f3f0;
       color: #3b2a18;
       overflow-x: hidden;
     }
@@ -31,9 +31,9 @@
       position: fixed;
       left: 0;
       top: 0;
-      width: 240px;
+      width: 220px;
       height: 100vh;
-      background-color: #8f8472;
+      background-color: #8b7d6b;
       color: white;
       overflow-y: auto;
       z-index: 1000;
@@ -71,12 +71,12 @@
     }
 
     .sidebar-logo-icon i {
-      color: #8f8472;
+      color: #8b7d6b;
       font-size: 20px;
     }
 
     .sidebar-title {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       line-height: 1.3;
       color: white;
@@ -107,7 +107,7 @@
       width: 28px;
       height: 28px;
       background-color: white;
-      color: #8f8472;
+      color: #8b7d6b;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -166,40 +166,61 @@
       font-size: 13px;
       font-weight: 400;
       transition: all 0.3s;
+      position: relative;
     }
 
     .nav-link:hover {
       background-color: rgba(255,255,255,0.1);
       color: white;
+      transform: translateX(3px);
     }
 
     .nav-link.active {
       background-color: #6d5d4d;
       color: white;
-      font-weight: 500;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .nav-link.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 70%;
+      background-color: white;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .nav-link.active i {
+      color: white;
+      transform: scale(1.1);
     }
 
     .nav-link i {
       font-size: 16px;
       width: 18px;
       text-align: center;
+      transition: transform 0.3s;
     }
 
     /* Main Layout Container */
     .main-layout {
-      margin-left: 240px;
+      margin-left: 220px;
       margin-right: 320px;
       min-height: 100vh;
     }
 
     /* Top Header */
     .top-header {
-      background-color: white;
+      background-color: #f5f3f0;
       padding: 18px 30px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid #d4cfc5;
+      border-bottom: none;
       gap: 20px;
     }
 
@@ -214,7 +235,7 @@
       width: 45px;
       height: 45px;
       border-radius: 50%;
-      background-color: #8f8472;
+      background-color: #8b7d6b;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -239,7 +260,7 @@
 
     .welcome-text p {
       font-size: 12px;
-      color: #8f8472;
+      color: #8b7d6b;
       margin: 0;
     }
 
@@ -262,7 +283,7 @@
       padding: 10px 15px 10px 40px;
       border: 1px solid #d4cfc5;
       border-radius: 8px;
-      background-color: #f5f3f0;
+      background-color: white;
       font-size: 13px;
       color: #3b2a18;
     }
@@ -273,7 +294,7 @@
 
     .search-box input:focus {
       outline: none;
-      border-color: #8f8472;
+      border-color: #8b7d6b;
       background-color: white;
     }
 
@@ -290,7 +311,7 @@
       width: 38px;
       height: 38px;
       border-radius: 8px;
-      background-color: #f5f3f0;
+      background-color: white;
       border: none;
       display: flex;
       align-items: center;
@@ -329,7 +350,7 @@
     /* Dashboard Content */
     .dashboard-content {
       padding: 25px 30px;
-      background-color: #e8e3db;
+      background-color: #f5f3f0;
     }
 
     /* Stats Cards */
@@ -354,7 +375,7 @@
       width: 50px;
       height: 50px;
       border-radius: 10px;
-      background-color: #8f8472;
+      background-color: #8b7d6b;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -366,7 +387,7 @@
     .stat-info h3 {
       font-size: 12px;
       font-weight: 400;
-      color: #8f8472;
+      color: #8b7d6b;
       margin: 0 0 5px 0;
     }
 
@@ -436,7 +457,7 @@
     .chart-stat-item h4 {
       font-size: 11px;
       font-weight: 400;
-      color: #8f8472;
+      color: #8b7d6b;
       margin: 0 0 4px 0;
     }
 
@@ -476,7 +497,7 @@
 
     .bar {
       width: 100%;
-      background-color: #8f8472;
+      background-color: #8b7d6b;
       border-radius: 4px 4px 0 0;
       transition: all 0.3s;
       position: relative;
@@ -528,7 +549,7 @@
 
     .see-all-btn {
       font-size: 11px;
-      color: #8f8472;
+      color: #8b7d6b;
       text-decoration: none;
       display: flex;
       align-items: center;
@@ -579,7 +600,7 @@
 
     .event-info p {
       font-size: 10px;
-      color: #8f8472;
+      color: #8b7d6b;
       margin: 0;
       line-height: 1.4;
     }
@@ -617,6 +638,26 @@
       line-height: 1.5;
     }
 
+    /* Mobile Menu Toggle */
+    .mobile-menu-toggle {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1001;
+      background: #8b7d6b;
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
     /* Responsive */
     @media (max-width: 1400px) {
       .main-layout {
@@ -644,6 +685,9 @@
       .stats-row {
         grid-template-columns: 1fr;
       }
+      .mobile-menu-toggle {
+        display: flex;
+      }
     }
 
     @media (max-width: 768px) {
@@ -665,15 +709,17 @@
 </head>
 <body>
 
+  <!-- Mobile Menu Toggle -->
+  <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+    <i class="fas fa-bars"></i>
+  </button>
+
   <!-- Left Sidebar -->
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <div class="sidebar-logo">
         <div class="sidebar-logo-icon">
-          <!-- Replace with your logo image -->
           <img src="LOGO NG SAN ISIDRO.png" alt="San Isidro Logo">
-          <!-- If no image, shows icon fallback -->
-          <!-- <i class="fas fa-tree"></i> -->
         </div>
         <div class="sidebar-title">San Isidro Labrador<br>Resort and Leisure Farm</div>
       </div>
@@ -695,33 +741,33 @@
       </div>
       <ul class="nav-menu">
         <li class="nav-item">
-          <a href="#" class="nav-link active">
+          <a href="admin-dashboard.php" class="nav-link active" data-page="dashboard">
             <i class="fas fa-th-large"></i>
             Dashboard
           </a>
         </li>
         <li class="nav-item">
-          <a href="#" class="nav-link">
+          <a href="admin-venues-packages.php" class="nav-link" data-page="venues">
             <i class="fas fa-map-marker-alt"></i>
             Manage Venues and Packages
           </a>
         </li>
         <li class="nav-item">
-          <a href="#" class="nav-link">
+          <a href="admin-bookings.php" class="nav-link" data-page="bookings">
             <i class="fas fa-calendar-check"></i>
             Bookings
           </a>
         </li>
         <li class="nav-item">
-          <a href="#" class="nav-link">
+          <a href="admin-payments.php" class="nav-link" data-page="payments">
             <i class="fas fa-credit-card"></i>
             Payments
           </a>
         </li>
         <li class="nav-item">
-          <a href="#" class="nav-link">
-            <i class="fas fa-chart-line"></i>
-            Analytics & Reports
+          <a href="admin-gallery.php" class="nav-link" data-page="gallery">
+            <i class="fas fa-images"></i>
+            Gallery
           </a>
         </li>
       </ul>
@@ -734,15 +780,15 @@
       </div>
       <ul class="nav-menu">
         <li class="nav-item">
-          <a href="#" class="nav-link">
+          <a href="admin-feedback.php" class="nav-link" data-page="feedback">
             <i class="fas fa-comment-dots"></i>
             Feedback and Inquiries
           </a>
         </li>
         <li class="nav-item">
-          <a href="#" class="nav-link">
-            <i class="fas fa-bell"></i>
-            Notifications
+          <a href="admin-calendar.php" class="nav-link" data-page="calendar">
+            <i class="fas fa-calendar-alt"></i>
+            Calendar of Events
           </a>
         </li>
       </ul>
@@ -755,13 +801,13 @@
       </div>
       <ul class="nav-menu">
         <li class="nav-item">
-          <a href="#" class="nav-link">
+          <a href="admin-staffs.php" class="nav-link" data-page="staffs">
             <i class="fas fa-users"></i>
             Manage Staffs
           </a>
         </li>
         <li class="nav-item">
-          <a href="#" class="nav-link">
+          <a href="logout.php" class="nav-link" data-page="logout">
             <i class="fas fa-sign-out-alt"></i>
             Logout
           </a>
@@ -776,13 +822,10 @@
     <header class="top-header">
       <div class="welcome-section">
         <div class="admin-avatar">
-          <!-- Replace with admin profile image -->
           <img src="formal.jpg" alt="Admin">
-          <!-- If no image, shows icon fallback -->
-          <!-- <i class="fas fa-user"></i> -->
         </div>
         <div class="welcome-text">
-          <h2>Welcome back, Admin!</h2>
+          <h2>Welcome back, Admin !</h2>
           <p>Management/Administrator</p>
         </div>
       </div>
@@ -791,13 +834,6 @@
           <i class="fas fa-search"></i>
           <input type="text" placeholder="Search ...">
         </div>
-        <button class="icon-btn">
-          <i class="fas fa-bell"></i>
-        </button>
-        <button class="icon-btn">
-          <i class="fas fa-shopping-bag"></i>
-          <span class="badge">3</span>
-        </button>
       </div>
     </header>
 
@@ -829,7 +865,7 @@
           </div>
           <div class="stat-info">
             <h3>Revenue</h3>
-            <p>22</p>
+            <p>Php 22000</p>
           </div>
         </div>
       </div>
@@ -937,9 +973,7 @@
       </div>
       <div class="event-item">
         <div class="event-avatar">
-          <!-- Replace with event image -->
           <img src="halloween.jpg" alt="Halloween Party">
-          <!-- If no image, shows colored background -->
         </div>
         <div class="event-info">
           <h4>Event : Halloween Party</h4>
@@ -949,7 +983,6 @@
       </div>
       <div class="event-item">
         <div class="event-avatar">
-          <!-- Replace with event image -->
           <img src="CICS.jpg" alt="CICS Night">
         </div>
         <div class="event-info">
@@ -960,7 +993,6 @@
       </div>
       <div class="event-item">
         <div class="event-avatar">
-          <!-- Replace with event image -->
           <img src="angel.jpg" alt="Cortino's Birthday">
         </div>
         <div class="event-info">
@@ -971,7 +1003,6 @@
       </div>
       <div class="event-item">
         <div class="event-avatar">
-          <!-- Replace with event image -->
           <img src="apple.jpg" alt="Apple's Wedding">
         </div>
         <div class="event-info">
@@ -1016,7 +1047,7 @@
       </div>
       <div class="notification-item">
         <div class="notification-icon">
-          <i class="fas fa-receipt" style="color: #8f8472;"></i>
+          <i class="fas fa-receipt" style="color: #8b7d6b;"></i>
         </div>
         <div class="notification-text">
           <p>Paycheck released for artists @Cynderex Event</p>
@@ -1024,7 +1055,7 @@
       </div>
       <div class="notification-item">
         <div class="notification-icon">
-          <i class="fas fa-receipt" style="color: #8f8472;"></i>
+          <i class="fas fa-receipt" style="color: #8b7d6b;"></i>
         </div>
         <div class="notification-text">
           <p>Paycheck released for artists @Get Together Event</p>
@@ -1037,6 +1068,23 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   
   <script>
+    // Toggle Sidebar for Mobile
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+    }
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', (e) => {
+      const sidebar = document.getElementById('sidebar');
+      const toggle = document.querySelector('.mobile-menu-toggle');
+      
+      if (window.innerWidth <= 992) {
+        if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+          sidebar.classList.remove('active');
+        }
+      }
+    });
+
     // Sales Line Chart
     const salesCtx = document.getElementById('salesChart');
     if (salesCtx) {
@@ -1047,11 +1095,11 @@
           datasets: [{
             label: 'Net Sales',
             data: [35000, 22000, 46000, 15000, 28000, 34000],
-            borderColor: '#8f8472',
-            backgroundColor: 'rgba(143, 132, 114, 0.05)',
+            borderColor: '#8b7d6b',
+            backgroundColor: 'rgba(139, 125, 107, 0.05)',
             tension: 0.4,
             fill: true,
-            pointBackgroundColor: '#8f8472',
+            pointBackgroundColor: '#8b7d6b',
             pointBorderColor: '#fff',
             pointBorderWidth: 2,
             pointRadius: 5,
@@ -1070,7 +1118,7 @@
               padding: 12,
               titleColor: '#fff',
               bodyColor: '#fff',
-              borderColor: '#8f8472',
+              borderColor: '#8b7d6b',
               borderWidth: 1,
               titleFont: {
                 size: 12,
@@ -1096,7 +1144,7 @@
                 }
               },
               grid: {
-                color: 'rgba(143, 132, 114, 0.08)'
+                color: 'rgba(139, 125, 107, 0.08)'
               }
             },
             x: {
@@ -1126,7 +1174,7 @@
           datasets: [{
             data: [250, 170, 290, 370],
             backgroundColor: [
-              '#8f8472',
+              '#8b7d6b',
               '#a89b88',
               '#7a6a58',
               '#6d5d4d'
@@ -1159,7 +1207,7 @@
               padding: 10,
               titleColor: '#fff',
               bodyColor: '#fff',
-              borderColor: '#8f8472',
+              borderColor: '#8b7d6b',
               borderWidth: 1,
               titleFont: {
                 size: 11,
@@ -1189,82 +1237,6 @@
       });
     }
 
-    // Mobile Menu Toggle
-    const menuToggle = document.createElement('button');
-    menuToggle.className = 'mobile-menu-toggle';
-    menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-    menuToggle.style.cssText = `
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      z-index: 1001;
-      background: #8f8472;
-      color: white;
-      border: none;
-      width: 40px;
-      height: 40px;
-      border-radius: 8px;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 18px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    `;
-
-    if (window.innerWidth <= 992) {
-      document.body.appendChild(menuToggle);
-      menuToggle.style.display = 'flex';
-    }
-
-    window.addEventListener('resize', () => {
-      if (window.innerWidth <= 992) {
-        if (!document.querySelector('.mobile-menu-toggle')) {
-          document.body.appendChild(menuToggle);
-        }
-        menuToggle.style.display = 'flex';
-      } else {
-        menuToggle.style.display = 'none';
-      }
-    });
-
-    menuToggle.addEventListener('click', () => {
-      document.querySelector('.sidebar').classList.toggle('active');
-    });
-
-    // Close sidebar when clicking outside on mobile
-    document.addEventListener('click', (e) => {
-      const sidebar = document.querySelector('.sidebar');
-      const isClickInsideSidebar = sidebar.contains(e.target);
-      const isClickOnToggle = menuToggle.contains(e.target);
-      
-      if (!isClickInsideSidebar && !isClickOnToggle && sidebar.classList.contains('active')) {
-        sidebar.classList.remove('active');
-      }
-    });
-
-    // Add smooth scrolling
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-          target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-        }
-      });
-    });
-
-    // Add active state to nav links
-    document.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('click', function(e) {
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        this.classList.add('active');
-      });
-    });
-
     // Animate stat cards on load
     window.addEventListener('load', () => {
       const statCards = document.querySelectorAll('.stat-card');
@@ -1280,7 +1252,7 @@
       });
     });
 
-    // Add number animation for stats (excluding Revenue which has text)
+    // Add number animation for stats
     function animateValue(element, start, end, duration) {
       let startTimestamp = null;
       const step = (timestamp) => {
@@ -1300,8 +1272,8 @@
       const statValues = document.querySelectorAll('.stat-info p');
       statValues.forEach((stat, index) => {
         const text = stat.textContent.trim();
-        // Only animate pure numbers
-        if (!isNaN(text)) {
+        // Skip if it contains "Php" or other non-numeric text
+        if (!text.includes('Php') && !isNaN(text)) {
           const num = parseInt(text);
           stat.textContent = '0';
           setTimeout(() => {

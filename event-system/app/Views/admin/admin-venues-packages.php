@@ -21,7 +21,7 @@
 
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #e8e3db;
+      background-color: #f5f3f0;
       color: #3b2a18;
       overflow-x: hidden;
     }
@@ -31,9 +31,9 @@
       position: fixed;
       left: 0;
       top: 0;
-      width: 240px;
+      width: 220px;
       height: 100vh;
-      background-color: #8f8472;
+      background-color: #8b7d6b;
       color: white;
       overflow-y: auto;
       z-index: 1000;
@@ -71,12 +71,12 @@
     }
 
     .sidebar-logo-icon i {
-      color: #8f8472;
+      color: #8b7d6b;
       font-size: 20px;
     }
 
     .sidebar-title {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       line-height: 1.3;
       color: white;
@@ -86,7 +86,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      background-color: #3b2a18;
+      background-color: rgba(255,255,255,0.15);
       border: none;
       color: white;
       padding: 10px 12px;
@@ -100,14 +100,14 @@
     }
 
     .quick-add-btn:hover {
-      background-color: #2a1f12;
+      background-color: rgba(255,255,255,0.25);
     }
 
     .quick-add-btn-icon {
       width: 28px;
       height: 28px;
       background-color: white;
-      color: #3b2a18;
+      color: #8b7d6b;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -175,7 +175,6 @@
       transform: translateX(3px);
     }
 
-    /* Enhanced Active State */
     .nav-link.active {
       background-color: #6d5d4d;
       color: white;
@@ -207,84 +206,88 @@
       transition: transform 0.3s;
     }
 
-    /* Main Content */
-    .main-content {
-      margin-left: 240px;
+    /* Main Layout Container */
+    .main-layout {
+      margin-left: 220px;
       min-height: 100vh;
-      background-color: #e8e3db;
-      padding: 30px 40px;
+      padding: 30px 35px;
+      background-color: #f5f3f0;
     }
 
-    /* Page Header */
-    .page-header {
+    /* Page Header Card */
+    .page-header-card {
       background-color: white;
-      border-radius: 12px;
-      padding: 25px 30px;
-      margin-bottom: 25px;
+      border-radius: 10px;
+      padding: 22px 25px;
+      margin-bottom: 22px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     }
 
-    .page-header h1 {
-      font-size: 22px;
+    .page-header-card h1 {
+      font-size: 20px;
       font-weight: 600;
       color: #3b2a18;
       margin: 0;
     }
 
-    /* Add Button */
+    /* Add Event Button */
     .add-event-btn {
-      background-color: #3b2a18;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 500;
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      cursor: pointer;
+      background-color: #3b2a18;
+      border: none;
+      color: white;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
       transition: all 0.3s;
-      margin-bottom: 25px;
+      cursor: pointer;
+      margin-bottom: 20px;
     }
 
     .add-event-btn:hover {
       background-color: #2a1f12;
     }
 
-    .add-event-btn i {
-      width: 24px;
-      height: 24px;
+    .add-event-btn-icon {
+      width: 28px;
+      height: 28px;
       background-color: white;
       color: #3b2a18;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
+      font-size: 14px;
+      flex-shrink: 0;
     }
 
     .add-event-text {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
+      text-align: left;
+      flex: 1;
     }
 
     .add-event-text-title {
       font-weight: 600;
+      font-size: 13px;
+      display: block;
     }
 
     .add-event-text-sub {
       font-size: 10px;
       opacity: 0.8;
+      display: block;
     }
 
     /* Table Card */
     .table-card {
       background-color: white;
-      border-radius: 12px;
-      padding: 30px;
+      border-radius: 10px;
+      padding: 25px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      overflow-x: auto;
     }
 
     /* Table */
@@ -292,6 +295,7 @@
       width: 100%;
       border-collapse: separate;
       border-spacing: 0;
+      min-width: 800px;
     }
 
     .venues-table thead {
@@ -299,9 +303,9 @@
     }
 
     .venues-table thead th {
-      padding: 15px 20px;
+      padding: 12px 18px;
       text-align: left;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       color: #3b2a18;
       border: none;
@@ -329,7 +333,7 @@
     }
 
     .venues-table tbody td {
-      padding: 18px 20px;
+      padding: 15px 18px;
       font-size: 13px;
       color: #5a4a3a;
     }
@@ -347,7 +351,7 @@
 
     .btn-edit,
     .btn-delete {
-      padding: 6px 16px;
+      padding: 6px 14px;
       border-radius: 6px;
       font-size: 12px;
       font-weight: 500;
@@ -380,7 +384,7 @@
       top: 20px;
       left: 20px;
       z-index: 1001;
-      background: #8f8472;
+      background: #8b7d6b;
       color: white;
       border: none;
       width: 40px;
@@ -403,15 +407,9 @@
       .sidebar.active {
         transform: translateX(0);
       }
-      .main-content {
+      .main-layout {
         margin-left: 0;
         padding: 20px 15px;
-      }
-      .table-card {
-        overflow-x: auto;
-      }
-      .venues-table {
-        min-width: 700px;
       }
       .mobile-menu-toggle {
         display: flex;
@@ -419,9 +417,6 @@
     }
 
     @media (max-width: 768px) {
-      .page-header h1 {
-        font-size: 18px;
-      }
       .add-event-btn {
         width: 100%;
         justify-content: center;
@@ -445,6 +440,15 @@
         </div>
         <div class="sidebar-title">San Isidro Labrador<br>Resort and Leisure Farm</div>
       </div>
+      <button class="quick-add-btn">
+        <div class="quick-add-btn-icon">
+          <i class="fas fa-plus"></i>
+        </div>
+        <div class="quick-add-text">
+          <div class="quick-add-text-title">Add Quick Event</div>
+          <div class="quick-add-text-sub">Events</div>
+        </div>
+      </button>
     </div>
 
     <nav class="nav-section">
@@ -478,9 +482,9 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="admin-analytics.php" class="nav-link" data-page="analytics">
-            <i class="fas fa-chart-line"></i>
-            Analytics & Reports
+          <a href="admin-gallery.php" class="nav-link" data-page="gallery">
+            <i class="fas fa-images"></i>
+            Gallery
           </a>
         </li>
       </ul>
@@ -499,9 +503,9 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="admin-notifications.php" class="nav-link" data-page="notifications">
-            <i class="fas fa-bell"></i>
-            Notifications
+          <a href="admin-calendar.php" class="nav-link" data-page="calendar">
+            <i class="fas fa-calendar-alt"></i>
+            Calendar of Events
           </a>
         </li>
       </ul>
@@ -529,16 +533,18 @@
     </nav>
   </aside>
 
-  <!-- Main Content -->
-  <main class="main-content">
-    <!-- Page Header -->
-    <div class="page-header">
+  <!-- Main Content Area -->
+  <div class="main-layout">
+    <!-- Page Header Card -->
+    <div class="page-header-card">
       <h1>Manage Venues and Packages</h1>
     </div>
 
     <!-- Add Event Button -->
     <button class="add-event-btn" onclick="addNewVenue()">
-      <i class="fas fa-plus"></i>
+      <div class="add-event-btn-icon">
+        <i class="fas fa-plus"></i>
+      </div>
       <div class="add-event-text">
         <span class="add-event-text-title">Add Quick Event</span>
         <span class="add-event-text-sub">Events</span>
@@ -609,7 +615,7 @@
         </tbody>
       </table>
     </div>
-  </main>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   
@@ -633,18 +639,18 @@
 
     // Add New Venue Function
     function addNewVenue() {
-      alert('Add New Venue functionality\n\nThis will open a modal or redirect to an add venue form.\n\nYour backend developer will implement the actual form and database insertion.');
+      alert('Add New Venue functionality\n\nThis will open a modal or redirect to an add venue form.');
     }
 
     // Edit Venue Function
     function editVenue(id) {
-      alert(`Edit Venue ID: ${id}\n\nThis will open a modal or redirect to an edit form with venue details.\n\nYour backend developer will implement the actual edit functionality.`);
+      alert(`Edit Venue ID: ${id}\n\nThis will open a modal or redirect to an edit form with venue details.`);
     }
 
     // Delete Venue Function
     function deleteVenue(id) {
       if (confirm('Are you sure you want to delete this venue?')) {
-        alert(`Delete Venue ID: ${id}\n\nYour backend developer will implement the actual deletion from database.`);
+        alert(`Delete Venue ID: ${id}\n\nVenue will be deleted from database.`);
       }
     }
   </script>

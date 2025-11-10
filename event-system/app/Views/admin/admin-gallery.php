@@ -7,7 +7,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Payments - San Isidro Labrador Resort</title>
+  <title>Gallery - San Isidro Labrador Resort</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css">
@@ -230,18 +230,74 @@
       margin: 0;
     }
 
-    /* Filter Section */
-    .filter-section {
+    /* Upload Section */
+    .upload-section {
       display: flex;
-      align-items: center;
-      gap: 15px;
-      margin-bottom: 22px;
+      gap: 20px;
+      margin-bottom: 30px;
       flex-wrap: wrap;
     }
 
-    .filter-item {
+    .upload-area {
+      flex: 1;
+      min-width: 300px;
+      background-color: #faf8f5;
+      border: 2px dashed #d4cfc5;
+      border-radius: 10px;
+      padding: 50px 30px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .upload-area:hover {
+      border-color: #8b7d6b;
+      background-color: #f5f3f0;
+    }
+
+    .upload-area.dragover {
+      border-color: #8b7d6b;
+      background-color: #e8e3db;
+    }
+
+    .upload-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      background-color: white;
+      border-radius: 50%;
       display: flex;
       align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .upload-icon i {
+      font-size: 32px;
+      color: #8b7d6b;
+    }
+
+    .upload-text {
+      font-size: 15px;
+      font-weight: 500;
+      color: #3b2a18;
+      margin: 0;
+    }
+
+    .upload-input {
+      display: none;
+    }
+
+    .filter-upload-group {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      min-width: 250px;
+    }
+
+    .category-filter {
+      display: flex;
+      flex-direction: column;
       gap: 8px;
     }
 
@@ -252,7 +308,7 @@
     }
 
     .filter-dropdown {
-      padding: 8px 35px 8px 15px;
+      padding: 10px 35px 10px 15px;
       border: 1px solid #d4cfc5;
       border-radius: 8px;
       background-color: white;
@@ -263,7 +319,6 @@
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%233b2a18' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 12px center;
-      min-width: 140px;
       transition: all 0.3s;
     }
 
@@ -272,136 +327,139 @@
       border-color: #8b7d6b;
     }
 
-    .search-box-payments {
-      position: relative;
-      flex: 1;
-      max-width: 320px;
-    }
-
-    .search-box-payments input {
-      width: 100%;
-      padding: 8px 15px 8px 40px;
-      border: 1px solid #d4cfc5;
+    .upload-btn {
+      padding: 12px 24px;
+      background-color: #3b2a18;
+      color: white;
+      border: none;
       border-radius: 8px;
-      background-color: white;
-      font-size: 13px;
-      color: #3b2a18;
-      transition: all 0.3s;
-    }
-
-    .search-box-payments input::placeholder {
-      color: #a89b88;
-    }
-
-    .search-box-payments input:focus {
-      outline: none;
-      border-color: #8b7d6b;
-    }
-
-    .search-box-payments i {
-      position: absolute;
-      left: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #a89b88;
       font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
-    /* Table Card */
-    .table-card {
+    .upload-btn:hover {
+      background-color: #2a1f12;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    /* Gallery Grid */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .gallery-card {
       background-color: white;
       border-radius: 10px;
-      padding: 25px;
+      overflow: hidden;
       box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-      overflow-x: auto;
+      transition: all 0.3s;
+      position: relative;
     }
 
-    /* Table */
-    .payments-table {
+    .gallery-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .gallery-image {
       width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      min-width: 800px;
+      height: 200px;
+      object-fit: cover;
+      display: block;
     }
 
-    .payments-table thead {
-      background-color: #e8e3db;
+    .gallery-info {
+      padding: 15px;
     }
 
-    .payments-table thead th {
-      padding: 12px 18px;
-      text-align: left;
-      font-size: 13px;
-      font-weight: 600;
-      color: #3b2a18;
-      border: none;
-    }
-
-    .payments-table thead th:first-child {
-      border-radius: 8px 0 0 8px;
-    }
-
-    .payments-table thead th:last-child {
-      border-radius: 0 8px 8px 0;
-    }
-
-    .payments-table tbody tr {
-      border-bottom: 1px solid #f0ede8;
-      transition: background-color 0.3s;
-      cursor: pointer;
-    }
-
-    .payments-table tbody tr:hover {
-      background-color: #faf8f5;
-    }
-
-    .payments-table tbody tr:last-child {
-      border-bottom: none;
-    }
-
-    .payments-table tbody td {
-      padding: 15px 18px;
-      font-size: 13px;
-      color: #5a4a3a;
-    }
-
-    .payment-id {
-      font-weight: 500;
-      color: #8b7d6b;
-    }
-
-    .client-name {
+    .gallery-title {
+      font-size: 14px;
       font-weight: 500;
       color: #3b2a18;
+      margin: 0 0 10px 0;
     }
 
-    .amount {
-      font-weight: 600;
-      color: #3b2a18;
+    .gallery-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
-    /* Status Badges */
-    .status-badge {
+    /* Category Badges */
+    .category-badge {
       display: inline-block;
       padding: 5px 12px;
       border-radius: 6px;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 500;
     }
 
-    .status-paid {
-      background-color: #d4edda;
-      color: #155724;
+    .badge-corporate {
+      background-color: #8b7d6b;
+      color: white;
     }
 
-    .status-pending {
-      background-color: #fff3cd;
-      color: #856404;
+    .badge-birthday {
+      background-color: #7a9cc6;
+      color: white;
     }
 
-    .status-refunded {
+    .badge-wedding {
+      background-color: #d4a5a5;
+      color: white;
+    }
+
+    /* Action Icons */
+    .action-icons {
+      display: flex;
+      gap: 8px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .gallery-card:hover .action-icons {
+      opacity: 1;
+    }
+
+    .icon-action {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: none;
+    }
+
+    .icon-edit {
+      background-color: #f5f3f0;
+      color: #3b2a18;
+    }
+
+    .icon-edit:hover {
+      background-color: #3b2a18;
+      color: white;
+    }
+
+    .icon-delete {
       background-color: #f8d7da;
       color: #721c24;
+    }
+
+    .icon-delete:hover {
+      background-color: #d9534f;
+      color: white;
     }
 
     /* Mobile Menu Toggle */
@@ -440,18 +498,17 @@
       .mobile-menu-toggle {
         display: flex;
       }
+      .gallery-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      }
     }
 
     @media (max-width: 768px) {
-      .filter-section {
+      .upload-section {
         flex-direction: column;
-        align-items: stretch;
       }
-      .filter-dropdown {
-        width: 100%;
-      }
-      .search-box-payments {
-        max-width: 100%;
+      .gallery-grid {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -508,13 +565,13 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="admin-payments.php" class="nav-link active" data-page="payments">
+          <a href="admin-payments.php" class="nav-link" data-page="payments">
             <i class="fas fa-credit-card"></i>
             Payments
           </a>
         </li>
         <li class="nav-item">
-          <a href="admin-gallery.php" class="nav-link" data-page="gallery">
+          <a href="admin-gallery.php" class="nav-link active" data-page="gallery">
             <i class="fas fa-images"></i>
             Gallery
           </a>
@@ -569,93 +626,113 @@
   <div class="main-layout">
     <!-- Page Header Card -->
     <div class="page-header-card">
-      <h1>Payments</h1>
+      <h1>Gallery</h1>
     </div>
 
-    <!-- Filter Section -->
-    <div class="filter-section">
-      <div class="filter-item">
-        <span class="filter-label">Today</span>
-        <select class="filter-dropdown" id="dateFilter" onchange="filterPayments()">
-          <option value="today">Today</option>
-          <option value="week">This Week</option>
-          <option value="month">This Month</option>
-          <option value="all">All Time</option>
-        </select>
+    <!-- Upload Section -->
+    <div class="upload-section">
+      <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+        <div class="upload-icon">
+          <i class="fas fa-cloud-upload-alt"></i>
+        </div>
+        <p class="upload-text">Click or Drag to Upload Images</p>
+        <input type="file" id="fileInput" class="upload-input" multiple accept="image/*" onchange="handleFileSelect(event)">
       </div>
 
-      <div class="filter-item">
-        <select class="filter-dropdown" id="statusFilter" onchange="filterPayments()">
-          <option value="all">All Payments</option>
-          <option value="paid">Paid</option>
-          <option value="pending">Pending</option>
-          <option value="refunded">Refunded</option>
-        </select>
-      </div>
-
-      <div class="search-box-payments">
-        <i class="fas fa-search"></i>
-        <input type="text" placeholder="Search ..." id="searchInput" onkeyup="searchPayments()">
+      <div class="filter-upload-group">
+        <div class="category-filter">
+          <label class="filter-label">Category</label>
+          <select class="filter-dropdown" id="categoryFilter" onchange="filterGallery()">
+            <option value="all">All Categories</option>
+            <option value="corporate">Corporate</option>
+            <option value="birthday">Birthdays</option>
+            <option value="wedding">Weddings</option>
+          </select>
+        </div>
+        <button class="upload-btn" onclick="uploadImages()">
+          <i class="fas fa-upload"></i>
+          UPLOAD
+        </button>
       </div>
     </div>
 
-    <!-- Payments Table -->
-    <div class="table-card">
-      <table class="payments-table" id="paymentsTable">
-        <thead>
-          <tr>
-            <th>Payment ID</th>
-            <th>Client</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr data-status="paid" data-date="2025-05-25">
-            <td class="payment-id">001</td>
-            <td class="client-name">Apple Templa</td>
-            <td>25 May 2025</td>
-            <td><span class="status-badge status-paid">Paid</span></td>
-            <td class="amount">Php 15,000</td>
-          </tr>
-          <tr data-status="pending" data-date="2025-06-12">
-            <td class="payment-id">002</td>
-            <td class="client-name">Earlsin Combenido</td>
-            <td>12 June 2025</td>
-            <td><span class="status-badge status-pending">Pending</span></td>
-            <td class="amount">Php 10,000</td>
-          </tr>
-          <tr data-status="refunded" data-date="2025-01-13">
-            <td class="payment-id">003</td>
-            <td class="client-name">Jean Iwayan</td>
-            <td>13 January 2025</td>
-            <td><span class="status-badge status-refunded">Refunded</span></td>
-            <td class="amount">Php 5,000</td>
-          </tr>
-          <tr data-status="paid" data-date="2025-01-21">
-            <td class="payment-id">004</td>
-            <td class="client-name">Ryan Magnaye</td>
-            <td>21 January 2025</td>
-            <td><span class="status-badge status-paid">Paid</span></td>
-            <td class="amount">Php 20,000</td>
-          </tr>
-          <tr data-status="pending" data-date="2025-02-13">
-            <td class="payment-id">005</td>
-            <td class="client-name">Gilbert Bumanglag</td>
-            <td>13 February 2025</td>
-            <td><span class="status-badge status-pending">Pending</span></td>
-            <td class="amount">Php 20,000</td>
-          </tr>
-          <tr data-status="pending" data-date="2025-03-25">
-            <td class="payment-id">006</td>
-            <td class="client-name">Johnmoreen Rol</td>
-            <td>25 March 2025</td>
-            <td><span class="status-badge status-pending">Pending</span></td>
-            <td class="amount">Php 10,000</td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Gallery Grid -->
+    <div class="gallery-grid" id="galleryGrid">
+      <!-- Gallery Item 1 -->
+      <div class="gallery-card" data-category="corporate">
+        <img src="room2.jpg" alt="Corporate Presentation" class="gallery-image">
+        <div class="gallery-info">
+          <h3 class="gallery-title">Corporate Presenta...</h3>
+          <div class="gallery-footer">
+            <span class="category-badge badge-corporate">Corporate</span>
+            <div class="action-icons">
+              <button class="icon-action icon-edit" onclick="editImage(1)">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="icon-action icon-delete" onclick="deleteImage(1)">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gallery Item 2 -->
+      <div class="gallery-card" data-category="birthday">
+        <img src="bday.jpg" alt="Birthday Party" class="gallery-image">
+        <div class="gallery-info">
+          <h3 class="gallery-title">Birthday Party</h3>
+          <div class="gallery-footer">
+            <span class="category-badge badge-birthday">Birthdays</span>
+            <div class="action-icons">
+              <button class="icon-action icon-edit" onclick="editImage(2)">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="icon-action icon-delete" onclick="deleteImage(2)">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gallery Item 3 -->
+      <div class="gallery-card" data-category="wedding">
+        <img src="weddings.jpg" alt="Wedding Ceremony" class="gallery-image">
+        <div class="gallery-info">
+          <h3 class="gallery-title">Wedding Ceremony</h3>
+          <div class="gallery-footer">
+            <span class="category-badge badge-wedding">Weddings</span>
+            <div class="action-icons">
+              <button class="icon-action icon-edit" onclick="editImage(3)">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="icon-action icon-delete" onclick="deleteImage(3)">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gallery Item 4 -->
+      <div class="gallery-card" data-category="corporate">
+        <img src="stairs.jpg" alt="Corporate Agreement" class="gallery-image">
+        <div class="gallery-info">
+          <h3 class="gallery-title">Corporate Agreement</h3>
+          <div class="gallery-footer">
+            <span class="category-badge badge-corporate">Corporate</span>
+            <div class="action-icons">
+              <button class="icon-action icon-edit" onclick="editImage(4)">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="icon-action icon-delete" onclick="deleteImage(4)">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -679,92 +756,93 @@
       }
     });
 
-    // Filter Payments Function
-    function filterPayments() {
-      const statusFilter = document.getElementById('statusFilter').value;
-      const dateFilter = document.getElementById('dateFilter').value;
-      const table = document.getElementById('paymentsTable');
-      const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+    // Drag and Drop functionality
+    const uploadArea = document.getElementById('uploadArea');
 
-      for (let i = 0; i < rows.length; i++) {
-        let showRow = true;
-        const row = rows[i];
-        const status = row.getAttribute('data-status');
-        const date = new Date(row.getAttribute('data-date'));
-        const today = new Date();
-
-        // Status filter
-        if (statusFilter !== 'all' && status !== statusFilter) {
-          showRow = false;
-        }
-
-        // Date filter
-        if (dateFilter === 'today') {
-          if (date.toDateString() !== today.toDateString()) {
-            showRow = false;
-          }
-        } else if (dateFilter === 'week') {
-          const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-          if (date < weekAgo || date > today) {
-            showRow = false;
-          }
-        } else if (dateFilter === 'month') {
-          if (date.getMonth() !== today.getMonth() || date.getFullYear() !== today.getFullYear()) {
-            showRow = false;
-          }
-        }
-
-        row.style.display = showRow ? '' : 'none';
-      }
-    }
-
-    // Search Payments Function
-    function searchPayments() {
-      const input = document.getElementById('searchInput');
-      const filter = input.value.toUpperCase();
-      const table = document.getElementById('paymentsTable');
-      const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
-
-      for (let i = 0; i < rows.length; i++) {
-        const cells = rows[i].getElementsByTagName('td');
-        let found = false;
-
-        for (let j = 0; j < cells.length; j++) {
-          const cellText = cells[j].textContent || cells[j].innerText;
-          if (cellText.toUpperCase().indexOf(filter) > -1) {
-            found = true;
-            break;
-          }
-        }
-
-        rows[i].style.display = found ? '' : 'none';
-      }
-    }
-
-    // Add click event to table rows for viewing payment details
-    document.querySelectorAll('.payments-table tbody tr').forEach(row => {
-      row.addEventListener('click', function() {
-        const paymentId = this.querySelector('.payment-id').textContent;
-        const clientName = this.querySelector('.client-name').textContent;
-        const amount = this.querySelector('.amount').textContent;
-        const status = this.getAttribute('data-status');
-        
-        alert(`Payment Details:\n\nPayment ID: ${paymentId}\nClient: ${clientName}\nAmount: ${amount}\nStatus: ${status.toUpperCase()}\n\nYour backend developer will implement:\n- Full payment details modal\n- Receipt download\n- Payment history\n- Refund processing (if needed)`);
-      });
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('dragover');
     });
 
-    // Add animation to status badges on load
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      handleFiles(files);
+    });
+
+    // Handle file select
+    function handleFileSelect(event) {
+      const files = event.target.files;
+      handleFiles(files);
+    }
+
+    // Handle files
+    function handleFiles(files) {
+      if (files.length > 0) {
+        alert(`${files.length} file(s) selected for upload.\n\nYour backend developer will implement:\n- Image preview\n- File validation (size, type)\n- Upload progress bar\n- Store in database with category`);
+      }
+    }
+
+    // Upload images
+    function uploadImages() {
+      const fileInput = document.getElementById('fileInput');
+      const category = document.getElementById('categoryFilter').value;
+      
+      if (fileInput.files.length === 0) {
+        alert('Please select images to upload first!');
+        return;
+      }
+
+      alert(`Uploading ${fileInput.files.length} image(s) to category: ${category}\n\nYour backend developer will implement:\n- Upload to server\n- Save file paths in database\n- Create thumbnails\n- Refresh gallery grid`);
+      
+      // Reset file input
+      fileInput.value = '';
+    }
+
+    // Filter gallery
+    function filterGallery() {
+      const filter = document.getElementById('categoryFilter').value;
+      const cards = document.querySelectorAll('.gallery-card');
+
+      cards.forEach(card => {
+        const category = card.getAttribute('data-category');
+        if (filter === 'all' || category === filter) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // Edit image
+    function editImage(id) {
+      alert(`Edit Image ID: ${id}\n\nYour backend developer will implement:\n- Open edit modal\n- Update image title\n- Change category\n- Replace image`);
+    }
+
+    // Delete image
+    function deleteImage(id) {
+      if (confirm('Are you sure you want to delete this image?')) {
+        alert(`Delete Image ID: ${id}\n\nYour backend developer will implement:\n- Remove from database\n- Delete file from server\n- Remove from gallery grid`);
+      }
+    }
+
+    // Add animation to gallery cards on load
     window.addEventListener('load', () => {
-      const badges = document.querySelectorAll('.status-badge');
-      badges.forEach((badge, index) => {
-        badge.style.opacity = '0';
-        badge.style.transform = 'scale(0.8)';
-        badge.style.transition = 'all 0.3s ease';
+      const cards = document.querySelectorAll('.gallery-card');
+      cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'all 0.5s ease';
         
         setTimeout(() => {
-          badge.style.opacity = '1';
-          badge.style.transform = 'scale(1)';
-        }, 50 + (index * 50));
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, 100 + (index * 100));
       });
     });
   </script>
