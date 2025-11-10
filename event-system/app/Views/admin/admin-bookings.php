@@ -1,5 +1,5 @@
 <?php
-
+           
 ?>
 
 <!DOCTYPE html>
@@ -7,7 +7,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Payments - San Isidro Labrador Resort</title>
+  <title>Bookings - San Isidro Labrador Resort</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css">
@@ -272,13 +272,13 @@
       border-color: #8b7d6b;
     }
 
-    .search-box-payments {
+    .search-box-bookings {
       position: relative;
       flex: 1;
       max-width: 320px;
     }
 
-    .search-box-payments input {
+    .search-box-bookings input {
       width: 100%;
       padding: 8px 15px 8px 40px;
       border: 1px solid #d4cfc5;
@@ -289,21 +289,46 @@
       transition: all 0.3s;
     }
 
-    .search-box-payments input::placeholder {
+    .search-box-bookings input::placeholder {
       color: #a89b88;
     }
 
-    .search-box-payments input:focus {
+    .search-box-bookings input:focus {
       outline: none;
       border-color: #8b7d6b;
     }
 
-    .search-box-payments i {
+    .search-box-bookings i {
       position: absolute;
       left: 15px;
       top: 50%;
       transform: translateY(-50%);
       color: #a89b88;
+      font-size: 14px;
+    }
+
+    /* View Calendar Button */
+    .view-calendar-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background-color: #3b2a18;
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.3s;
+      cursor: pointer;
+      margin-left: auto;
+    }
+
+    .view-calendar-btn:hover {
+      background-color: #2a1f12;
+    }
+
+    .view-calendar-btn i {
       font-size: 14px;
     }
 
@@ -317,18 +342,18 @@
     }
 
     /* Table */
-    .payments-table {
+    .bookings-table {
       width: 100%;
       border-collapse: separate;
       border-spacing: 0;
       min-width: 800px;
     }
 
-    .payments-table thead {
+    .bookings-table thead {
       background-color: #e8e3db;
     }
 
-    .payments-table thead th {
+    .bookings-table thead th {
       padding: 12px 18px;
       text-align: left;
       font-size: 13px;
@@ -337,35 +362,34 @@
       border: none;
     }
 
-    .payments-table thead th:first-child {
+    .bookings-table thead th:first-child {
       border-radius: 8px 0 0 8px;
     }
 
-    .payments-table thead th:last-child {
+    .bookings-table thead th:last-child {
       border-radius: 0 8px 8px 0;
     }
 
-    .payments-table tbody tr {
+    .bookings-table tbody tr {
       border-bottom: 1px solid #f0ede8;
       transition: background-color 0.3s;
-      cursor: pointer;
     }
 
-    .payments-table tbody tr:hover {
+    .bookings-table tbody tr:hover {
       background-color: #faf8f5;
     }
 
-    .payments-table tbody tr:last-child {
+    .bookings-table tbody tr:last-child {
       border-bottom: none;
     }
 
-    .payments-table tbody td {
+    .bookings-table tbody td {
       padding: 15px 18px;
       font-size: 13px;
       color: #5a4a3a;
     }
 
-    .payment-id {
+    .booking-id {
       font-weight: 500;
       color: #8b7d6b;
     }
@@ -375,33 +399,39 @@
       color: #3b2a18;
     }
 
-    .amount {
-      font-weight: 600;
-      color: #3b2a18;
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 8px;
     }
 
-    /* Status Badges */
-    .status-badge {
-      display: inline-block;
-      padding: 5px 12px;
+    .btn-approve,
+    .btn-reject {
+      padding: 6px 14px;
       border-radius: 6px;
       font-size: 12px;
       font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
     }
 
-    .status-paid {
-      background-color: #d4edda;
-      color: #155724;
+    .btn-approve {
+      background-color: #3b2a18;
+      color: white;
     }
 
-    .status-pending {
-      background-color: #fff3cd;
-      color: #856404;
+    .btn-approve:hover {
+      background-color: #2a1f12;
     }
 
-    .status-refunded {
-      background-color: #f8d7da;
-      color: #721c24;
+    .btn-reject {
+      background-color: #d9534f;
+      color: white;
+    }
+
+    .btn-reject:hover {
+      background-color: #c9302c;
     }
 
     /* Mobile Menu Toggle */
@@ -450,8 +480,13 @@
       .filter-dropdown {
         width: 100%;
       }
-      .search-box-payments {
+      .search-box-bookings {
         max-width: 100%;
+      }
+      .view-calendar-btn {
+        width: 100%;
+        justify-content: center;
+        margin-left: 0;
       }
     }
   </style>
@@ -490,25 +525,25 @@
       </div>
       <ul class="nav-menu">
         <li class="nav-item">
-          <a href="<?= site_url('dashboard')?>" class="nav-link" data-page="dashboard">
+          <a href="admin-dashboard.php" class="nav-link" data-page="dashboard">
             <i class="fas fa-th-large"></i>
             Dashboard
           </a>
         </li>
         <li class="nav-item">
-          <a href="<?= site_url('venue-packages')?>" class="nav-link" data-page="venues">
+          <a href="admin-venues-packages.php" class="nav-link" data-page="venues">
             <i class="fas fa-map-marker-alt"></i>
             Manage Venues and Packages
           </a>
         </li>
         <li class="nav-item">
-          <a href="<?= site_url('admin-booking')?>" class="nav-link" data-page="bookings">
+          <a href="admin-bookings.php" class="nav-link active" data-page="bookings">
             <i class="fas fa-calendar-check"></i>
             Bookings
           </a>
         </li>
         <li class="nav-item">
-          <a href="<?= site_url('admin-payments')?>" class="nav-link active" data-page="payments">
+          <a href="admin-payments.php" class="nav-link" data-page="payments">
             <i class="fas fa-credit-card"></i>
             Payments
           </a>
@@ -556,7 +591,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="<?= site_url('logout')?>" class="nav-link" data-page="logout">
+          <a href="logout.php" class="nav-link" data-page="logout">
             <i class="fas fa-sign-out-alt"></i>
             Logout
           </a>
@@ -569,14 +604,14 @@
   <div class="main-layout">
     <!-- Page Header Card -->
     <div class="page-header-card">
-      <h1>Payments</h1>
+      <h1>Bookings</h1>
     </div>
 
     <!-- Filter Section -->
     <div class="filter-section">
       <div class="filter-item">
         <span class="filter-label">Today</span>
-        <select class="filter-dropdown" id="dateFilter" onchange="filterPayments()">
+        <select class="filter-dropdown" id="dateFilter" onchange="filterBookings()">
           <option value="today">Today</option>
           <option value="week">This Week</option>
           <option value="month">This Month</option>
@@ -585,74 +620,111 @@
       </div>
 
       <div class="filter-item">
-        <select class="filter-dropdown" id="statusFilter" onchange="filterPayments()">
-          <option value="all">All Payments</option>
-          <option value="paid">Paid</option>
-          <option value="pending">Pending</option>
-          <option value="refunded">Refunded</option>
+        <select class="filter-dropdown" id="venueFilter" onchange="filterBookings()">
+          <option value="all">All Venues</option>
+          <option value="enclosed">Enclosed Venue</option>
+          <option value="open">Open Venue</option>
+          <option value="playground">Playground</option>
+          <option value="cafe">Cafe 2nd Floor</option>
         </select>
       </div>
 
-      <div class="search-box-payments">
+      <div class="search-box-bookings">
         <i class="fas fa-search"></i>
-        <input type="text" placeholder="Search ..." id="searchInput" onkeyup="searchPayments()">
+        <input type="text" placeholder="Search ..." id="searchInput" onkeyup="searchBookings()">
       </div>
+
+      <button class="view-calendar-btn" onclick="viewCalendar()">
+        <i class="fas fa-calendar-alt"></i>
+        View Calendar
+        <span style="font-size: 10px; opacity: 0.9;">Events</span>
+      </button>
     </div>
 
-    <!-- Payments Table -->
+    <!-- Bookings Table -->
     <div class="table-card">
-      <table class="payments-table" id="paymentsTable">
+      <table class="bookings-table" id="bookingsTable">
         <thead>
           <tr>
-            <th>Payment ID</th>
+            <th>Booking ID</th>
             <th>Client</th>
+            <th>Venue</th>
             <th>Date</th>
             <th>Status</th>
-            <th>Amount</th>
           </tr>
         </thead>
         <tbody>
-          <tr data-status="paid" data-date="2025-05-25">
-            <td class="payment-id">001</td>
+          <tr data-venue="enclosed" data-date="2025-05-25">
+            <td class="booking-id">001</td>
             <td class="client-name">Apple Templa</td>
+            <td>Enclosed Venue</td>
             <td>25 May 2025</td>
-            <td><span class="status-badge status-paid">Paid</span></td>
-            <td class="amount">Php 15,000</td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn-approve" onclick="approveBooking(1)">Approve</button>
+                <button class="btn-reject" onclick="rejectBooking(1)">Reject</button>
+              </div>
+            </td>
           </tr>
-          <tr data-status="pending" data-date="2025-06-12">
-            <td class="payment-id">002</td>
+          <tr data-venue="open" data-date="2025-06-12">
+            <td class="booking-id">002</td>
             <td class="client-name">Earlsin Combenido</td>
+            <td>Open Venue</td>
             <td>12 June 2025</td>
-            <td><span class="status-badge status-pending">Pending</span></td>
-            <td class="amount">Php 10,000</td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn-approve" onclick="approveBooking(2)">Approve</button>
+                <button class="btn-reject" onclick="rejectBooking(2)">Reject</button>
+              </div>
+            </td>
           </tr>
-          <tr data-status="refunded" data-date="2025-01-13">
-            <td class="payment-id">003</td>
+          <tr data-venue="playground" data-date="2025-01-13">
+            <td class="booking-id">003</td>
             <td class="client-name">Jean Iwayan</td>
+            <td>Playground</td>
             <td>13 January 2025</td>
-            <td><span class="status-badge status-refunded">Refunded</span></td>
-            <td class="amount">Php 5,000</td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn-approve" onclick="approveBooking(3)">Approve</button>
+                <button class="btn-reject" onclick="rejectBooking(3)">Reject</button>
+              </div>
+            </td>
           </tr>
-          <tr data-status="paid" data-date="2025-01-21">
-            <td class="payment-id">004</td>
+          <tr data-venue="cafe" data-date="2025-01-21">
+            <td class="booking-id">004</td>
             <td class="client-name">Ryan Magnaye</td>
+            <td>Cafe 2nd Floor</td>
             <td>21 January 2025</td>
-            <td><span class="status-badge status-paid">Paid</span></td>
-            <td class="amount">Php 20,000</td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn-approve" onclick="approveBooking(4)">Approve</button>
+                <button class="btn-reject" onclick="rejectBooking(4)">Reject</button>
+              </div>
+            </td>
           </tr>
-          <tr data-status="pending" data-date="2025-02-13">
-            <td class="payment-id">005</td>
+          <tr data-venue="cafe" data-date="2025-02-13">
+            <td class="booking-id">005</td>
             <td class="client-name">Gilbert Bumanglag</td>
+            <td>Cafe 2nd Floor</td>
             <td>13 February 2025</td>
-            <td><span class="status-badge status-pending">Pending</span></td>
-            <td class="amount">Php 20,000</td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn-approve" onclick="approveBooking(5)">Approve</button>
+                <button class="btn-reject" onclick="rejectBooking(5)">Reject</button>
+              </div>
+            </td>
           </tr>
-          <tr data-status="pending" data-date="2025-03-25">
-            <td class="payment-id">006</td>
+          <tr data-venue="open" data-date="2025-03-25">
+            <td class="booking-id">006</td>
             <td class="client-name">Johnmoreen Rol</td>
+            <td>Open Venue</td>
             <td>25 March 2025</td>
-            <td><span class="status-badge status-pending">Pending</span></td>
-            <td class="amount">Php 10,000</td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn-approve" onclick="approveBooking(6)">Approve</button>
+                <button class="btn-reject" onclick="rejectBooking(6)">Reject</button>
+              </div>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -679,22 +751,22 @@
       }
     });
 
-    // Filter Payments Function
-    function filterPayments() {
-      const statusFilter = document.getElementById('statusFilter').value;
+    // Filter Bookings Function
+    function filterBookings() {
+      const venueFilter = document.getElementById('venueFilter').value;
       const dateFilter = document.getElementById('dateFilter').value;
-      const table = document.getElementById('paymentsTable');
+      const table = document.getElementById('bookingsTable');
       const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
 
       for (let i = 0; i < rows.length; i++) {
         let showRow = true;
         const row = rows[i];
-        const status = row.getAttribute('data-status');
+        const venue = row.getAttribute('data-venue');
         const date = new Date(row.getAttribute('data-date'));
         const today = new Date();
 
-        // Status filter
-        if (statusFilter !== 'all' && status !== statusFilter) {
+        // Venue filter
+        if (venueFilter !== 'all' && venue !== venueFilter) {
           showRow = false;
         }
 
@@ -718,11 +790,11 @@
       }
     }
 
-    // Search Payments Function
-    function searchPayments() {
+    // Search Bookings Function
+    function searchBookings() {
       const input = document.getElementById('searchInput');
       const filter = input.value.toUpperCase();
-      const table = document.getElementById('paymentsTable');
+      const table = document.getElementById('bookingsTable');
       const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
 
       for (let i = 0; i < rows.length; i++) {
@@ -741,32 +813,27 @@
       }
     }
 
-    // Add click event to table rows for viewing payment details
-    document.querySelectorAll('.payments-table tbody tr').forEach(row => {
-      row.addEventListener('click', function() {
-        const paymentId = this.querySelector('.payment-id').textContent;
-        const clientName = this.querySelector('.client-name').textContent;
-        const amount = this.querySelector('.amount').textContent;
-        const status = this.getAttribute('data-status');
-        
-        alert(`Payment Details:\n\nPayment ID: ${paymentId}\nClient: ${clientName}\nAmount: ${amount}\nStatus: ${status.toUpperCase()}\n\nYour backend developer will implement:\n- Full payment details modal\n- Receipt download\n- Payment history\n- Refund processing (if needed)`);
-      });
-    });
+    // View Calendar Function
+    function viewCalendar() {
+      alert('View Calendar functionality\n\nThis will redirect to the Calendar of Events page or open a calendar modal.');
+      // You can redirect to calendar page:
+      // window.location.href = 'admin-calendar.php';
+    }
 
-    // Add animation to status badges on load
-    window.addEventListener('load', () => {
-      const badges = document.querySelectorAll('.status-badge');
-      badges.forEach((badge, index) => {
-        badge.style.opacity = '0';
-        badge.style.transform = 'scale(0.8)';
-        badge.style.transition = 'all 0.3s ease';
-        
-        setTimeout(() => {
-          badge.style.opacity = '1';
-          badge.style.transform = 'scale(1)';
-        }, 50 + (index * 50));
-      });
-    });
+    // Approve Booking Function
+    function approveBooking(id) {
+      if (confirm(`Approve booking #${String(id).padStart(3, '0')}?`)) {
+        alert(`Booking #${String(id).padStart(3, '0')} has been approved!\n\nYour backend developer will implement:\n- Update booking status in database\n- Send confirmation email to client\n- Update calendar availability`);
+      }
+    }
+
+    // Reject Booking Function
+    function rejectBooking(id) {
+      const reason = prompt(`Reject booking #${String(id).padStart(3, '0')}?\n\nPlease provide a reason:`);
+      if (reason) {
+        alert(`Booking #${String(id).padStart(3, '0')} has been rejected.\n\nReason: ${reason}\n\nYour backend developer will implement:\n- Update booking status in database\n- Send rejection email to client with reason\n- Free up the date slot`);
+      }
+    }
   </script>
 </body>
 </html>
