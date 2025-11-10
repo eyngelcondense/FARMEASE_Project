@@ -490,25 +490,25 @@
       </div>
       <ul class="nav-menu">
         <li class="nav-item">
-          <a href="admin-dashboard.php" class="nav-link" data-page="dashboard">
+          <a href="<?= site_url('dashboard')?>" class="nav-link" data-page="dashboard">
             <i class="fas fa-th-large"></i>
             Dashboard
           </a>
         </li>
         <li class="nav-item">
-          <a href="admin-venues-packages.php" class="nav-link" data-page="venues">
+          <a href="<?= site_url('venue-packages')?>" class="nav-link" data-page="venues">
             <i class="fas fa-map-marker-alt"></i>
             Manage Venues and Packages
           </a>
         </li>
         <li class="nav-item">
-          <a href="admin-bookings.php" class="nav-link" data-page="bookings">
+          <a href="<?= site_url('admin-booking')?>" class="nav-link" data-page="bookings">
             <i class="fas fa-calendar-check"></i>
             Bookings
           </a>
         </li>
         <li class="nav-item">
-          <a href="admin-payments.php" class="nav-link active" data-page="payments">
+          <a href="<?= site_url('admin-payments')?>" class="nav-link active" data-page="payments">
             <i class="fas fa-credit-card"></i>
             Payments
           </a>
@@ -556,7 +556,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="logout.php" class="nav-link" data-page="logout">
+          <a href="<?= site_url('logout')?>" class="nav-link" data-page="logout">
             <i class="fas fa-sign-out-alt"></i>
             Logout
           </a>

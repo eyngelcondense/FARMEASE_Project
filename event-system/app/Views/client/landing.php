@@ -295,7 +295,7 @@
 
     <!-- Profile Button -->
     <div class="profile-btn d-flex align-items-center justify-content-center" onclick="toggleSidebar()">
-      <i class="fa-solid fa-user me-2" style="font-size: 20px; color: #c19a6b;"></i>
+      <i class="fas fa-user-circle" style="font-size: 20px; color: #c19a6b;"></i>
     </div>
 
     <!-- Overlay -->

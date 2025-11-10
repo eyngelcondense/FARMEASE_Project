@@ -316,7 +316,10 @@
 
   <!-- Book Button Section -->
   <section class="book-section">
-    <button class="btn btn-book">Book Your Event Today</button>
+    <a href="<?= site_url('contact') ?>" 
+      class="btn btn-book <?= (service('uri')->getSegment(1) == 'contact') ? 'active' : '' ?>">
+      Book Your Event Today
+    </a>
   </section>
 
   <!-- Feedback Section -->
