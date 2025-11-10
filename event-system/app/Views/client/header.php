@@ -1,3 +1,29 @@
+
+<?php if(session()->getFlashdata('message') || session()->getFlashdata('success') || session()->getFlashdata('error')): ?>
+  <div class="container mt-2">
+    <?php if(session()->getFlashdata('message')): ?>
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <?= session()->getFlashdata('message') ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <?php endif; ?>
+    
+    <?php if(session()->getFlashdata('success')): ?>
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <?= session()->getFlashdata('success') ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <?php endif; ?>
+    
+    <?php if(session()->getFlashdata('error')): ?>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <?= session()->getFlashdata('error') ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <?php endif; ?>
+  </div>
+<?php endif; ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -153,6 +179,11 @@
 
 <body>
     <!-- Header -->
+    <?php if(isset($user) && $user): ?>
+        <?php $client = $client ?? null; ?>
+    <?php else: ?>
+        <?php $client = null; ?>
+    <?php endif; ?>
   <div class="header-bar">
     <div class="header-container">
       <div class="header-logo">
@@ -164,11 +195,23 @@
       </div>
    <!-- Profile Dropdown -->
       <div class="profile-dropdown">
-        <button class="profile-btn">
-          <i class="fas fa-user-circle"></i>
-        </button>
+        <div class="profile-pic-container">
+                    <?php if (!empty($client['profile_pic'])): ?>
+                            <img src="/uploads/profile_pics/<?= esc($client['profile_pic']) ?>" 
+                                 class="rounded-circle border" 
+                                 width="40" 
+                                 height="40" 
+                                 style="object-fit: cover; border: 3px solid #7c6a43 !important;">
+                        <?php else: ?>
+                            <img src="https://ui-avatars.com/api/?name=<?= urlencode($user->username ?? 'User') ?>&background=7c6a43&color=fff&size=120" 
+                                 class="rounded-circle border" 
+                                 width="40" 
+                                 height="40" 
+                                 style="object-fit: cover; border: 3px solid #7c6a43 !important;">
+                        <?php endif; ?>
+                </div>
         <div class="dropdown-menu">
-          <a href="#">My Profile</a>
+          <a href="<?= route_to('profile') ?>">My Profile</a>
           <a href="#">Settings</a>
           <hr style="margin: 5px 0;">
           <a href="<?= base_url('logout') ?>" 
@@ -199,7 +242,7 @@
           <a class="nav-link <?= (uri_string() == 'gallery') ? 'active' : '' ?>" href="<?= site_url('gallery') ?>">VIDEO/GALLERIES</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?= (uri_string() == 'testimonials') ? 'active' : '' ?>" href="<?= site_url('testimonials') ?>">TESTIMONIALS</a>
+          <a class="nav-link <?= (uri_string() == 'testimonial') ? 'active' : '' ?>" href="<?= site_url('testimonials') ?>">TESTIMONIALS</a>
         </li>
         <li class="nav-item">
           <a class="nav-link <?= (uri_string() == 'contact') ? 'active' : '' ?>" href="<?= site_url('contact') ?>">CONTACT</a>

@@ -1,7 +1,7 @@
 <?php
  $title = "Booking | San Isidro Labrador Resort and Leisure Farm";
- include ('header.php');
 ?>
+<?= view('client/header', ['title' => $title, 'user' => $user, 'client' => $client]) ?>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>

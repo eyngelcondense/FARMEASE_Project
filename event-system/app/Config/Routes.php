@@ -37,8 +37,11 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:client'
     $routes->get('booking', 'ClientController::booking');
     $routes->get('packages', 'ClientController::packages');
     $routes->get('gallery', 'ClientController::gallery');
-    $routes->get('testimonials', 'ClientController::testimonials');
+    $routes->get('testimonials', 'FeedbackController::testimonials');
+    $routes->post('feedback/submit', 'FeedbackController::submitFeedback');
     $routes->get('contact', 'ClientController::contact');
+    $routes->get('profile', 'ClientController::profileView');
+    $routes->post('profile-update', 'ClientController::profileUpdate');
 });
 
 $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin'], static function ($routes) {
@@ -46,6 +49,7 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->get('admin-bookings', 'AdminController::bookingsView');
     $routes->get('admin-payments', 'AdminController::paymentsView');
     $routes->get('venue-packages', 'AdminController::venueView');
+    $routes->get('admin/feedback', 'FeedbackController::manageFeedback');
 });
 
 $routes->get('landing', 'ClientController::landing', ['filter' => 'redirectIfAuthenticated']);

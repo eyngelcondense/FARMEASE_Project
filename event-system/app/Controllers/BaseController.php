@@ -8,6 +8,7 @@ use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
+use App\Models\ClientModel;
 
 /**
  * Class BaseController
@@ -54,5 +55,32 @@ abstract class BaseController extends Controller
         // Preload any models, libraries, etc, here.
 
         // E.g.: $this->session = service('session');
+    }
+
+    protected function getUserClient(): array
+    {
+        $user = auth()->user();
+
+        $client = null;
+
+        if ($user) {
+            $clientModel = new ClientModel();
+            $client = $clientModel->where('user_id', $user->id)->first();
+
+            // Optional: create a default empty client if it doesn't exist
+            if (!$client) {
+                $client = [
+                    'phone' => '',
+                    'address' => '',
+                    'profile_pic' => ''
+                ];
+            }
+        }
+
+        return [
+            'user' => $user,
+            'client' => $client
+            '
+        ];
     }
 }
