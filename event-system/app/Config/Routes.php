@@ -34,12 +34,13 @@ service('auth')->routes($routes);
 
 $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:client'], static function ($routes) {
     $routes->get('home', 'ClientController::home');
-    $routes->get('booking', 'ClientController::booking');
+    $routes->get('booking', 'BookingController::bookingView');
+    $routes->post('booking/submit', 'BookingController::submitBooking');
+    $routes->get('booking/booked-dates', 'BookingController::getBookedDates');
     $routes->get('packages', 'ClientController::packages');
     $routes->get('gallery', 'ClientController::gallery');
     $routes->get('testimonials', 'FeedbackController::testimonials');
     $routes->post('feedback/submit', 'FeedbackController::submitFeedback');
-    $routes->get('contact', 'ClientController::contact');
     $routes->get('profile', 'ClientController::profileView');
     $routes->post('profile-update', 'ClientController::profileUpdate');
 });

@@ -80,7 +80,7 @@ abstract class BaseController extends Controller
         return [
             'user' => $user,
             'client' => $client
-            '
+            
         ];
     }
 }

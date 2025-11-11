@@ -272,19 +272,21 @@ $title = "Testimonials | San Isidro Labrador Resort and Leisure Farm";
                 <?php foreach ($recentTestimonials as $testimonial): ?>
                     <div class="col-lg-4 col-md-6">
                         <div class="testimonial-card">
-                            <?php if (!empty($client['profile_pic'])): ?>
-                                <img src="/uploads/profile_pics/<?= esc($client['profile_pic']) ?>" 
-                                     alt="<?= esc($client['fullname']) ?>" class="testimonial-avatar">
+                            <!-- FIX: Use $testimonial instead of $client -->
+                            <?php if (!empty($testimonial['profile_pic'])): ?>
+                                <img src="/uploads/profile_pics/<?= esc($testimonial['profile_pic']) ?>" 
+                                    alt="<?= esc($testimonial['fullname']) ?>" class="testimonial-avatar">
                             <?php else: ?>
-                                <img src="https://ui-avatars.com/api/?name=<?= urlencode($client['fullname']) ?>&background=3b2a18&color=fff&size=100" 
-                                     alt="<?= esc($client['fullname']) ?>" class="testimonial-avatar">
+                                <img src="https://ui-avatars.com/api/?name=<?= urlencode($testimonial['fullname']) ?>&background=3b2a18&color=fff&size=100" 
+                                    alt="<?= esc($testimonial['fullname']) ?>" class="testimonial-avatar">
                             <?php endif; ?>
                             <div class="testimonial-content">
                                 <div class="testimonial-text">
                                     "<?= esc($testimonial['comments']) ?>"
                                 </div>
                                 <div class="testimonial-author">
-                                    <div class="testimonial-name"><?= esc($client['fullname']) ?></div>
+                                    <!-- FIX: Use $testimonial instead of $client -->
+                                    <div class="testimonial-name"><?= esc($testimonial['fullname']) ?></div>
                                     <div class="testimonial-event">
                                         Rating: 
                                         <?php for ($i = 1; $i <= 5; $i++): ?>

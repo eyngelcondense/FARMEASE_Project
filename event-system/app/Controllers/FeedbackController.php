@@ -15,23 +15,28 @@ class FeedbackController extends BaseController
         $this->feedbackModel = new FeedbackModel();
     }
 
-    public function testimonials(): string
+    public function testimonials()
     {
-
-
         $data = $this->getUserClient();
         $data['title'] = "Welcome | San Isidro Labrador Resort and Leisure Farm";
 
-        $testimonials = $this->feedbackModel
-            ->where('status', 'approved')
-            ->orderBy('created_at', 'DESC')
-            ->findAll();
+        $db = \Config\Database::connect();
+        
+        // Get testimonials with client information
+        $testimonials = $db->table('feedback f')
+            ->select('f.*, c.fullname, c.profile_pic, c.email')
+            ->join('clients c', 'c.id = f.client_id')
+            ->where('f.status', 'approved')
+            ->orderBy('f.created_at', 'DESC')
+            ->get()
+            ->getResultArray();
 
-        $recentTestimonials = $this->feedbackModel
-            ->where('status', 'approved')
-            ->orderBy('created_at', 'DESC')
-            ->limit(6)
-            ->findAll();
+        $recentTestimonials = array_slice($testimonials, 0, 6);
+
+        // Debug: Check what columns we're getting
+        if (!empty($recentTestimonials)) {
+            log_message('debug', 'Testimonial columns: ' . implode(', ', array_keys($recentTestimonials[0])));
+        }
 
         return view('client/testimonial', [
             'testimonials' => $testimonials,
@@ -39,7 +44,6 @@ class FeedbackController extends BaseController
             'title' => $data['title'],
             'user' => $data['user'],
             'client' => $data['client'],
-            'fullname' => $data['fullname']
         ]);
     }
 

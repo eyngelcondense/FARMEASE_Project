@@ -31,19 +31,6 @@ class ClientController extends BaseController
     }
 
 
-
-    public function contact(): string{
-        $data = $this->getUserClient();
-        $data['title'] = "Welcome | San Isidro Labrador Resort and Leisure Farm";
-        return view('client/contact', $data);
-    }
-
-    public function booking(): string{
-        $data = $this->getUserClient();
-        $data['title'] = "Welcome | San Isidro Labrador Resort and Leisure Farm";
-        return view('client/booking', $data);
-    }
-
     public function landing()
     {
         $key = getenv('GOOGLE_MAPS_API_KEY');

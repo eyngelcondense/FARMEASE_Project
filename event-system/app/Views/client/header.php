@@ -245,7 +245,7 @@
           <a class="nav-link <?= (uri_string() == 'testimonial') ? 'active' : '' ?>" href="<?= site_url('testimonials') ?>">TESTIMONIALS</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?= (uri_string() == 'contact') ? 'active' : '' ?>" href="<?= site_url('contact') ?>">CONTACT</a>
+          <a class="nav-link <?= (uri_string() == 'contact') ? 'active' : '' ?>" href="<?= site_url('booking') ?>">CONTACT</a>
         </li>
       </ul>
     </div>
