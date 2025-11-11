@@ -4,35 +4,35 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class ClientModel extends Model
+class FeedbackModel extends Model
 {
-    protected $table            = 'clients';
+    protected $table            = 'feedback';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = [
-        'user_id',       // if linked to users table
-        'fullname',
-        'profile_pic',
-        'email',
-        'phone',
-        'address',
+    protected $allowedFields = [
+        'client_id',
+        'rating',
+        'comments',
+        'status',
+        'created_at',
+        'updated_at'
     ];
 
-    protected bool $allowEmptyInserts = true;
+    protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
 
     protected array $casts = [];
     protected array $castHandlers = [];
 
     // Dates
-    protected $useTimestamps = true;
+    protected $useTimestamps = false;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
-    // protected $updatedField  = 'updated_at';
-    // protected $deletedField  = 'deleted_at';
+    protected $updatedField  = 'updated_at';
+    protected $deletedField  = 'deleted_at';
 
     // Validation
     protected $validationRules      = [];
