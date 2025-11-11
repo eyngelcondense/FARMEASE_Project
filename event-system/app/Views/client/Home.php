@@ -1,7 +1,7 @@
 <?php
  $title = "Welcome | San Isidro Labrador Resort and Leisure Farm";
- include ('header.php');
 ?>
+<?= view('client/header', ['title' => $title, 'user' => $user, 'client' => $client]) ?>
 
 
 

@@ -8,7 +8,7 @@ class CreateBookingTable extends Migration
 {
     public function up()
     {
-        $this->forge->addfield([
+        $this->forge->addField([  // Fixed: addField not addfield
             'id' => [
                 'type' => 'INT',
                 'constraint' => 11,
@@ -32,16 +32,18 @@ class CreateBookingTable extends Migration
             ],
             'duration_hours' => [
                 'type' => 'INT',
-                'constraint' => 2
+                'constraint' => 2,
+                'unsigned' => true  // Added unsigned since hours can't be negative
             ],
             'pax' => [
                 'type' => 'INT',
-                'constraint' => 5
+                'constraint' => 5,
+                'unsigned' => true  // Added unsigned since number of guests can't be negative
             ],
             'status' => [
                 'type' => 'VARCHAR',
                 'constraint' => 50,
-                'default' => 'Pending'
+                'default' => 'pending'  // Changed to lowercase for consistency
             ],
             'created_at' => [
                 'type' => 'DATETIME',

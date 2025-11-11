@@ -75,12 +75,12 @@
                         </a>
                     </div>
 
-                    <div class="text-center mt-3">
+                    <!-- <div class="text-center mt-3">
                         <small class="text-muted">
                             Didn't receive the email? 
                             <a href="<?= site_url('resend-activation') ?>" class="text-decoration-none">Resend activation link</a>
                         </small>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>

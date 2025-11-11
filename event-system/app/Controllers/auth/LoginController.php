@@ -20,6 +20,7 @@ class LoginController extends ShieldLogin
      */
     public function loginAction(): RedirectResponse
     {
+
         $rules = [
             'email'    => 'required|valid_email',
             'password' => 'required|min_length[8]',
