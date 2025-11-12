@@ -1,4 +1,5 @@
 <?php
+  $current_page = isset($current_page) ? $current_page : 'venues'
 ?>
 
 <!DOCTYPE html>
@@ -425,113 +426,9 @@
 </head>
 <body>
 
-  <!-- Mobile Menu Toggle -->
-  <button class="mobile-menu-toggle" onclick="toggleSidebar()">
-    <i class="fas fa-bars"></i>
-  </button>
 
-  <!-- Left Sidebar -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-logo">
-        <div class="sidebar-logo-icon">
-          <img src="LOGO NG SAN ISIDRO.png" alt="San Isidro Logo">
-        </div>
-        <div class="sidebar-title">San Isidro Labrador<br>Resort and Leisure Farm</div>
-      </div>
-      <button class="quick-add-btn">
-        <div class="quick-add-btn-icon">
-          <i class="fas fa-plus"></i>
-        </div>
-        <div class="quick-add-text">
-          <div class="quick-add-text-title">Add Quick Event</div>
-          <div class="quick-add-text-sub">Events</div>
-        </div>
-      </button>
-    </div>
-
-    <nav class="nav-section">
-      <div class="nav-section-title">
-        MAIN NAVIGATION
-        <i class="fas fa-chevron-down" style="font-size: 9px;"></i>
-      </div>
-      <ul class="nav-menu">
-        <li class="nav-item">
-          <a href="<?= site_url('dashboard')?>" class="nav-link" data-page="dashboard">
-            <i class="fas fa-th-large"></i>
-            Dashboard
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="<?= site_url('venue-packages')?>" class="nav-link active" data-page="venues">
-            <i class="fas fa-map-marker-alt"></i>
-            Manage Venues and Packages
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="<?= site_url('bookings')?>" class="nav-link" data-page="bookings">
-            <i class="fas fa-calendar-check"></i>
-            Bookings
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="<?= site_url('admin-payments')?>" class="nav-link" data-page="payments">
-            <i class="fas fa-credit-card"></i>
-            Payments
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="admin-gallery.php" class="nav-link" data-page="gallery">
-            <i class="fas fa-images"></i>
-            Gallery
-          </a>
-        </li>
-      </ul>
-    </nav>
-
-    <nav class="nav-section">
-      <div class="nav-section-title">
-        SUPPORT AND SETTINGS
-        <i class="fas fa-chevron-down" style="font-size: 9px;"></i>
-      </div>
-      <ul class="nav-menu">
-        <li class="nav-item">
-          <a href="admin-feedback.php" class="nav-link" data-page="feedback">
-            <i class="fas fa-comment-dots"></i>
-            Feedback and Inquiries
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="admin-calendar.php" class="nav-link" data-page="calendar">
-            <i class="fas fa-calendar-alt"></i>
-            Calendar of Events
-          </a>
-        </li>
-      </ul>
-    </nav>
-
-    <nav class="nav-section">
-      <div class="nav-section-title">
-        ACCOUNT MANAGEMENT
-        <i class="fas fa-chevron-down" style="font-size: 9px;"></i>
-      </div>
-      <ul class="nav-menu">
-        <li class="nav-item">
-          <a href="admin-staffs.php" class="nav-link" data-page="staffs">
-            <i class="fas fa-users"></i>
-            Manage Staffs
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="<?= site_url('logout')?>" class="nav-link" data-page="logout">
-            <i class="fas fa-sign-out-alt"></i>
-            Logout
-          </a>
-        </li>
-      </ul>
-    </nav>
-  </aside>
-
+  <!-- Sidebar Include -->
+  <?= $this->include('admin/sidebar') ?>
   <!-- Main Content Area -->
   <div class="main-layout">
     <!-- Page Header Card -->

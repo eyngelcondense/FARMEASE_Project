@@ -26,4 +26,19 @@ class AdminController extends BaseController
     {
         return view('admin/venpackages');
     }
+
+    public function feedbackView()
+    {
+        return view('admin/feedbacks');
+    }
+
+    public function galleryView()
+    {
+        return view('admin/gallery');
+    }
+
+    public function calendarView()
+    {
+        return view('admin/calendar');
+    }
 }
