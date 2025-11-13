@@ -304,16 +304,6 @@
       font-size: 13px;
     }
 
-    .btn-edit-testimonial {
-      background-color: rgba(255,255,255,0.9);
-      color: #3b2a18;
-    }
-
-    .btn-edit-testimonial:hover {
-      background-color: #3b2a18;
-      color: white;
-    }
-
     .btn-delete-testimonial {
       background-color: rgba(217,83,79,0.9);
       color: white;
@@ -374,6 +364,15 @@
       font-size: 18px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
+    .btn-approve-testimonial {
+      background-color: rgba(92, 184, 92, 0.9); /* green tone */
+      color: white;
+    }
+
+    .btn-approve-testimonial:hover {
+      background-color: #449d44;
+    }
+
 
     /* Responsive */
     @media (max-width: 992px) {
@@ -428,8 +427,8 @@
       <!-- Testimonial 1 -->
       <div class="testimonial-card">
         <div class="testimonial-actions">
-          <button class="action-btn btn-edit-testimonial" onclick="editTestimonial(1)">
-            <i class="fas fa-edit"></i>
+          <button class="action-btn btn-approve-testimonial" onclick="approveTestimonial(1)">
+            <i class="fas fa-check"></i>
           </button>
           <button class="action-btn btn-delete-testimonial" onclick="deleteTestimonial(1)">
             <i class="fas fa-trash"></i>
@@ -442,8 +441,8 @@
       <!-- Testimonial 2 -->
       <div class="testimonial-card">
         <div class="testimonial-actions">
-          <button class="action-btn btn-edit-testimonial" onclick="editTestimonial(2)">
-            <i class="fas fa-edit"></i>
+          <button class="action-btn btn-approve-testimonial" onclick="approveTestimonial(1)">
+            <i class="fas fa-check"></i>
           </button>
           <button class="action-btn btn-delete-testimonial" onclick="deleteTestimonial(2)">
             <i class="fas fa-trash"></i>
@@ -456,8 +455,8 @@
       <!-- Testimonial 3 -->
       <div class="testimonial-card">
         <div class="testimonial-actions">
-          <button class="action-btn btn-edit-testimonial" onclick="editTestimonial(3)">
-            <i class="fas fa-edit"></i>
+          <button class="action-btn btn-approve-testimonial" onclick="approveTestimonial(1)">
+            <i class="fas fa-check"></i>
           </button>
           <button class="action-btn btn-delete-testimonial" onclick="deleteTestimonial(3)">
             <i class="fas fa-trash"></i>
@@ -470,8 +469,8 @@
       <!-- Testimonial 4 -->
       <div class="testimonial-card">
         <div class="testimonial-actions">
-          <button class="action-btn btn-edit-testimonial" onclick="editTestimonial(4)">
-            <i class="fas fa-edit"></i>
+          <button class="action-btn btn-approve-testimonial" onclick="approveTestimonial(1)">
+            <i class="fas fa-check"></i>
           </button>
           <button class="action-btn btn-delete-testimonial" onclick="deleteTestimonial(4)">
             <i class="fas fa-trash"></i>
@@ -508,11 +507,6 @@
       alert('Add New Testimonial\n\nYour backend developer will implement:\n- Open modal/form\n- Input fields: Client name, Date, Quote\n- Save to database\n- Refresh testimonials grid');
     }
 
-    // Edit testimonial
-    function editTestimonial(id) {
-      event.stopPropagation();
-      alert(`Edit Testimonial ID: ${id}\n\nYour backend developer will implement:\n- Open edit modal\n- Pre-fill form with existing data\n- Update database\n- Refresh display`);
-    }
 
     // Delete testimonial
     function deleteTestimonial(id) {
@@ -520,6 +514,11 @@
       if (confirm('Are you sure you want to delete this testimonial?')) {
         alert(`Delete Testimonial ID: ${id}\n\nYour backend developer will implement:\n- Remove from database\n- Remove card from grid\n- Show success message`);
       }
+    }
+
+      function approveTestimonial(id) {
+      event.stopPropagation();
+      alert(`Feedback ID: ${id} approved!`);
     }
 
     // Add animation to testimonial cards on load
