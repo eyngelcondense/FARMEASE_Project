@@ -148,7 +148,7 @@
   <!-- Back btn -->
     <div class="login-container">
     <a href="<?= site_url('/')?>" class="back-btn">
-      <i class="fa-solid fa-chevron-left"></i>
+      <i class="fa-solid fa-chevron-left"></i> Back
   </a>
 
   <div class="signup-container">
