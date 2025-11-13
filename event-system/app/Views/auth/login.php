@@ -132,18 +132,29 @@
 
     /* Back Button */
     .back-btn {
-      position: fixed;
+      position: absolute;
       top: 20px;
-      left: 20px;
-      font-size: 1.8rem;
-      color: #4b4b4b;
+      left: 25px;
+      background-color: #7c6a43;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 10px 18px;
+      font-size: 1rem;
+      font-weight: 600;
       text-decoration: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
       z-index: 1000;
     }
+
     .back-btn:hover {
-      color: #7c6a43;
-      transform: scale(1.1);
-      transition: transform 0.2s;
+      background-color: #6a5938;
+      transform: translateX(-3px);
+      color: #fff;
     }
 
     @media (max-width: 576px) {
@@ -153,7 +164,6 @@
         font-size: 1.6rem;
       }
     }
-
 
     .triangle-btn {
     width: 0;
@@ -174,11 +184,10 @@
 
   <div class="header-bar"></div>
   
-  <!-- Back btn -->
-    
-  <div class="login-container">
+   <!-- Back btn -->
+    <div class="login-container">
     <a href="<?= site_url('/')?>" class="back-btn">
-      <i class="fa-solid fa-chevron-left"></i>
+      <i class="fa-solid fa-chevron-left"></i> Back
   </a>
 
     <div class="login-card">
