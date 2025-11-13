@@ -110,7 +110,7 @@
     }
 
     .btn-custom {
-      background-color: #c19a6b;
+      background-color: #b2a187;
       color: white;
       border: none;
     }
@@ -143,8 +143,9 @@
       z-index: 2;
     }
 
+    /* Button Login */
     .btn-login {
-      background-color: #c19a6b;
+      background-color: #b2a187;
       color: white;
       border: none;
       padding: 12px 28px;
@@ -273,16 +274,6 @@
       margin-top: 10px;
     }
 
-
-    /* remove contact and email styles */
-    .contact-info a {
-        text-decoration: none;
-        color: inherit;
-      }
-
-    .contact-info a:hover {
-      color: #d9534f;
-    }
 
   </style>
 </head>

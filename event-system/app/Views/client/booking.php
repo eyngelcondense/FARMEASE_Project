@@ -147,12 +147,12 @@
       transition: all 0.3s ease;
     }
     .calendar-day.selected {
-    background: linear-gradient(135deg, #7c6a43 0%, #5a4a3a 100%) !important;
-    color: white !important;
-    font-weight: bold;
-    border: 2px solid #3b2a18 !important;
-    box-shadow: 0 3px 10px rgba(124, 106, 67, 0.4) !important;
-}
+      background: linear-gradient(135deg, #7c6a43 0%, #5a4a3a 100%) !important;
+      color: white !important;
+      font-weight: bold;
+      border: 2px solid #3b2a18 !important;
+      box-shadow: 0 3px 10px rgba(124, 106, 67, 0.4) !important;
+    }
     .calendar-day.booked {
       background: linear-gradient(135deg, #5a4a3a 0%, #3b2a18 100%);
       color: white;
@@ -336,18 +336,18 @@
             </div>
 
             <!-- BOOKING FORM -->
-            <div class="inquiry-form">
+            <div class="inquiry-form mt-4">
                 <form method="POST" action="<?= site_url('booking/submit') ?>">
                     <?= csrf_field() ?>
                     
                     <div class="row g-3">
-                        <div class="col-md-6 mt-4">
+                        <div class="col-md-6">
                             <label class="form-label">Type of Event *</label>
                             <input type="text" class="form-control" name="event_type" 
-                                value="<?= old('event_type') ?>" 
+                                value="<?= old('event_type') ?>"
                                 placeholder="e.g., Birthday, Wedding, Corporate Event" required>
                         </div>
-                        <div class="col-md-6 mt-4">
+                        <div class="col-md-6">
                             <label class="form-label">Event Date *</label>
                             <input type="date" class="form-control" name="event_date" 
                                 id="event_date" value="<?= old('event_date') ?>" required>
@@ -361,29 +361,105 @@
                         <div class="col-md-6">
                             <label class="form-label">Duration (hours) *</label>
                             <input type="number" class="form-control" name="duration_hours" 
-                                value="<?= old('duration_hours') ?>" 
+                                value="<?= old('duration_hours') ?>"
                                 placeholder="e.g., 4" min="1" max="24" required>
                         </div>
 
                         <div class="col-12">
                             <label class="form-label">Number of Guests *</label>
                             <input type="number" class="form-control" name="pax" 
-                                value="<?= old('pax') ?>" 
+                                value="<?= old('pax') ?>"
                                 placeholder="e.g., 50" min="1" required>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Select Package *</label>
+                            <select class="form-select" name="package" id="package" required>
+                                <option selected disabled>Select Package</option>
+                                <option value="Cafe 2nd Floor Venue" <?= old('package') == 'Cafe 2nd Floor Venue' ? 'selected' : '' ?>>Cafe 2nd Floor Venue</option>
+                                <option value="Playground" <?= old('package') == 'Playground' ? 'selected' : '' ?>>Playground</option>
+                                <option value="Enclosed Venue" <?= old('package') == 'Enclosed Venue' ? 'selected' : '' ?>>Enclosed Venue</option>
+                                <option value="Prep & Photoshoot" <?= old('package') == 'Prep & Photoshoot' ? 'selected' : '' ?>>Prep & Photoshoot</option>
+                                <option value="Cafe Meetings" <?= old('package') == 'Cafe Meetings' ? 'selected' : '' ?>>Cafe Meetings</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" name="category" id="category" disabled>
+                                <option selected disabled>Select a package first</option>
+                            </select>
                         </div>
 
                         <div class="col-12">
                             <label class="form-label">Additional Notes (Optional)</label>
                             <textarea class="form-control" name="message" rows="3" 
-                                    placeholder="Any special requirements or additional information..."><?= old('message') ?></textarea>
+                                placeholder="Any special requirements or additional information..."><?= old('message') ?></textarea>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-submit mt-4">Submit Booking Request</button>
+                    
+                    <button type="submit" class="btn btn-submit">Submit Booking Request</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+  const packageSelect = document.querySelector("select[name='package']");
+  const categorySelect = document.getElementById("category");
+  const oldCategory = "<?= old('category') ?>";
+
+  function updateCategoryDropdown() {
+    const selected = packageSelect.value;
+    
+    // Reset category dropdown
+    categorySelect.innerHTML = "";
+    categorySelect.disabled = false;
+
+    let options = [];
+
+    if (selected === "Prep & Photoshoot" || selected === "Cafe 2nd Floor Venue") {
+      options = ["Basic", "Premium"];
+    }
+    else if (selected === "Playground") {
+      options = ["Exclusive", "Non-Exclusive"];
+    }
+    else if (selected === "Cafe Meetings") {
+      options = ["Exclusive"];
+    }
+    else {
+      // Disable if no category needed
+      categorySelect.disabled = true;
+      categorySelect.innerHTML = '<option disabled selected>No category required</option>';
+      return;
+    }
+
+    // Populate category dropdown
+    options.forEach(opt => {
+      const optionElement = document.createElement("option");
+      optionElement.textContent = opt;
+      optionElement.value = opt;
+      
+      // Check if this was the previously selected category
+      if (oldCategory && opt === oldCategory) {
+        optionElement.selected = true;
+      }
+      
+      categorySelect.appendChild(optionElement);
+    });
+  }
+
+  packageSelect.addEventListener("change", updateCategoryDropdown);
+
+  // Trigger on page load if package is pre-selected
+  if (packageSelect.value && packageSelect.value !== "Select Package") {
+    updateCategoryDropdown();
+  }
+});
+</script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
