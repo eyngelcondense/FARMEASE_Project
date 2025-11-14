@@ -1,8 +1,9 @@
 <?php
-// Ensure $current_page is defined
-if (!isset($current_page)) {
-    $current_page = '';
-}
+    // Ensure $current_page is defined
+    $current_page = isset($current_page) ? $current_page : null;
+    if (!isset($current_page)) {
+        $current_page = 'dashboard';
+    }
 ?>
 
 <!-- Mobile Menu Toggle -->
@@ -87,7 +88,7 @@ if (!isset($current_page)) {
                 <a href="<?= site_url('feedback')?>" 
                    class="nav-link <?= $current_page === 'feedback' ? 'active' : '' ?>">
                     <i class="fas fa-comment-dots"></i>
-                    Feedback and Inquiries
+                    Feedbacks
                 </a>
             </li>
             <li class="nav-item">
@@ -107,7 +108,7 @@ if (!isset($current_page)) {
         </div>
         <ul class="nav-menu">
             <li class="nav-item">
-                <a href="<?= site_url('admin/staffs')?>" 
+                <a href="<?= site_url('manage-staff')?>" 
                    class="nav-link <?= $current_page === 'staffs' ? 'active' : '' ?>">
                     <i class="fas fa-users"></i>
                     Manage Staffs

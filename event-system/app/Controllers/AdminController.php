@@ -26,12 +26,7 @@ class AdminController extends BaseController
     {
         return view('admin/venpackages', ['current_page' => 'venues']);
     }
-
-    public function feedbackView()
-    {
-        return view('admin/feedbacks', ['current_page' => 'feedback']);
-    }
-
+    
     public function galleryView()
     {
         return view('admin/gallery', ['current_page' => 'gallery']);
@@ -44,5 +39,10 @@ class AdminController extends BaseController
     public function staffsView()
     {
         return view('admin/staffs', ['current_page' => 'staffs']);
+    }
+
+    public function manageStaffView()
+    {
+        return view('admin/manage-staff');
     }
 }

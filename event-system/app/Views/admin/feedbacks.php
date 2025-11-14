@@ -1,5 +1,5 @@
 <?php
-    $current_page = isset($current_page) ? $current_page : 'feedback';
+$current_page = isset($current_page) ? $current_page : 'feedback';
 ?>
 
 <!DOCTYPE html>
@@ -411,74 +411,184 @@
     <!-- Page Header -->
     <div class="page-header">
       <h1>Feedback/Testimonials</h1>
-      <p class="page-subtitle">See what clients say about their experience</p>
+      <p class="page-subtitle">Manage client feedback and testimonials</p>
     </div>
 
-    <!-- Add Testimonial Button -->
-    <div class="add-testimonial-section">
-      <button class="add-testimonial-btn" onclick="addTestimonial()">
-        <i class="fas fa-plus"></i>
-        Add Testimonial
-      </button>
+    <!-- Success/Error Messages -->
+    <?php if (session()->has('success')): ?>
+      <div class="alert alert-success">
+        <i class="fas fa-check-circle"></i> <?= session('success') ?>
+      </div>
+    <?php endif; ?>
+
+    <?php if (session()->has('error')): ?>
+      <div class="alert alert-error">
+        <i class="fas fa-exclamation-circle"></i> <?= session('error') ?>
+      </div>
+    <?php endif; ?>
+
+
+    <!-- Pending Feedback Section -->
+    <div class="page-header">
+      <h4>Pending Feedback <span class="status-badge status-pending"><?= count($pending_feedback) ?> Pending</span></h4>
     </div>
 
-    <!-- Testimonials Grid -->
+    <!-- Pending Feedback Grid -->
     <div class="testimonials-grid">
-      <!-- Testimonial 1 -->
-      <div class="testimonial-card">
-        <div class="testimonial-actions">
-          <button class="action-btn btn-approve-testimonial" onclick="approveTestimonial(1)">
-            <i class="fas fa-check"></i>
-          </button>
-          <button class="action-btn btn-delete-testimonial" onclick="deleteTestimonial(1)">
-            <i class="fas fa-trash"></i>
-          </button>
+      <?php if (!empty($pending_feedback)): ?>
+        <?php foreach ($pending_feedback as $feedback): ?>
+          <div class="testimonial-card">
+            <div class="testimonial-actions">
+              <button class="action-btn btn-approve-testimonial" onclick="approveFeedback(<?= $feedback['id'] ?>)">
+                
+                <i class="fas fa-check"></i>
+              </button>
+              <button class="action-btn btn-delete-testimonial" onclick="deleteFeedback(<?= $feedback['id'] ?>)">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+            
+            <!-- Rating Stars -->
+            <div class="rating-stars">
+              <?php for ($i = 1; $i <= 5; $i++): ?>
+                <span class="star">
+                  <?php if ($i <= $feedback['rating']): ?>
+                    <i class="fas fa-star"></i>
+                  <?php else: ?>
+                    <i class="far fa-star"></i>
+                  <?php endif; ?>
+                </span>
+              <?php endfor; ?>
+              <span class="rating-value">(<?= $feedback['rating'] ?>.0)</span>
+            </div>
+            
+            <p class="testimonial-quote">"<?= esc(character_limiter($feedback['comments'], 150)) ?>"</p>
+            
+            <div>
+              <p class="testimonial-author">
+                <?= esc($feedback['client_name'] ?? 'Unknown Client') ?>
+              </p>
+              <p class="client-info">
+                <?= date('F j, Y', strtotime($feedback['created_at'])) ?>
+                <?php if ($feedback['client_email']): ?>
+                  • <?= esc($feedback['client_email']) ?>
+                <?php endif; ?>
+              </p>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <div class="empty-state">
+          <i class="fas fa-comments"></i>
+          <p>No pending feedback</p>
         </div>
-        <p class="testimonial-quote">"The place is magical! Perfect for weddings and quiet retreats."</p>
-        <p class="testimonial-author">Apple Template, October 10, 2025</p>
-      </div>
+      <?php endif; ?>
+    </div>
 
-      <!-- Testimonial 2 -->
-      <div class="testimonial-card">
-        <div class="testimonial-actions">
-          <button class="action-btn btn-approve-testimonial" onclick="approveTestimonial(1)">
-            <i class="fas fa-check"></i>
-          </button>
-          <button class="action-btn btn-delete-testimonial" onclick="deleteTestimonial(2)">
-            <i class="fas fa-trash"></i>
-          </button>
-        </div>
-        <p class="testimonial-quote">"A hidden gem in Batangas! The scenery was breathtaking."</p>
-        <p class="testimonial-author">Earlsin Comenudo, November 1, 2025</p>
-      </div>
+    <!-- Approved Feedback Section -->
+    <div class="page-header">
+      <h4>Approved Feedback <span class="status-badge status-approved"><?= count($approved_feedback) ?> Approved</span></h4>
+    </div>
 
-      <!-- Testimonial 3 -->
-      <div class="testimonial-card">
-        <div class="testimonial-actions">
-          <button class="action-btn btn-approve-testimonial" onclick="approveTestimonial(1)">
-            <i class="fas fa-check"></i>
-          </button>
-          <button class="action-btn btn-delete-testimonial" onclick="deleteTestimonial(3)">
-            <i class="fas fa-trash"></i>
-          </button>
+    <!-- Approved Feedback Grid -->
+    <div class="testimonials-grid">
+      <?php if (!empty($approved_feedback)): ?>
+        <?php foreach ($approved_feedback as $feedback): ?>
+          <div class="testimonial-card">
+            <div class="testimonial-actions">
+              <button class="action-btn btn-delete-testimonial" onclick="deleteFeedback(<?= $feedback['id'] ?>)">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+            
+            <!-- Rating Stars -->
+            <div class="rating-stars">
+              <?php for ($i = 1; $i <= 5; $i++): ?>
+                <span class="star">
+                  <?php if ($i <= $feedback['rating']): ?>
+                    <i class="fas fa-star"></i>
+                  <?php else: ?>
+                    <i class="far fa-star"></i>
+                  <?php endif; ?>
+                </span>
+              <?php endfor; ?>
+              <span class="rating-value">(<?= $feedback['rating'] ?>.0)</span>
+            </div>
+            
+            <p class="testimonial-quote">"<?= esc(character_limiter($feedback['comments'], 150)) ?>"</p>
+            
+            <div>
+              <p class="testimonial-author">
+                <?= esc($feedback['client_name'] ?? 'Unknown Client') ?>
+              </p>
+              <p class="client-info">
+                <?= date('F j, Y', strtotime($feedback['created_at'])) ?>
+                <?php if ($feedback['client_email']): ?>
+                  • <?= esc($feedback['client_email']) ?>
+                <?php endif; ?>
+              </p>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <div class="empty-state">
+          <i class="fas fa-comments"></i>
+          <p>No approved feedback yet</p>
         </div>
-        <p class="testimonial-quote">"Ganda yarn!?"</p>
-        <p class="testimonial-author">Lady Jean, December 25, 2025</p>
-      </div>
+      <?php endif; ?>
+    </div>
 
-      <!-- Testimonial 4 -->
-      <div class="testimonial-card">
-        <div class="testimonial-actions">
-          <button class="action-btn btn-approve-testimonial" onclick="approveTestimonial(1)">
-            <i class="fas fa-check"></i>
-          </button>
-          <button class="action-btn btn-delete-testimonial" onclick="deleteTestimonial(4)">
-            <i class="fas fa-trash"></i>
-          </button>
+    <!-- REj Feedback Section -->
+    <div class="page-header">
+      <h4>Rejected Feedbacks <span class="status-badge status-approved"><?= count($rejected_feedback) ?> Rejected</span></h4>
+    </div>
+
+    <!-- rej Feedback Grid -->
+    <div class="testimonials-grid">
+      <?php if (!empty($rejected_feedback)): ?>
+        <?php foreach ($rejected_feedback as $feedback): ?>
+          <div class="testimonial-card">
+            <div class="testimonial-actions">
+              <button class="action-btn btn-approve-testimonial" onclick="approveFeedback(<?= $feedback['id'] ?>)">
+                <i class="fas fa-check"></i>
+              </button>
+            </div>
+            
+            <!-- Rating Stars -->
+            <div class="rating-stars">
+              <?php for ($i = 1; $i <= 5; $i++): ?>
+                <span class="star">
+                  <?php if ($i <= $feedback['rating']): ?>
+                    <i class="fas fa-star"></i>
+                  <?php else: ?>
+                    <i class="far fa-star"></i>
+                  <?php endif; ?>
+                </span>
+              <?php endfor; ?>
+              <span class="rating-value">(<?= $feedback['rating'] ?>.0)</span>
+            </div>
+            
+            <p class="testimonial-quote">"<?= esc(character_limiter($feedback['comments'], 150)) ?>"</p>
+            
+            <div>
+              <p class="testimonial-author">
+                <?= esc($feedback['client_name'] ?? 'Unknown Client') ?>
+              </p>
+              <p class="client-info">
+                <?= date('F j, Y', strtotime($feedback['created_at'])) ?>
+                <?php if ($feedback['client_email']): ?>
+                  • <?= esc($feedback['client_email']) ?>
+                <?php endif; ?>
+              </p>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <div class="empty-state">
+          <i class="fas fa-comments"></i>
+          <p>No approved feedback yet</p>
         </div>
-        <p class="testimonial-quote">"Perfect!"</p>
-        <p class="testimonial-author">Eyngelcondense, January 13, 2025</p>
-      </div>
+      <?php endif; ?>
     </div>
   </div>
 
@@ -502,26 +612,64 @@
       }
     });
 
-    // Add testimonial
-    function addTestimonial() {
-      alert('Add New Testimonial\n\nYour backend developer will implement:\n- Open modal/form\n- Input fields: Client name, Date, Quote\n- Save to database\n- Refresh testimonials grid');
-    }
-
-
-    // Delete testimonial
-    function deleteTestimonial(id) {
+  function approveFeedback(id) {
       event.stopPropagation();
-      if (confirm('Are you sure you want to delete this testimonial?')) {
-        alert(`Delete Testimonial ID: ${id}\n\nYour backend developer will implement:\n- Remove from database\n- Remove card from grid\n- Show success message`);
+      if (confirm('Are you sure you want to approve this feedback?')) {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = '<?= site_url('feedback/approve/') ?>' + id;
+          
+          // Method spoofing for PATCH request
+          const method = document.createElement('input');
+          method.type = 'hidden';
+          method.name = '_method';
+          form.appendChild(method);
+          
+          // Add status field
+          const status = document.createElement('input');
+          status.type = 'hidden';
+          status.name = 'status';
+          status.value = 'approved';
+          form.appendChild(status);
+          
+          // Add CSRF token
+          const csrfToken = document.createElement('input');
+          csrfToken.type = 'hidden';
+          csrfToken.name = '<?= csrf_token() ?>';
+          csrfToken.value = '<?= csrf_hash() ?>';
+          form.appendChild(csrfToken);
+          
+          document.body.appendChild(form);
+          form.submit();
       }
-    }
+  }
 
-      function approveTestimonial(id) {
+  function deleteFeedback(id) {
       event.stopPropagation();
-      alert(`Feedback ID: ${id} approved!`);
-    }
+      if (confirm('Are you sure you want to delete this feedback?')) {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = '<?= site_url('feedback/delete/') ?>' + id;
+          
+          // Method spoofing for DELETE request
+          const method = document.createElement('input');
+          method.type = 'hidden';
+          method.name = '_method';
+          form.appendChild(method);
+          
+          // Add CSRF token
+          const csrfToken = document.createElement('input');
+          csrfToken.type = 'hidden';
+          csrfToken.name = '<?= csrf_token() ?>';
+          csrfToken.value = '<?= csrf_hash() ?>';
+          form.appendChild(csrfToken);
+          
+          document.body.appendChild(form);
+          form.submit();
+      }
+  }
 
-    // Add animation to testimonial cards on load
+    // Add animation to feedback cards on load
     window.addEventListener('load', () => {
       const cards = document.querySelectorAll('.testimonial-card');
       cards.forEach((card, index) => {
