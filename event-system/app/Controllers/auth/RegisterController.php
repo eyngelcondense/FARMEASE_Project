@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers\Auth;
+namespace App\Controllers\auth;
 
 use App\Controllers\BaseController;
 use CodeIgniter\Shield\Models\UserModel;

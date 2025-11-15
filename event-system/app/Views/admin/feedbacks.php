@@ -432,7 +432,6 @@ $current_page = isset($current_page) ? $current_page : 'feedback';
     <div class="page-header">
       <h4>Pending Feedback <span class="status-badge status-pending"><?= count($pending_feedback) ?> Pending</span></h4>
     </div>
-
     <!-- Pending Feedback Grid -->
     <div class="testimonials-grid">
       <?php if (!empty($pending_feedback)): ?>
@@ -441,10 +440,10 @@ $current_page = isset($current_page) ? $current_page : 'feedback';
             <div class="testimonial-actions">
               <button class="action-btn btn-approve-testimonial" onclick="approveFeedback(<?= $feedback['id'] ?>)">
                 
-                <i class="fas fa-check"></i>
+                <i class="fas fa-thumbs-up"></i>
               </button>
-              <button class="action-btn btn-delete-testimonial" onclick="deleteFeedback(<?= $feedback['id'] ?>)">
-                <i class="fas fa-trash"></i>
+              <button class="action-btn btn-delete-testimonial" onclick="rejectFeedback(<?= $feedback['id'] ?>)">
+                <i class="fas fa-thumbs-down"></i>
               </button>
             </div>
             
@@ -489,15 +488,14 @@ $current_page = isset($current_page) ? $current_page : 'feedback';
     <div class="page-header">
       <h4>Approved Feedback <span class="status-badge status-approved"><?= count($approved_feedback) ?> Approved</span></h4>
     </div>
-
     <!-- Approved Feedback Grid -->
     <div class="testimonials-grid">
       <?php if (!empty($approved_feedback)): ?>
         <?php foreach ($approved_feedback as $feedback): ?>
           <div class="testimonial-card">
             <div class="testimonial-actions">
-              <button class="action-btn btn-delete-testimonial" onclick="deleteFeedback(<?= $feedback['id'] ?>)">
-                <i class="fas fa-trash"></i>
+              <button class="action-btn btn-delete-testimonial" onclick="rejectFeedback(<?= $feedback['id'] ?> )" name="reject" alt="Reject Feedback">
+                <i class="fas fa-thumbs-down"></i>
               </button>
             </div>
             
@@ -538,19 +536,22 @@ $current_page = isset($current_page) ? $current_page : 'feedback';
       <?php endif; ?>
     </div>
 
-    <!-- REj Feedback Section -->
+    <!-- Reject Feedback Section -->
     <div class="page-header">
       <h4>Rejected Feedbacks <span class="status-badge status-approved"><?= count($rejected_feedback) ?> Rejected</span></h4>
     </div>
 
-    <!-- rej Feedback Grid -->
+    <!-- Reject Feedback Grid -->
     <div class="testimonials-grid">
       <?php if (!empty($rejected_feedback)): ?>
         <?php foreach ($rejected_feedback as $feedback): ?>
           <div class="testimonial-card">
             <div class="testimonial-actions">
               <button class="action-btn btn-approve-testimonial" onclick="approveFeedback(<?= $feedback['id'] ?>)">
-                <i class="fas fa-check"></i>
+                <i class="fas fa-up"></i>
+              </button>
+              <button class="action-btn btn-delete-testimonial" onclick="deleteFeedback(<?= $feedback['id'] ?>)">
+                <i class="fas fa-trash"></i>
               </button>
             </div>
             
@@ -631,6 +632,31 @@ $current_page = isset($current_page) ? $current_page : 'feedback';
           status.name = 'status';
           status.value = 'approved';
           form.appendChild(status);
+          
+          // Add CSRF token
+          const csrfToken = document.createElement('input');
+          csrfToken.type = 'hidden';
+          csrfToken.name = '<?= csrf_token() ?>';
+          csrfToken.value = '<?= csrf_hash() ?>';
+          form.appendChild(csrfToken);
+          
+          document.body.appendChild(form);
+          form.submit();
+      }
+  }
+
+  function rejectFeedback(id) {
+      event.stopPropagation();
+      if (confirm('Are you sure you want to reject this feedback?')) {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = '<?= site_url('feedback/reject/') ?>' + id;
+          
+          // Method spoofing for DELETE request
+          const method = document.createElement('input');
+          method.type = 'hidden';
+          method.name = '_method';
+          form.appendChild(method);
           
           // Add CSRF token
           const csrfToken = document.createElement('input');

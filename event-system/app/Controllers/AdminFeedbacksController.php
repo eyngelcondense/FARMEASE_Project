@@ -66,7 +66,7 @@ class AdminFeedbacksController extends BaseController
         return redirect()->back()->with('success', 'Feedback approved successfully.');
     }
 
-    public function delete($id)
+    public function reject($id)
     {
         $feedback = $this->feedbackModel->find($id);
         
@@ -79,6 +79,20 @@ class AdminFeedbacksController extends BaseController
             'status' => 'rejected',
             'updated_at' => date('Y-m-d H:i:s')
         ]);
+        
+        return redirect()->back()->with('success', 'Feedback rejected successfully.');
+    }
+
+    public function delete($id)
+    {
+        $feedback = $this->feedbackModel->find($id);
+        
+        if (!$feedback) {
+            return redirect()->back()->with('error', 'Feedback not found.');
+        }
+
+        // $this->feedbackModel->delete($id);
+        $this->feedbackModel->delete($id);
         
         return redirect()->back()->with('success', 'Feedback deleted successfully.');
     }

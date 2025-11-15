@@ -55,7 +55,7 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->get('admin/payments', 'AdminController::paymentsView');
     $routes->get('venue/packages', 'AdminController::venueView');
     $routes->get('feedback', 'AdminFeedbacksController::feedbackView');
-    $routes->post('feedback/delete/(:num)', 'AdminFeedbacksController::delete/$1');
+    $routes->post('feedback/reject/(:num)', 'AdminFeedbacksController::reject/$1');
     $routes->post('feedback/delete/(:num)', 'AdminFeedbacksController::delete/$1');
     $routes->post('feedback/approve/(:num)', 'AdminFeedbacksController::approve/$1');
     $routes->get('admin/gallery', 'AdminController::galleryView');

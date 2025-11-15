@@ -16,7 +16,6 @@
     <div class="sidebar-header">
         <div class="sidebar-logo">
             <div class="sidebar-logo-icon">
-                <!-- ✅ FIXED: Using base_url() to make the logo visible on all pages -->
                 <img src="<?= base_url('images/LOGO NG SAN ISIDRO.png') ?>" alt="San Isidro Logo">
             </div>
             <div class="sidebar-title">San Isidro Labrador<br>Resort and Leisure Farm</div>
