@@ -300,7 +300,7 @@
       <a href="/login" class="btn btn-custom w-100 mb-3">Login</a>
       <a href="/register" class="btn btn-outline-dark w-100">Sign Up</a>
       <hr class="my-4">
-      <p style="font-size: 14px;">Need help? <a href="#" style="color:#c19a6b;">Contact Support</a></p>
+      <p style="font-size: 14px;">Need help? <a href="requestdata.php" style="color:#c19a6b;">Request your data here.</a></p>
     </div>
   </div>
 
