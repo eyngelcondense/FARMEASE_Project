@@ -16,7 +16,7 @@ class RedirectIfAuthenticated implements FilterInterface
 
             // Redirect based on role
             if ($user->can('admin.access') || $user->role === 'admin') {
-                return redirect()->to('/admin/dashboard');
+                return redirect()->to('dashboard');
             }
 
             if ($user->can('client.access') || $user->role === 'client') {

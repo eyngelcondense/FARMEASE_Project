@@ -10,12 +10,13 @@ class AuthRedirect implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
-        // If user is NOT logged in, redirect to landing page
+
         if (! auth()->loggedIn()) {
+            alert("session")->setFlashdata('error', 'Session Expired. Please log in again.');
             return redirect()->to('/');
         }
 
-        return null; // Continue normally if logged in
+        return null;
     }
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Controllers\auth;
 
 use CodeIgniter\Controller;
 use CodeIgniter\Shield\Authentication\Authentication;

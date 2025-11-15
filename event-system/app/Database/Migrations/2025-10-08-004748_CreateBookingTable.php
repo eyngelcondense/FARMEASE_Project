@@ -8,7 +8,7 @@ class CreateBookingTable extends Migration
 {
     public function up()
     {
-        $this->forge->addField([  // Fixed: addField not addfield
+        $this->forge->addField([  
             'id' => [
                 'type' => 'INT',
                 'constraint' => 11,
