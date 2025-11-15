@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers\Auth;
+namespace App\Controllers\auth;
 
 use CodeIgniter\Shield\Controllers\LoginController as ShieldLogin;
 use CodeIgniter\HTTP\RedirectResponse;

@@ -8,9 +8,11 @@ use CodeIgniter\Shield\Controllers\MagicLinkController;
  * @var RouteCollection $routes
  */
 
-//landing page route
+//landing page route 
 $routes->get('/', 'ClientController::landing', ['filter' => 'redirectIfAuthenticated']);
+$routes->get('landing', 'ClientController::landing', ['filter' => 'redirectIfAuthenticated']);
 
+//auth routes
 $routes->group('', ['namespace' => 'App\Controllers\Auth'], static function ($routes) {
     $routes->get('login', 'LoginController::loginView', ['filter' => 'redirectIfAuthenticated']);
     $routes->post('login', 'LoginController::loginAction');
@@ -32,6 +34,7 @@ $routes->group('', ['namespace' => 'App\Controllers\Auth'], static function ($ro
 });
 service('auth')->routes($routes);
 
+//client routes
 $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:client'], static function ($routes) {
     $routes->get('home', 'ClientController::home');
     $routes->get('booking', 'BookingController::bookingView');
@@ -45,12 +48,18 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:client'
     $routes->post('profile-update', 'ClientController::profileUpdate');
 });
 
+//admin routes
 $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin'], static function ($routes) {
     $routes->get('dashboard', 'AdminController::dashboardView');
-    $routes->get('admin-bookings', 'AdminController::bookingsView');
-    $routes->get('admin-payments', 'AdminController::paymentsView');
-    $routes->get('venue-packages', 'AdminController::venueView');
-    $routes->get('admin/feedback', 'FeedbackController::manageFeedback');
+    $routes->get('admin/bookings', 'AdminController::bookingsView');
+    $routes->get('admin/payments', 'AdminController::paymentsView');
+    $routes->get('venue/packages', 'AdminController::venueView');
+    $routes->get('feedback', 'AdminFeedbacksController::feedbackView');
+    $routes->post('feedback/reject/(:num)', 'AdminFeedbacksController::reject/$1');
+    $routes->post('feedback/delete/(:num)', 'AdminFeedbacksController::delete/$1');
+    $routes->post('feedback/approve/(:num)', 'AdminFeedbacksController::approve/$1');
+    $routes->get('admin/gallery', 'AdminController::galleryView');
+    $routes->get('admin/calendar', 'AdminController::calendarView');
+    $routes->get('manage-staff', 'AdminController::manageStaffView');
+    
 });
-
-$routes->get('landing', 'ClientController::landing', ['filter' => 'redirectIfAuthenticated']);

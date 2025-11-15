@@ -8,7 +8,7 @@ class UpdateClientTable extends Migration
 {
     public function up()
     {
-        // Add new fields
+
         $fields = [
             'profile_pic' => [
                 'type' => 'VARCHAR',
@@ -23,7 +23,7 @@ class UpdateClientTable extends Migration
 
     public function down()
     {
-        // Remove the added fields (rollback)
+
         $this->forge->dropColumn('clients', ['profile_pic', 'phone']);
     }
 }

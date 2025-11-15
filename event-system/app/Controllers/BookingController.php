@@ -29,7 +29,6 @@ class BookingController extends BaseController
 
     public function submitBooking(): RedirectResponse
     {
-        // Check if user is logged in
         $user = auth()->user();
         if (!$user) {
             return redirect()->to('/login')->with('error', 'Please login to make a booking.');
@@ -50,7 +49,6 @@ class BookingController extends BaseController
         }
 
         try {
-            // Get client ID
             $clientModel = new \App\Models\ClientModel();
             $client = $clientModel->where('user_id', $user->id)->first();
 
