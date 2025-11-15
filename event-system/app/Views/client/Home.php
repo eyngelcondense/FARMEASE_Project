@@ -423,8 +423,8 @@ function toggleContent() {
         <h3 class="fw-bold mb-1">Book your preferred date in advance</h3>
         <p class="mb-0 text-muted"><strong>"At San Isidro, Where Nature Meets Grandeur"</strong></p>
       </div>
-      <a href="<?= site_url('contact') ?>" 
-        class="btn btn-book-now <?= (service('uri')->getSegment(1) == 'contact') ? 'active' : '' ?>">
+      <a href="<?= site_url('booking') ?>" 
+        class="btn btn-book-now <?= (service('uri')->getSegment(1) == 'booking') ? 'active' : '' ?>">
         BOOK NOW
       </a>
     </div>

@@ -20,6 +20,11 @@
   <link rel="icon" type="image/png" href="images/LOGO NG SAN ISIDRO.png"/>
 
   <style>
+    .header-bar {
+      height: 10px;
+      background-color: #b2a187;
+    }
+
     html, body {
         height: 100%;
         margin: 0;
@@ -30,11 +35,6 @@
     body {
       background-color: #f8f6f3;
       font-family: "Poppins", sans-serif;
-    }
-
-    .header-bar {
-      height: 10px;
-      background-color: #b2a187;
     }
 
     /* Back Button */
@@ -143,15 +143,16 @@
 </head>
 
 <body>
-  <div class="header-bar"></div>
-  
-  <!-- Back btn -->
-    <div class="login-container">
+  <div class="login-container">
+
+    <div class="header-bar"></div>
+
+     <!-- Back btn -->
     <a href="<?= site_url('/')?>" class="back-btn">
-      <i class="fa-solid fa-chevron-left"></i> Back
+      <i class="fa-solid fa-chevron-left"></i>
   </a>
 
-  <div class="signup-container">
+  <div class="signup-container mt-4">
     <div class="logo">
       <img src="images/LOGO NG SAN ISIDRO.png" alt="Logo" style="width: 130px;">
       <div class="brand-name" style="font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif">SAN ISIDRO LABRADOR</div>
