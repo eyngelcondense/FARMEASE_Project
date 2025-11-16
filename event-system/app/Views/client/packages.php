@@ -373,8 +373,8 @@
               <p><strong>Your Perfect Café Meeting Awaits </strong></p>
               <p>Host your next meeting in our exclusive 2nd floor space – where productivity meets comfort. Up to 50 guests, 3 hours of privacy, and ₱20,000 worth of delicious refreshments included.
                 Ready to elevate your meetings? <br>Make an inquiry and let's get started! ☕✨</p>
-              <a href="<?= site_url('contact') ?>" 
-                class="btn btn-inquiry <?= (service('uri')->getSegment(1) == 'contact') ? 'active' : '' ?>">
+              <a href="<?= site_url('booking') ?>" 
+                class="btn btn-inquiry <?= (service('uri')->getSegment(1) == 'booking') ? 'active' : '' ?>">
                 Make an Inquiry
             </a>
             </div>
@@ -390,8 +390,8 @@
               <p><strong>Celebrate Life's Beautiful Moments</strong></p>
                 <p>From weddings to milestones, make your special occasions truly unforgettable at San Isidro Labrador Resort and Leisure Farm. Our picturesque venue and dedicated team are here to bring your dream celebration to life. <br>
                 Let us be part of your story. Make an inquiry today! 💐✨</p>
-              <a href="<?= site_url('contact') ?>" 
-                class="btn btn-inquiry <?= (service('uri')->getSegment(1) == 'contact') ? 'active' : '' ?>">
+              <a href="<?= site_url('booking') ?>" 
+                class="btn btn-inquiry <?= (service('uri')->getSegment(1) == 'booking') ? 'active' : '' ?>">
                 Make an Inquiry
             </a>
             </div>
@@ -410,8 +410,8 @@
                 ideal setting for weddings, debuts, and grand celebrations. <br>
                 Turn your vision into reality. Make an inquiry and let's plan something extraordinary! ✨
               </p>
-              <a href="<?= site_url('contact') ?>" 
-                class="btn btn-inquiry <?= (service('uri')->getSegment(1) == 'contact') ? 'active' : '' ?>">
+              <a href="<?= site_url('booking') ?>" 
+                class="btn btn-inquiry <?= (service('uri')->getSegment(1) == 'booking') ? 'active' : '' ?>">
                 Make an Inquiry
             </a>
             </div>
