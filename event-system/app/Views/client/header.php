@@ -242,11 +242,10 @@
           <a class="nav-link <?= (uri_string() == 'gallery') ? 'active' : '' ?>" href="<?= site_url('gallery') ?>">VIDEO/GALLERIES</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?= (uri_string() == 'testimonial') ? 'active' : '' ?>" href="<?= site_url('testimonials') ?>">TESTIMONIALS</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link <?= (uri_string() == 'contact') ? 'active' : '' ?>" href="<?= site_url('booking') ?>">CONTACT</a>
-        </li>
+        <a class="nav-link <?= (uri_string() == 'testimonials') ? 'active' : '' ?>" href="<?= site_url('testimonials') ?>">TESTIMONIALS</a>
+      </li>
+      <li class="nav-item"><a class="nav-link <?= (uri_string() == 'booking') ? 'active' : '' ?>" href="<?= site_url('booking') ?>">CONTACT</a>
+      </li>
       </ul>
     </div>
   </div>
