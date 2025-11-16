@@ -211,8 +211,7 @@
                         <?php endif; ?>
                 </div>
         <div class="dropdown-menu">
-          <a href="<?= route_to('profile') ?>">My Profile</a>
-          <a href="#">Settings</a>
+          <a href="<?= route_to('profile') ?>">Profile Settings</a>
           <hr style="margin: 5px 0;">
           <a href="<?= base_url('logout') ?>" 
             class="logout-btn" 
