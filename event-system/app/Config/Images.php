@@ -14,6 +14,25 @@ class Images extends BaseConfig
     public string $defaultHandler = 'gd';
 
     /**
+     * The maximum image file size in kilobytes.
+     * Set to 10240 for 10MB
+     */
+    public $maxSize = 10240;
+
+    /**
+     * The maximum image width in pixels.
+     * Set to 0 for no limit
+     */
+    public $maxWidth = 0;
+
+    /**
+     * The maximum image height in pixels.
+     * Set to 0 for no limit
+     */
+    public $maxHeight = 0;
+
+
+    /**
      * The path to the image library.
      * Required for ImageMagick, GraphicsMagick, or NetPBM.
      */

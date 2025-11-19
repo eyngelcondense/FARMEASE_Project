@@ -1,0 +1,324 @@
+<mxfile host="app.diagrams.net">
+    <diagram name="Farmis System Architecture" id="Farmis-Architecture">
+        <mxGraphModel dx="1426" dy="881" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                
+                <!-- External Systems -->
+                <mxCell id="external" value="External Systems" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="40" width="1090" height="120" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="shield" value="CodeIgniter Shield&#xa;(Authentication)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="100" y="80" width="180" height="60" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="smtp" value="SMTP Server&#xa;(Email Notifications)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="340" y="80" width="180" height="60" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="mysql" value="MySQL Database&#xa;(Persistence)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="580" y="80" width="180" height="60" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="browser" value="Web Browser&#xa;(Client Interface)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="820" y="80" width="180" height="60" as="geometry"/>
+                </mxCell>
+                
+                <!-- Presentation Layer -->
+                <mxCell id="presentation" value="Presentation Layer&#xa;(Front-end Views)" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="180" width="1090" height="120" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="client_dash" value="Client Dashboard" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="100" y="220" width="120" height="60" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="admin_dash" value="Admin Dashboard" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="240" y="220" width="120" height="60" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="staff_dash" value="Staff Dashboard" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="380" y="220" width="120" height="60" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="booking_form" value="Booking Form" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="520" y="220" width="120" height="60" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="venue_list" value="Venue List" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="660" y="220" width="120" height="60" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="calendar" value="Booking Calendar" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="800" y="220" width="120" height="60" as="geometry"/>
+                </mxCell>
+                
+                <!-- Application Layer -->
+                <mxCell id="application" value="Application Layer&#xa;(Controllers)" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="320" width="1090" height="120" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="auth_controller" value="AuthController&#xa;Login/Logout&#xa;Role Redirection" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="100" y="360" width="140" height="60" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="booking_controller" value="BookingController&#xa;Create/View&#xa;Approve/Reject" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="260" y="360" width="140" height="60" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="venue_controller" value="VenueController&#xa;Add/Edit/Delete&#xa;List Venues" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="420" y="360" width="140" height="60" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="package_controller" value="PackageController&#xa;Manage Packages&#xa;Price Calculation" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="580" y="360" width="140" height="60" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="staff_controller" value="StaffController&#xa;Register Staff&#xa;Assignments" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="740" y="360" width="140" height="60" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="audit_controller" value="AuditLogController&#xa;View/Filter Logs" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="900" y="360" width="140" height="60" as="geometry"/>
+                </mxCell>
+                
+                <!-- Business Logic Layer -->
+                <mxCell id="business" value="Business Logic Layer&#xa;(Services)" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="460" width="1090" height="160" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="booking_service" value="BookingService&#xa;• Check Availability&#xa;• Apply Pricing&#xa;• Set Status&#xa;• Trigger Notifications" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="100" y="500" width="140" height="100" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="availability_service" value="AvailabilityService&#xa;• Query Bookings&#xa;• Check Overlaps&#xa;• Prevent Double-booking" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="260" y="500" width="140" height="100" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="pricing_service" value="PricingService&#xa;• Dynamic Pricing&#xa;• Combine Costs&#xa;• Handle Discounts" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="420" y="500" width="140" height="100" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="staff_service" value="StaffAssignmentService&#xa;• Available Staff&#xa;• Assign to Booking&#xa;• Prevent Conflicts" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="580" y="500" width="140" height="100" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="notification_service" value="NotificationService&#xa;• Send Emails&#xa;• Message Templates&#xa;• Error Logging" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="740" y="500" width="140" height="100" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="audit_service" value="AuditService&#xa;• Log Admin Actions&#xa;• Metadata Attachment&#xa;• Before/After Values" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="900" y="500" width="140" height="100" as="geometry"/>
+                </mxCell>
+                
+                <!-- Data Access Layer -->
+                <mxCell id="data_access" value="Data Access Layer&#xa;(Models)" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="640" width="1090" height="120" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="user_model" value="UserModel&#xa;ClientModel&#xa;AdminModel&#xa;StaffModel" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="100" y="680" width="120" height="60" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="venue_model" value="VenueModel&#xa;PackageModel&#xa;AddonModel" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="240" y="680" width="120" height="60" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="booking_model" value="BookingModel&#xa;BookingAddonModel&#xa;StaffAssignmentModel" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="380" y="680" width="120" height="60" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="audit_model" value="AuditLogModel&#xa;Auth Identities&#xa;Auth Tokens" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="520" y="680" width="120" height="60" as="geometry"/>
+                </mxCell>
+                
+                <!-- Database Layer -->
+                <mxCell id="database" value="Database Layer&#xa;(MySQL Schema)" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="780" width="1090" height="120" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="user_tables" value="User Tables&#xa;• users&#xa;• clients&#xa;• admins&#xa;• staff" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="100" y="820" width="120" height="60" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="booking_tables" value="Booking Tables&#xa;• venues&#xa;• packages&#xa;• addons&#xa;• bookings" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="240" y="820" width="120" height="60" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="relation_tables" value="Relation Tables&#xa;• booking_addons&#xa;• staff_assignments" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="380" y="820" width="120" height="60" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="security_tables" value="Security Tables&#xa;• auth_identities&#xa;• auth_tokens&#xa;• audit_logs" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="520" y="820" width="120" height="60" as="geometry"/>
+                </mxCell>
+                
+                <!-- Connection Arrows -->
+                <!-- External to Presentation -->
+                <mxCell id="conn1" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="browser" target="client_dash">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="910" y="150" as="sourcePoint"/>
+                        <mxPoint x="960" y="100" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <!-- Presentation to Application -->
+                <mxCell id="conn2" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="client_dash" target="auth_controller">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="160" y="290" as="sourcePoint"/>
+                        <mxPoint x="170" y="340" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <mxCell id="conn3" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="booking_form" target="booking_controller">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="580" y="290" as="sourcePoint"/>
+                        <mxPoint x="330" y="340" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <!-- Application to Business -->
+                <mxCell id="conn4" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="auth_controller" target="booking_service">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="170" y="430" as="sourcePoint"/>
+                        <mxPoint x="170" y="490" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <mxCell id="conn5" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="booking_controller" target="booking_service">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="330" y="430" as="sourcePoint"/>
+                        <mxPoint x="170" y="490" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <mxCell id="conn6" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="venue_controller" target="availability_service">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="490" y="430" as="sourcePoint"/>
+                        <mxPoint x="330" y="490" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <mxCell id="conn7" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="package_controller" target="pricing_service">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="650" y="430" as="sourcePoint"/>
+                        <mxPoint x="490" y="490" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <!-- Business to Data Access -->
+                <mxCell id="conn8" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="booking_service" target="user_model">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="170" y="610" as="sourcePoint"/>
+                        <mxPoint x="160" y="670" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <mxCell id="conn9" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="availability_service" target="venue_model">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="330" y="610" as="sourcePoint"/>
+                        <mxPoint x="300" y="670" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <mxCell id="conn10" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="pricing_service" target="booking_model">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="490" y="610" as="sourcePoint"/>
+                        <mxPoint x="440" y="670" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <!-- Data Access to Database -->
+                <mxCell id="conn11" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="user_model" target="user_tables">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="160" y="750" as="sourcePoint"/>
+                        <mxPoint x="160" y="810" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <mxCell id="conn12" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="venue_model" target="booking_tables">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="300" y="750" as="sourcePoint"/>
+                        <mxPoint x="300" y="810" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <!-- External integrations -->
+                <mxCell id="conn13" value="" style="endArrow=classic;html=1;rounded=0;dashed=1;" edge="1" parent="1" source="shield" target="auth_controller">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="190" y="150" as="sourcePoint"/>
+                        <mxPoint x="170" y="340" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <mxCell id="conn14" value="" style="endArrow=classic;html=1;rounded=0;dashed=1;" edge="1" parent="1" source="notification_service" target="smtp">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="810" y="500" as="sourcePoint"/>
+                        <mxPoint x="430" y="150" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <mxCell id="conn15" value="" style="endArrow=classic;html=1;rounded=0;dashed=1;" edge="1" parent="1" source="user_model" target="mysql">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="160" y="750" as="sourcePoint"/>
+                        <mxPoint x="670" y="150" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <!-- Internal service calls -->
+                <mxCell id="conn16" value="" style="endArrow=classic;html=1;rounded=0;dashed=1;strokeColor=#FF0000;" edge="1" parent="1" source="booking_service" target="availability_service">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="240" y="530" as="sourcePoint"/>
+                        <mxPoint x="260" y="530" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <mxCell id="conn17" value="" style="endArrow=classic;html=1;rounded=0;dashed=1;strokeColor=#FF0000;" edge="1" parent="1" source="booking_service" target="pricing_service">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="240" y="550" as="sourcePoint"/>
+                        <mxPoint x="420" y="550" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <mxCell id="conn18" value="" style="endArrow=classic;html=1;rounded=0;dashed=1;strokeColor=#FF0000;" edge="1" parent="1" source="booking_service" target="notification_service">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="240" y="570" as="sourcePoint"/>
+                        <mxPoint x="740" y="570" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <!-- Legend -->
+                <mxCell id="legend" value="Architecture Legend" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="920" width="1090" height="120" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="solid_arrow" value="Solid Arrow: Direct Layer Communication" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="100" y="960" width="200" height="30" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="dashed_arrow" value="Dashed Arrow: External Integration" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="100" y="990" width="200" height="30" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="red_arrow" value="Red Dashed Arrow: Internal Service Calls" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="100" y="1020" width="200" height="30" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="solid_example" value="─────────→" style="edgeStyle=none;rounded=0;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="320" y="965" width="60" height="20" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="dashed_example" value="─ ─ ─ ─ ─ →" style="edgeStyle=none;rounded=0;html=1;dashed=1;" vertex="1" parent="1">
+                    <mxGeometry x="320" y="995" width="60" height="20" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="red_example" value="─ ─ ─ ─ ─ →" style="edgeStyle=none;rounded=0;html=1;dashed=1;strokeColor=#FF0000;" vertex="1" parent="1">
+                    <mxGeometry x="320" y="1025" width="60" height="20" as="geometry"/>
+                </mxCell>
+                
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
