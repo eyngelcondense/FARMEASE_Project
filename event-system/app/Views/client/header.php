@@ -150,28 +150,28 @@
   position: relative;
   text-decoration: none;
   transition: color 0.3s ease;
-}
+  }
 
-/* Hover Effect */
-.navbar-nav .nav-link:hover {
-  color: #8b6f47;
-}
+  /* Hover Effect */
+  .navbar-nav .nav-link:hover {
+    color: #8b6f47;
+  }
 
-/* Active Link (Current Page) */
-.navbar-nav .nav-link.active::after {
-  content: "";
-  position: absolute;
-  bottom: 8px;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background-color: #8b6f47; /* gold-brown underline */
-  transition: width 0.3s ease;
-}
+  /* Active Link (Current Page) */
+  .navbar-nav .nav-link.active::after {
+    content: "";
+    position: absolute;
+    bottom: 8px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #8b6f47; /* gold-brown underline */
+    transition: width 0.3s ease;
+  }
 
-.navbar-nav .nav-link.active {
-  color: #8b6f47;
-}
+  .navbar-nav .nav-link.active {
+    color: #8b6f47;
+  }
 
 
 </style>
@@ -244,8 +244,13 @@
         <li class="nav-item">
         <a class="nav-link <?= (uri_string() == 'testimonials') ? 'active' : '' ?>" href="<?= site_url('testimonials') ?>">TESTIMONIALS</a>
       </li>
-      <li class="nav-item"><a class="nav-link <?= (uri_string() == 'booking') ? 'active' : '' ?>" href="<?= site_url('booking') ?>">CONTACT</a>
+      <li class="nav-item"><a class="nav-link <?= (uri_string() == 'booking') ? 'active' : '' ?>" href="<?= site_url('bookings') ?>">CONTACT</a>
       </li>
+      <li class="nav-item">
+    <a class="nav-link <?= (uri_string() == 'booking_history') ? 'active' : '' ?>" href="<?= site_url('booking_history') ?>">
+        <i class="fas fa-history"></i> MY BOOKINGS
+    </a>
+</li>
       </ul>
     </div>
   </div>

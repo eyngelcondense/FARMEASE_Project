@@ -291,6 +291,11 @@
                 width: 80px;
             }
         }
+        .italized {
+            font-style: italic;
+            font-size: 0.7rem;
+            color: #767676ff;
+        }
     </style>
 </head>
 
@@ -323,13 +328,18 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="email">Email Address <span class="required">*</span></label>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="juan.delacruz@example.com" required>
+                    <label for="email">Active Email Address <span class="required">*</span><br><i class="italized">Email address that you have access on</i></label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="juandelacruz@mail.com" required>
                 </div>
 
                 <div class="form-group">
                     <label for="phone">Contact Number <span class="required">*</span></label>
                     <input type="tel" class="form-control" id="phone" name="phone" placeholder="+63 912 345 6789" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Registered Email Address <span class="required">*</span><br><i class="italized">Email address that you have registered in the system</i></label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="juandelacruz@mail.com" required>
                 </div>
 
                 <!-- Request Type -->
@@ -397,110 +407,101 @@
         © 2025 San Isidro Labrador Resort and Leisure Farm. All rights reserved.
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // File upload handling
-        const fileInput = document.getElementById('validId');
-        const fileText = document.getElementById('fileText');
-        const fileName = document.getElementById('fileName');
-
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                // Check file size (5MB limit)
-                if (file.size > 5 * 1024 * 1024) {
-                    showAlert('File size exceeds 5MB. Please upload a smaller file.', 'danger');
-                    fileInput.value = '';
-                    return;
-                }
-
-                fileText.textContent = file.name;
-                fileName.textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
-                fileName.style.display = 'block';
-            }
-        });
-
-        // Form submission handling
-        document.getElementById('dataRequestForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const fullName = document.getElementById('fullName').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            const requestType = document.getElementById('requestType').value;
-            const details = document.getElementById('details').value.trim();
-            const consent = document.getElementById('consent').checked;
-            const validId = document.getElementById('validId').files[0];
-
-            const alertBox = document.getElementById('alertBox');
-            alertBox.innerHTML = '';
-
-            // Email validation pattern
-            const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
-
-            // Validation
-            if (!fullName || !email || !phone || !requestType || !details || !validId) {
-                showAlert('Please fill in all required fields and upload your valid ID.', 'danger');
-                return;
-            }
-
-            if (!emailPattern.test(email)) {
-                showAlert('Please enter a valid email address.', 'warning');
-                return;
-            }
-
-            if (!consent) {
-                showAlert('You must agree to the consent statement to proceed.', 'warning');
-                return;
-            }
-
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('dataRequestForm');
             const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...';
-
-            // Create FormData for file upload
-            const formData = new FormData(this);
-
-            // Simulate form submission (replace with actual backend submission)
-            setTimeout(() => {
-                showAlert('Your data request has been submitted successfully! We will process your request within 5-7 business days and contact you via email.', 'success');
-                
-                // Reset form after successful submission
-                setTimeout(() => {
-                    this.reset();
-                    fileName.style.display = 'none';
-                    fileText.textContent = 'Click to upload valid ID';
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Submit Request';
-                }, 2000);
-
-                // In production, send to your PHP backend:
-                // fetch('process-data-request.php', {
-                //     method: 'POST',
-                //     body: formData
-                // })
-                // .then(response => response.json())
-                // .then(data => {
-                //     if (data.success) {
-                //         showAlert('Request submitted successfully!', 'success');
-                //     } else {
-                //         showAlert('Error: ' + data.message, 'danger');
-                //     }
-                // })
-                // .catch(error => {
-                //     showAlert('Error submitting request. Please try again.', 'danger');
-                // });
-
-            }, 2000);
-        });
-
-        function showAlert(message, type) {
             const alertBox = document.getElementById('alertBox');
-            alertBox.innerHTML = `
-                <div class="alert alert-${type}" role="alert">
-                    ${message}
-                </div>
-            `;
-        }
+
+            // Fix duplicate email field issue
+            const emailFields = document.querySelectorAll('input[type="email"]');
+            if (emailFields.length > 1) {
+                emailFields[1].name = 'registeredEmail';
+                emailFields[1].id = 'registeredEmail';
+            }
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Disable submit button
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+
+                const formData = new FormData(form);
+
+                try {
+                    const response = await fetch('<?= site_url('data-request/submit') ?>', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.status === 'success') {
+                        showAlert(result.message, 'success');
+                        form.reset();
+                        fileName.style.display = 'none';
+                        fileText.textContent = 'Click to upload valid ID';
+                    } else {
+                        let errorMessage = result.message;
+                        if (result.errors) {
+                            errorMessage += '<br>' + Object.values(result.errors).join('<br>');
+                        }
+                        showAlert(errorMessage, 'danger');
+                    }
+                } catch (error) {
+                    showAlert('Network error. Please check your connection and try again.', 'danger');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Submit Request';
+                }
+            });
+
+            function showAlert(message, type) {
+                alertBox.innerHTML = `
+                    <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                        ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+                
+                // Auto dismiss after 5 seconds for success messages
+                if (type === 'success') {
+                    setTimeout(() => {
+                        const alert = bootstrap.Alert.getOrCreateInstance(alertBox.querySelector('.alert'));
+                        alert.close();
+                    }, 5000);
+                }
+            }
+
+            // File upload display
+            const fileInput = document.getElementById('validId');
+            const fileText = document.getElementById('fileText');
+            const fileName = document.getElementById('fileName');
+
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    if (file.size > 5 * 1024 * 1024) {
+                        showAlert('File size exceeds 5MB. Please upload a smaller file.', 'danger');
+                        fileInput.value = '';
+                        return;
+                    }
+
+                    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+                    if (!allowedTypes.includes(file.type)) {
+                        showAlert('Invalid file type. Please upload JPG, PNG, or PDF files only.', 'danger');
+                        fileInput.value = '';
+                        return;
+                    }
+
+                    fileText.textContent = file.name;
+                    fileName.textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+                    fileName.style.display = 'block';
+                }
+            });
+        });
     </script>
 </body>
 </html>
