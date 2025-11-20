@@ -385,10 +385,18 @@
                                 value="<?= old('start_time') ?>" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Duration (hours) *</label>
-                            <input type="number" class="form-control" name="duration_hours" 
-                                value="<?= old('duration_hours') ?>"
-                                placeholder="e.g., 4" min="1" max="24" required>
+                            <label class="form-label">Duration (Hours) *</label>
+                            <select class="form-select" name="duration" id="duration" required>
+                                <option disabled selected>Select Duration</option>
+                                <option value="4">4 Hours</option>
+                                <option value="5">5 Hours</option>
+                                <option value="6">6 Hours</option>
+                                <option value="8">8 Hours</option>
+                                <option value="10">10 Hours</option>
+                                <option value="12">12 Hours</option>
+                                <option value="13">13 Hours</option>
+                            </select>
+
                         </div>
 
                         <div class="col-12">
