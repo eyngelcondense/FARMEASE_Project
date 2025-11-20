@@ -319,82 +319,111 @@ function loadBookingStats() {
 
 // View booking details
 function viewDetails(id) {
+    // Show loading state
+    const detailsBtn = $(`button[onclick="viewDetails(${id})"]`);
+    const originalText = detailsBtn.text();
+    detailsBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Loading...');
+    
     $.ajax({
         url: `<?= site_url('bookings/') ?>${id}/details`,
         type: 'GET',
         dataType: 'json',
         success: function(response) {
+            // Reset button
+            detailsBtn.prop('disabled', false).html(originalText);
+            
             if (response.success) {
                 showBookingDetails(response.booking, response.payments, response.total_paid, response.balance);
             } else {
-                showToast(response.message, 'error');
+                showToast(response.message || 'Error loading booking details', 'error');
+                console.error('Booking details error:', response.message);
             }
         },
-        error: function() {
-            showToast('Error loading booking details', 'error');
+        error: function(xhr, status, error) {
+            // Reset button
+            detailsBtn.prop('disabled', false).html(originalText);
+            
+            console.error('AJAX Error loading booking details:', error);
+            console.error('Status:', status);
+            console.error('Response:', xhr.responseText);
+            
+            showToast('Error loading booking details. Please try again.', 'error');
         }
     });
 }
 
 // Show booking details in modal
 function showBookingDetails(booking, payments, totalPaid, balance) {
-    let detailsHtml = `
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <strong>Booking Reference:</strong> ${booking.booking_reference}
-            </div>
-            <div class="col-md-6">
-                <strong>Status:</strong> ${getStatusBadge(booking.status)}
-            </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <strong>Client:</strong> ${booking.client_name}
-            </div>
-            <div class="col-md-6">
-                <strong>Contact:</strong> ${booking.client_phone || 'N/A'}<br>
-                <small class="text-muted">${booking.client_email || 'N/A'}</small>
-            </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <strong>Event Type:</strong> ${booking.event_type}
-            </div>
-            <div class="col-md-6">
-                <strong>Package:</strong> ${booking.package_name || 'N/A'}
-            </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <strong>Date:</strong> ${formatDate(booking.event_date)}
-            </div>
-            <div class="col-md-6">
-                <strong>Time:</strong> ${formatTime(booking.start_time)} - ${formatTime(booking.end_time)}
-            </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <strong>Total Hours:</strong> ${booking.total_hours || 'N/A'} hrs
-            </div>
-            <div class="col-md-6">
-                <strong>Guests:</strong> ${booking.total_guests}
-            </div>
-        </div>
-    `;
-    
-    // Venue information
-    if (booking.venue_name) {
-        detailsHtml += `
+    try {
+        // Safely get values with fallbacks
+        const bookingRef = booking.booking_reference || 'N/A';
+        const clientName = booking.client_name || booking.fullname || 'N/A';
+        const clientPhone = booking.client_phone || 'N/A';
+        const clientEmail = booking.client_email || 'N/A';
+        const eventType = booking.event_type || 'N/A';
+        const packageName = booking.package_name || 'N/A';
+        const venueName = booking.venue_name || 'N/A';
+        const eventDate = booking.event_date ? formatDate(booking.event_date) : 'N/A';
+        const startTime = booking.start_time ? formatTime(booking.start_time) : 'N/A';
+        const endTime = booking.end_time ? formatTime(booking.end_time) : 'N/A';
+        const totalHours = booking.total_hours || 'N/A';
+        const totalGuests = booking.total_guests || 'N/A';
+        const totalAmount = booking.total_amount || 0;
+        const specialRequests = booking.special_requests || 'None';
+
+        let detailsHtml = `
             <div class="row mb-3">
-                <div class="col-12">
-                    <strong>Venue:</strong> ${booking.venue_name}
+                <div class="col-md-6">
+                    <strong>Booking Reference:</strong> ${bookingRef}
+                </div>
+                <div class="col-md-6">
+                    <strong>Status:</strong> ${getStatusBadge(booking.status || 'unknown')}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>Client:</strong> ${clientName}
+                </div>
+                <div class="col-md-6">
+                    <strong>Contact:</strong> ${clientPhone}<br>
+                    <small class="text-muted">${clientEmail}</small>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>Event Type:</strong> ${eventType}
+                </div>
+                <div class="col-md-6">
+                    <strong>Package:</strong> ${packageName}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>Venue:</strong> ${venueName}
+                </div>
+                <div class="col-md-6">
+                    <strong>Date:</strong> ${eventDate}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>Time:</strong> ${startTime} - ${endTime}
+                </div>
+                <div class="col-md-6">
+                    <strong>Total Hours:</strong> ${totalHours} hrs
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>Guests:</strong> ${totalGuests}
+                </div>
+                <div class="col-md-6">
+                    <strong>Payment Status:</strong> ${getPaymentStatusBadge(booking.payment_status || 'pending')}
                 </div>
             </div>
         `;
-    }
-    
-    // Financial information
-    if (booking.total_amount) {
+        
+        // Financial information
         detailsHtml += `
             <div class="row mb-3">
                 <div class="col-12">
@@ -402,7 +431,7 @@ function showBookingDetails(booking, payments, totalPaid, balance) {
                     <div class="mt-2">
                         <div class="d-flex justify-content-between">
                             <span>Total Amount:</span>
-                            <span>₱${parseFloat(booking.total_amount || 0).toLocaleString()}</span>
+                            <span>₱${parseFloat(totalAmount).toLocaleString()}</span>
                         </div>
                         <div class="d-flex justify-content-between">
                             <span>Total Paid:</span>
@@ -416,55 +445,80 @@ function showBookingDetails(booking, payments, totalPaid, balance) {
                 </div>
             </div>
         `;
-    }
-    
-    // Special requests
-    if (booking.special_requests) {
+        
+        // Special requests
         detailsHtml += `
             <div class="row mb-3">
                 <div class="col-12">
                     <strong>Special Requests:</strong>
-                    <div class="mt-1 p-2 bg-light rounded">${booking.special_requests}</div>
+                    <div class="mt-1 p-2 bg-light rounded">${specialRequests}</div>
                 </div>
             </div>
         `;
-    }
-    
-    // Payment history
-    if (payments && payments.length > 0) {
-        detailsHtml += `
-            <div class="row mb-3">
-                <div class="col-12">
-                    <strong>Payment History:</strong>
-                    <div class="mt-2">
-        `;
         
-        payments.forEach(payment => {
-            const paymentBadge = getPaymentStatusBadge(payment.status);
+        // Payment history
+        if (payments && payments.length > 0) {
             detailsHtml += `
-                <div class="payment-item p-2 border-bottom">
-                    <div class="d-flex justify-content-between">
-                        <span>${payment.payment_reference}</span>
-                        <span>₱${parseFloat(payment.amount).toLocaleString()}</span>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <strong>Payment History:</strong>
+                        <div class="mt-2">
+            `;
+            
+            payments.forEach(payment => {
+                const paymentBadge = getPaymentStatusBadge(payment.status);
+                const paymentDate = payment.payment_date ? formatDateTime(payment.payment_date) : 'N/A';
+                const paymentMethod = payment.payment_method || 'N/A';
+                const paymentAmount = payment.amount || 0;
+                const paymentRef = payment.payment_reference || 'N/A';
+                
+                detailsHtml += `
+                    <div class="payment-item p-2 border-bottom">
+                        <div class="d-flex justify-content-between">
+                            <span>${paymentRef}</span>
+                            <span>₱${parseFloat(paymentAmount).toLocaleString()}</span>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted small">
+                            <span>${paymentDate} • ${paymentMethod}</span>
+                            <span>${paymentBadge}</span>
+                        </div>
                     </div>
-                    <div class="d-flex justify-content-between text-muted small">
-                        <span>${formatDateTime(payment.payment_date)} • ${payment.payment_method}</span>
-                        <span>${paymentBadge}</span>
+                `;
+            });
+            
+            detailsHtml += `
+                        </div>
                     </div>
                 </div>
             `;
-        });
-        
-        detailsHtml += `
+        } else {
+            detailsHtml += `
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <strong>Payment History:</strong>
+                        <div class="mt-2 text-muted">
+                            No payments recorded yet.
+                        </div>
                     </div>
                 </div>
+            `;
+        }
+        
+        // Show in modal
+        $('#bookingDetailsContent').html(detailsHtml);
+        $('#bookingDetailsModal').modal('show');
+        
+    } catch (error) {
+        console.error('Error displaying booking details:', error);
+        $('#bookingDetailsContent').html(`
+            <div class="alert alert-danger">
+                <h5>Error Displaying Details</h5>
+                <p>There was an error displaying the booking details. Please try again.</p>
+                <small class="text-muted">Technical details: ${error.message}</small>
             </div>
-        `;
+        `);
+        $('#bookingDetailsModal').modal('show');
     }
-    
-    // Show in modal
-    $('#bookingDetailsContent').html(detailsHtml);
-    $('#bookingDetailsModal').modal('show');
 }
 
 // Approve booking function

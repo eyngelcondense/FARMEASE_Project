@@ -150,39 +150,65 @@ class AdminBookingsController extends BaseController
         ]);
     }
 
-    /**
-     * Get booking details
-     */
     public function getBookingDetails($id)
     {
-        $booking = $this->bookingModel->getBookingWithDetails($id);
-        
-        if (!$booking) {
+        try {
+            log_message('debug', 'Starting getBookingDetails for ID: ' . $id);
+            
+            // Test direct query first
+            $db = db_connect();
+            $testQuery = $db->table('bookings')
+                        ->select('id, booking_reference')
+                        ->where('id', $id)
+                        ->get();
+            
+            if ($testQuery->getNumRows() === 0) {
+                log_message('debug', 'Booking not found with direct query');
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Booking not found'
+                ]);
+            }
+            
+            log_message('debug', 'Booking found with direct query');
+
+            // Now try the model method
+            log_message('debug', 'Calling getBookingWithDetails method');
+            $booking = $this->bookingModel->getBookingWithDetails($id);
+            
+            log_message('debug', 'getBookingWithDetails completed, result: ' . ($booking ? 'found' : 'not found'));
+
+            if (!$booking) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Booking not found'
+                ]);
+            }
+
+            // Get payments for this booking
+            $payments = $this->paymentModel->getPaymentsByBooking($id);
+            $totalPaid = $this->paymentModel->getTotalPaidAmount($id);
+
+            $data = [
+                'success' => true,
+                'booking' => $booking,
+                'payments' => $payments,
+                'total_paid' => $totalPaid,
+                'balance' => ($booking['total_amount'] ?? 0) - $totalPaid
+            ];
+
+            log_message('debug', 'Successfully returning booking details');
+            return $this->response->setJSON($data);
+
+        } catch (\Exception $e) {
+            log_message('error', 'Error in getBookingDetails: ' . $e->getMessage());
+            log_message('error', 'Stack trace: ' . $e->getTraceAsString());
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'Booking not found'
+                'message' => 'Error loading booking details: ' . $e->getMessage()
             ]);
         }
-
-        // Get payments for this booking
-        $payments = $this->paymentModel->getPaymentsByBooking($id);
-        $totalPaid = $this->paymentModel->getTotalPaidAmount($id);
-
-        $data = [
-            'success' => true,
-            'booking' => $booking,
-            'payments' => $payments,
-            'total_paid' => $totalPaid,
-            'balance' => $booking['total_amount'] - $totalPaid
-        ];
-
-        return $this->response->setJSON($data);
     }
-
-    /**
-     * Approve booking with conflicts (override)
-     */
-
     /**
      * Reject a booking
      */
@@ -282,7 +308,6 @@ class AdminBookingsController extends BaseController
             return [];
         }
     }
-
     /**
      * Alternative conflict detection using package venues - Fixed database connection
      */
