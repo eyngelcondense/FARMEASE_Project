@@ -107,8 +107,8 @@
         </div>
         <ul class="nav-menu">
             <li class="nav-item">
-                <a href="<?= site_url('manage-staff')?>" 
-                   class="nav-link <?= $current_page === 'staffs' ? 'active' : '' ?>">
+                <a href="<?= site_url('manage-staff')?>"
+                class="nav-link <?= ($current_page === 'staffs' || $current_page === 'manage_staff') ? 'active' : '' ?>">
                     <i class="fas fa-users"></i>
                     Manage Staffs
                 </a>

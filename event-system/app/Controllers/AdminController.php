@@ -43,6 +43,6 @@ class AdminController extends BaseController
 
     public function manageStaffView()
     {
-        return view('admin/manage-staff');
+        return view('admin/manage-staff', ['current_page' => 'manage_staff']);
     }
 }
