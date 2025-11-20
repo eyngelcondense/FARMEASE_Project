@@ -879,7 +879,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // Package selection function
-    window.selectPackage = function(element, packageId) {
+    function selectPackage(element, packageId) {
         // Remove selected class from all packages
         document.querySelectorAll('.package-card').forEach(card => {
             card.classList.remove('selected');
@@ -899,7 +899,7 @@ document.addEventListener("DOMContentLoaded", function() {
         
         // Update time slots if date and duration are already selected
         updateTimeSlots();
-    };
+    }
 
     // Update capacity info when package is selected
     function updateCapacityInfo(packageId) {
@@ -1089,11 +1089,11 @@ document.addEventListener("DOMContentLoaded", function() {
                         <div class="addon-quantity" id="quantity_${addonId}" style="display: none;">
                             <label class="form-label small mb-1">Quantity:</label>
                             <div class="input-group input-group-sm" style="width: 140px;">
-                                <button class="btn btn-outline-secondary" type="button" onclick="window.updateAddonQuantity(${addonId}, -1)">-</button>
+                                <button class="btn btn-outline-secondary" type="button" onclick="updateAddonQuantity(${addonId}, -1)">-</button>
                                 <input type="number" class="form-control text-center" 
                                     id="qty_${addonId}" name="addons[${addonId}]" 
-                                    value="1" min="1" max="100">
-                                <button class="btn btn-outline-secondary" type="button" onclick="window.updateAddonQuantity(${addonId}, 1)">+</button>
+                                    value="0" min="0" max="100">
+                                <button class="btn btn-outline-secondary" type="button" onclick="updateAddonQuantity(${addonId}, 1)">+</button>
                             </div>
                         </div>
                     </div>
@@ -1106,7 +1106,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const checkbox = document.getElementById(`addon_${addon.id}`);
             if (checkbox) {
                 checkbox.addEventListener('change', function() {
-                    window.toggleAddon(addon.id, addon.name, parseFloat(addon.price));
+                    toggleAddon(addon.id, addon.name, parseFloat(addon.price));
                 });
             }
             
@@ -1114,7 +1114,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const quantityInput = document.getElementById(`qty_${addon.id}`);
             if (quantityInput) {
                 quantityInput.addEventListener('change', function() {
-                    window.updateAddonTotal(addon.id);
+                    updateAddonTotal(addon.id);
                 });
             }
         });
@@ -1127,59 +1127,127 @@ document.addEventListener("DOMContentLoaded", function() {
             <div class="col-12 text-center text-danger">
                 <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
                 <p>Failed to load additional services.</p>
-                <button class="btn btn-sm btn-outline-primary" onclick="window.loadAddons()">
+                <button class="btn btn-sm btn-outline-primary" onclick="loadAddons()">
                     <i class="fas fa-redo"></i> Try Again
                 </button>
             </div>
         `;
     }
 
-    // Global functions for addons
-    window.toggleAddon = function(addonId, addonName, addonPrice) {
+    // Addon functions
+    function toggleAddon(addonId, addonName, addonPrice) {
         const checkbox = document.getElementById(`addon_${addonId}`);
         const quantityDiv = document.getElementById(`quantity_${addonId}`);
+        const quantityInput = document.getElementById(`qty_${addonId}`);
         
-        if (checkbox && checkbox.checked) {
+        if (checkbox.checked) {
             quantityDiv.style.display = 'block';
             selectedAddons[addonId] = {
                 name: addonName,
                 price: addonPrice,
                 quantity: 1
             };
-        } else if (quantityDiv) {
+            quantityInput.value = 1;
+            console.log('Addon selected:', addonId, addonName);
+        } else {
             quantityDiv.style.display = 'none';
             delete selectedAddons[addonId];
-            const quantityInput = document.getElementById(`qty_${addonId}`);
-            if (quantityInput) quantityInput.value = 1;
+            quantityInput.value = 0;
+            console.log('Addon removed:', addonId);
         }
         
         updateAddonsSummary();
-    };
+    }
 
-    window.updateAddonQuantity = function(addonId, change) {
+    function updateAddonQuantity(addonId, change) {
         const input = document.getElementById(`qty_${addonId}`);
-        if (!input) return;
-        
         let newQuantity = parseInt(input.value) + change;
-        if (newQuantity < 1) newQuantity = 1;
+        
+        if (newQuantity < 0) newQuantity = 0;
         if (newQuantity > 100) newQuantity = 100;
         
         input.value = newQuantity;
-        window.updateAddonTotal(addonId);
-    };
+        
+        if (newQuantity === 0) {
+            // If quantity becomes 0, uncheck the checkbox
+            const checkbox = document.getElementById(`addon_${addonId}`);
+            if (checkbox) {
+                checkbox.checked = false;
+                const quantityDiv = document.getElementById(`quantity_${addonId}`);
+                if (quantityDiv) {
+                    quantityDiv.style.display = 'none';
+                }
+                delete selectedAddons[addonId];
+            }
+        } else if (selectedAddons[addonId]) {
+            selectedAddons[addonId].quantity = newQuantity;
+        } else {
+            // If adding quantity but addon not selected yet, select it
+            const checkbox = document.getElementById(`addon_${addonId}`);
+            if (checkbox && !checkbox.checked) {
+                checkbox.checked = true;
+                const quantityDiv = document.getElementById(`quantity_${addonId}`);
+                if (quantityDiv) {
+                    quantityDiv.style.display = 'block';
+                }
+                // We need the addon name and price - we'll get it from the displayed data
+                const addonName = checkbox.parentElement.querySelector('strong').textContent;
+                const addonPriceText = checkbox.parentElement.querySelector('.text-success').textContent;
+                const addonPrice = parseFloat(addonPriceText.replace('₱', ''));
+                
+                selectedAddons[addonId] = {
+                    name: addonName,
+                    price: addonPrice,
+                    quantity: newQuantity
+                };
+            }
+        }
+        
+        updateAddonsSummary();
+    }
 
-    window.updateAddonTotal = function(addonId) {
+    function updateAddonTotal(addonId) {
         const input = document.getElementById(`qty_${addonId}`);
         if (!input) return;
         
-        const quantity = parseInt(input.value) || 1;
-        if (selectedAddons[addonId]) {
+        const quantity = parseInt(input.value) || 0;
+        
+        if (quantity === 0) {
+            // If quantity is 0, uncheck and remove
+            const checkbox = document.getElementById(`addon_${addonId}`);
+            if (checkbox) {
+                checkbox.checked = false;
+                const quantityDiv = document.getElementById(`quantity_${addonId}`);
+                if (quantityDiv) {
+                    quantityDiv.style.display = 'none';
+                }
+            }
+            delete selectedAddons[addonId];
+        } else if (selectedAddons[addonId]) {
             selectedAddons[addonId].quantity = quantity;
-            updateAddonsSummary();
+        } else {
+            // If setting quantity but addon not selected, select it
+            const checkbox = document.getElementById(`addon_${addonId}`);
+            if (checkbox && !checkbox.checked) {
+                checkbox.checked = true;
+                const quantityDiv = document.getElementById(`quantity_${addonId}`);
+                if (quantityDiv) {
+                    quantityDiv.style.display = 'block';
+                }
+                const addonName = checkbox.parentElement.querySelector('strong').textContent;
+                const addonPriceText = checkbox.parentElement.querySelector('.text-success').textContent;
+                const addonPrice = parseFloat(addonPriceText.replace('₱', ''));
+                
+                selectedAddons[addonId] = {
+                    name: addonName,
+                    price: addonPrice,
+                    quantity: quantity
+                };
+            }
         }
-    };
-
-    window.loadAddons = loadAddons;
+        
+        updateAddonsSummary();
+    }
 
     function updateAddonsSummary() {
         if (!elements.addonsSummary || !elements.selectedAddonsCount || !elements.addonsTotal) return;
@@ -1189,7 +1257,7 @@ document.addEventListener("DOMContentLoaded", function() {
             return total + (addon.price * addon.quantity);
         }, 0);
         
-        if (selectedCount > 0) {
+        if (selectedCount > 0 && addonsTotalAmount > 0) {
             elements.addonsSummary.style.display = 'block';
             elements.selectedAddonsCount.textContent = selectedCount;
             elements.addonsTotal.textContent = addonsTotalAmount.toFixed(2);
@@ -1198,14 +1266,39 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
+    // Clean up addons before form submission
+    function cleanupAddonsBeforeSubmit() {
+        // Remove all existing addon inputs first
+        const existingAddonInputs = document.querySelectorAll('input[name^="addons["]');
+        existingAddonInputs.forEach(input => {
+            input.remove();
+        });
+        
+        // Only add inputs for selected addons with quantity > 0
+        Object.keys(selectedAddons).forEach(addonId => {
+            const addon = selectedAddons[addonId];
+            if (addon.quantity > 0) {
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = `addons[${addonId}]`;
+                hiddenInput.value = addon.quantity;
+                if (elements.bookingForm) {
+                    elements.bookingForm.appendChild(hiddenInput);
+                }
+            }
+        });
+        
+        console.log('Addons being submitted:', selectedAddons);
+    }
+
     // Carousel scrolling function
-    window.scrollCarousel = function(direction) {
+    function scrollCarousel(direction) {
         const carousel = document.getElementById('package-carousel');
         if (carousel) {
             const scrollAmount = 300;
             carousel.scrollLeft += direction * scrollAmount;
         }
-    };
+    }
 
     // Event listeners
     if (elements.durationHours) {
@@ -1248,6 +1341,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 alert(`Number of guests (${guestCount}) exceeds the maximum capacity of ${currentPackageCapacity} for the selected package. Please reduce the number of guests or select a different package.`);
                 return;
             }
+            
+            // Clean up addons before submission
+            cleanupAddonsBeforeSubmit();
         });
     }
 
@@ -1274,10 +1370,18 @@ document.addEventListener("DOMContentLoaded", function() {
         <?php if (old('package_id')): ?>
             const oldPackageCard = document.querySelector(`.package-card[data-package-id="<?= old('package_id') ?>"]`);
             if (oldPackageCard) {
-                window.selectPackage(oldPackageCard, <?= old('package_id') ?>);
+                selectPackage(oldPackageCard, <?= old('package_id') ?>);
             }
         <?php endif; ?>
     }
+
+    // Expose functions to global scope
+    window.selectPackage = selectPackage;
+    window.scrollCarousel = scrollCarousel;
+    window.loadAddons = loadAddons;
+    window.toggleAddon = toggleAddon;
+    window.updateAddonQuantity = updateAddonQuantity;
+    window.updateAddonTotal = updateAddonTotal;
 
     // Start the system
     initializeBookingSystem();

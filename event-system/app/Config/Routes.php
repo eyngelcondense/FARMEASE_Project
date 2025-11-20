@@ -93,7 +93,7 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->get('venues/delete/(:num)', 'VenueController::delete/$1');
     $routes->post('venues/upload-image', 'VenueController::uploadImage');
 
-    $routes->get('packages', 'PackageController::index');
+    $routes->get('packages-view', 'PackageController::index');
     $routes->get('packages/create', 'PackageController::create');
     $routes->post('packages/store', 'PackageController::store');
     $routes->get('packages/edit/(:num)', 'PackageController::edit/$1');

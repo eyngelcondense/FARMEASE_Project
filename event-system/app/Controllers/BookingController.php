@@ -16,6 +16,7 @@ class BookingController extends BaseController
     protected $venueModel;
     protected $addonModel;
     protected $bookingAddonModel;
+    protected $paymentModel;
 
     public function __construct()
     {
@@ -24,15 +25,43 @@ class BookingController extends BaseController
         $this->venueModel = new VenueModel();
         $this->addonModel = new AddonModel();
         $this->bookingAddonModel = new BookingAddonModel();
+        $this->paymentModel = new PaymentModel();
         
     }
 
     public function index()
     {
+        // Get session instance
+        $session = session();
+        
+        // Get user data from session
+        $userData = $session->get('user');
+        $userId = $userData['id'] ?? null;
+        
+        log_message('debug', 'User session data: ' . print_r($userData, true));
+        log_message('debug', 'User ID from session: ' . ($userId ?? 'NULL'));
+
+        if (!$userId) {
+            return redirect()->to('/login')->with('error', 'Please login to make a booking.')->with('redirect', current_url());
+        }
+
+        // Get client ID using user_id
+        $clientModel = new \App\Models\ClientModel();
+        $client = $clientModel->where('user_id', $userId)->first();
+        
+        if (!$client) {
+            log_message('error', 'No client found for user_id: ' . $userId);
+            return redirect()->to('/login')->with('error', 'Client profile not found. Please contact support.');
+        }
+
+        $clientId = $client['id']; // This is the actual client_id for bookings
+        
+        log_message('debug', 'Found client - Client ID: ' . $clientId . ' for User ID: ' . $userId);
+
         $data = [
             'title' => 'Book Now | San Isidro Labrador Resort and Leisure Farm',
-            'user' => session()->get('user'),
-            'client' => session()->get('client'),
+            'user' => $userData,
+            'client' => $client, // Pass full client data to view
             'packages' => $this->packageModel->getActivePackagesWithVenues(),
             'addons' => $this->addonModel->getActiveAddons()
         ];
@@ -40,9 +69,33 @@ class BookingController extends BaseController
         return view('client/bookings', $data);
     }
 
-
     public function submit()
     {
+        // Get session instance
+        $session = session();
+        
+        // Get user data from session
+        $userData = $session->get('user');
+        $userId = $userData['id'] ?? null;
+        
+        log_message('debug', 'Submit - User ID: ' . ($userId ?? 'NULL'));
+
+        if (!$userId) {
+            return redirect()->to('/login')->with('error', 'Please login to make a booking.');
+        }
+
+        // Get client ID using user_id
+        $clientModel = new \App\Models\ClientModel();
+        $client = $clientModel->where('user_id', $userId)->first();
+        
+        if (!$client) {
+            log_message('error', 'No client found for user_id: ' . $userId);
+            return redirect()->to('/login')->with('error', 'Client profile not found. Please contact support.');
+        }
+
+        $clientId = $client['id'];
+        log_message('debug', 'Submit - Client ID: ' . $clientId . ' for User ID: ' . $userId);
+
         $validation = \Config\Services::validation();
         
         $rules = [
@@ -59,171 +112,188 @@ class BookingController extends BaseController
             return redirect()->back()->withInput()->with('errors', $validation->getErrors());
         }
 
-        // Get package details for capacity validation
-        $packageId = $this->request->getPost('package_id');
-        $totalGuests = $this->request->getPost('total_guests');
-        
-        $package = $this->packageModel->find($packageId);
-        if (!$package) {
-            return redirect()->back()->withInput()->with('error', 'Invalid package selected.');
-        }
+        // Get database instance
+        $db = \Config\Database::connect();
+        $db->transStart();
 
-        // Validate guest count against package capacity
-        if ($totalGuests > $package['max_capacity']) {
-            return redirect()->back()->withInput()->with('error', 
-                "Number of guests ({$totalGuests}) exceeds the maximum capacity ({$package['max_capacity']}) for this package.");
-        }
-
-        // Calculate end time and total hours
-        $startTime = $this->request->getPost('start_time');
-        $durationHours = $this->request->getPost('duration_hours');
-        $endTime = date('H:i', strtotime("$startTime +$durationHours hours"));
-        $totalHours = $durationHours;
-
-        // Get package with venues
-        $package = $this->packageModel->getPackageWithVenues($packageId);
-        
-        if (!$package) {
-            return redirect()->back()->withInput()->with('error', 'Invalid package selected.');
-        }
-
-        // Get primary venue
-        $primaryVenue = null;
-        foreach ($package['venues'] as $venue) {
-            if (isset($venue['is_primary']) && $venue['is_primary']) {
-                $primaryVenue = $venue;
-                break;
-            }
-        }
-        if (!$primaryVenue && !empty($package['venues'])) {
-            $primaryVenue = $package['venues'][0];
-        }
-
-        if (!$primaryVenue) {
-            return redirect()->back()->withInput()->with('error', 'No venues available for this package.');
-        }
-
-        $eventDate = $this->request->getPost('event_date');
-
-        // Check ALL venues in the package for availability with 1-hour buffer
-        foreach ($package['venues'] as $venue) {
-            $bufferStart = date('H:i', strtotime("$startTime -1 hour"));
-            $bufferEnd = date('H:i', strtotime("$endTime +1 hour"));
-
-            $isAvailable = $this->bookingModel->isTimeSlotAvailable(
-                $venue['id'], 
-                $eventDate, 
-                $bufferStart, 
-                $bufferEnd
-            );
-
-            if (!$isAvailable) {
-                return redirect()->back()->withInput()->with('error', 
-                    "Sorry, the venue '{$venue['name']}' is not available for the selected time slot. Please choose a different time or date.");
-            }
-        }
-
-        // Calculate base pricing
-        $baseAmount = $package['base_price'];
-        $overtimeAmount = 0;
-        
-        // Calculate overtime if applicable
-        if ($totalHours > $package['base_hours']) {
-            $overtimeHours = $totalHours - $package['base_hours'];
-            $overtimeAmount = $overtimeHours * $package['overtime_rate'];
-        }
-
-        // Process addons
-        $addonsAmount = 0;
-        $selectedAddons = $this->request->getPost('addons') ?: [];
-        $addonsData = [];
-
-        if (!empty($selectedAddons)) {
-            $activeAddons = $this->addonModel->getActiveAddons();
-            $activeAddonIds = array_column($activeAddons, 'id');
+        try {
+            // Get package details for capacity validation
+            $packageId = $this->request->getPost('package_id');
+            $totalGuests = $this->request->getPost('total_guests');
             
-            foreach ($selectedAddons as $addonId => $quantity) {
-                $quantity = (int)$quantity;
-                if ($quantity > 0 && in_array($addonId, $activeAddonIds)) {
-                    $addon = array_filter($activeAddons, function($a) use ($addonId) {
-                        return $a['id'] == $addonId;
-                    });
-                    $addon = !empty($addon) ? array_values($addon)[0] : null;
-                    
-                    if ($addon) {
-                        $addonTotal = $addon['price'] * $quantity;
-                        $addonsAmount += $addonTotal;
+            $package = $this->packageModel->find($packageId);
+            if (!$package) {
+                throw new \Exception('Invalid package selected.');
+            }
+
+            // Validate guest count against package capacity
+            if ($totalGuests > $package['max_capacity']) {
+                throw new \Exception("Number of guests ({$totalGuests}) exceeds the maximum capacity ({$package['max_capacity']}) for this package.");
+            }
+
+            // Calculate end time and total hours
+            $startTime = $this->request->getPost('start_time');
+            $durationHours = $this->request->getPost('duration_hours');
+            $endTime = date('H:i', strtotime("$startTime +$durationHours hours"));
+            $totalHours = $durationHours;
+
+            // Get package with venues
+            $package = $this->packageModel->getPackageWithVenues($packageId);
+            
+            if (!$package) {
+                throw new \Exception('Invalid package selected.');
+            }
+
+            // Get primary venue
+            $primaryVenue = null;
+            foreach ($package['venues'] as $venue) {
+                if (isset($venue['is_primary']) && $venue['is_primary']) {
+                    $primaryVenue = $venue;
+                    break;
+                }
+            }
+            if (!$primaryVenue && !empty($package['venues'])) {
+                $primaryVenue = $package['venues'][0];
+            }
+
+            if (!$primaryVenue) {
+                throw new \Exception('No venues available for this package.');
+            }
+
+            $eventDate = $this->request->getPost('event_date');
+
+            // Check ALL venues in the package for availability with 1-hour buffer
+            foreach ($package['venues'] as $venue) {
+                $bufferStart = date('H:i', strtotime("$startTime -1 hour"));
+                $bufferEnd = date('H:i', strtotime("$endTime +1 hour"));
+
+                $isAvailable = $this->bookingModel->isTimeSlotAvailable(
+                    $venue['id'], 
+                    $eventDate, 
+                    $bufferStart, 
+                    $bufferEnd
+                );
+
+                if (!$isAvailable) {
+                    throw new \Exception("Sorry, the venue '{$venue['name']}' is not available for the selected time slot. Please choose a different time or date.");
+                }
+            }
+
+            // Calculate base pricing
+            $baseAmount = $package['base_price'];
+            $overtimeAmount = 0;
+            
+            // Calculate overtime if applicable
+            if ($totalHours > $package['base_hours']) {
+                $overtimeHours = $totalHours - $package['base_hours'];
+                $overtimeAmount = $overtimeHours * $package['overtime_rate'];
+            }
+
+            // Process addons
+            // In the submit method, replace the addons processing section with this:
+
+            // Process addons - only include if quantity > 0
+            $addonsAmount = 0;
+            $selectedAddons = $this->request->getPost('addons') ?: [];
+            $addonsData = [];
+
+            // Filter out addons with quantity 0 or empty
+            $selectedAddons = array_filter($selectedAddons, function($quantity) {
+                return !empty($quantity) && $quantity > 0;
+            });
+
+            if (!empty($selectedAddons)) {
+                $activeAddons = $this->addonModel->getActiveAddons();
+                $activeAddonIds = array_column($activeAddons, 'id');
+                
+                foreach ($selectedAddons as $addonId => $quantity) {
+                    $quantity = (int)$quantity;
+                    if ($quantity > 0 && in_array($addonId, $activeAddonIds)) {
+                        $addon = array_filter($activeAddons, function($a) use ($addonId) {
+                            return $a['id'] == $addonId;
+                        });
+                        $addon = !empty($addon) ? array_values($addon)[0] : null;
                         
-                        $addonsData[] = [
-                            'id' => $addonId,
-                            'quantity' => $quantity,
-                            'price' => $addon['price'],
-                            'total' => $addonTotal
-                        ];
+                        if ($addon) {
+                            $addonTotal = $addon['price'] * $quantity;
+                            $addonsAmount += $addonTotal;
+                            
+                            $addonsData[] = [
+                                'id' => $addonId,
+                                'quantity' => $quantity,
+                                'price' => $addon['price'],
+                                'total' => $addonTotal
+                            ];
+                        }
                     }
                 }
             }
-        }
 
-        $totalAmount = $baseAmount + $overtimeAmount + $addonsAmount;
+            log_message('debug', 'Addons processed - Count: ' . count($addonsData) . ', Amount: ' . $addonsAmount);
 
-        // Prepare booking data
-        $bookingData = [
-            'client_id' => session()->get('client')['id'] ?? null,
-            'booking_reference' => $this->bookingModel->generateBookingReference(),
-            'event_type' => $this->request->getPost('event_type'),
-            'event_date' => $eventDate,
-            'start_time' => $startTime,
-            'end_time' => $endTime,
-            'total_hours' => $totalHours,
-            'total_guests' => $this->request->getPost('total_guests'),
-            'package_id' => $packageId,
-            'venue_id' => $primaryVenue['id'],
-            'base_amount' => $baseAmount,
-            'overtime_amount' => $overtimeAmount,
-            'addons_amount' => $addonsAmount,
-            'total_amount' => $totalAmount,
-            'special_requests' => $this->request->getPost('special_requests'),
-            'status' => 'pending',
-            'payment_status' => 'pending'
-        ];
+            $totalAmount = $baseAmount + $overtimeAmount + $addonsAmount;
 
-        // Start transaction
-        $this->db->transStart();
+            // Prepare booking data with the actual client_id from clients table
+            $bookingData = [
+                'client_id' => $clientId,
+                'booking_reference' => $this->bookingModel->generateBookingReference(),
+                'event_type' => $this->request->getPost('event_type'),
+                'event_date' => $eventDate,
+                'start_time' => $startTime,
+                'end_time' => $endTime,
+                'total_hours' => (int)$totalHours,
+                'total_guests' => (int)$totalGuests,
+                'package_id' => (int)$packageId,
+                'venue_id' => (int)$primaryVenue['id'],
+                'base_amount' => (float)$baseAmount,
+                'overtime_amount' => (float)$overtimeAmount,
+                'addons_amount' => (float)$addonsAmount,
+                'total_amount' => (float)$totalAmount,
+                'special_requests' => $this->request->getPost('special_requests'),
+                'status' => 'pending',
+                'payment_status' => 'pending'
+            ];
 
-        // Save booking
-        $bookingId = $this->bookingModel->insert($bookingData);
-
-        if (!$bookingId) {
-            $this->db->transRollback();
-            return redirect()->back()->withInput()->with('error', 'Failed to submit booking request. Please try again.');
-        }
-
-        // Save addons if any
-        if (!empty($addonsData)) {
-            $formattedAddons = array_map(function($addon) {
-                return [
-                    'id' => $addon['id'],
-                    'quantity' => $addon['quantity'],
-                    'price' => $addon['price']
-                ];
-            }, $addonsData);
+            log_message('debug', 'Booking data with client_id: ' . $clientId);
             
-            $this->bookingAddonModel->saveBookingAddons($bookingId, $formattedAddons);
+            // Save booking
+            $bookingId = $this->bookingModel->insert($bookingData);
+
+            if (!$bookingId) {
+                $errors = $this->bookingModel->errors();
+                log_message('error', 'Booking insert errors: ' . print_r($errors, true));
+                throw new \Exception('Failed to save booking. Please check your input data.');
+            }
+
+            log_message('debug', 'Booking saved successfully with ID: ' . $bookingId);
+
+            // Save addons if any
+            if (!empty($addonsData)) {
+                $formattedAddons = array_map(function($addon) {
+                    return [
+                        'id' => $addon['id'],
+                        'quantity' => $addon['quantity'],
+                        'price' => $addon['price']
+                    ];
+                }, $addonsData);
+                
+                $this->bookingAddonModel->saveBookingAddons($bookingId, $formattedAddons);
+            }
+
+            $db->transCommit();
+
+            $successMessage = 'Booking request submitted successfully! Your reference number is: ' . $bookingData['booking_reference'];
+            if ($addonsAmount > 0) {
+                $successMessage .= ' (Includes ₱' . number_format($addonsAmount, 2) . ' in addons)';
+            }
+
+            return redirect()->back()->with('message', $successMessage);
+
+        } catch (\Exception $e) {
+            $db->transRollback();
+            log_message('error', 'Booking submission error: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
-
-        $this->db->transComplete();
-
-        if ($this->db->transStatus() === FALSE) {
-            return redirect()->back()->withInput()->with('error', 'Failed to submit booking request. Please try again.');
-        }
-
-        $successMessage = 'Booking request submitted successfully! Your reference number is: ' . $bookingData['booking_reference'];
-        if ($addonsAmount > 0) {
-            $successMessage .= ' (Includes ₱' . number_format($addonsAmount, 2) . ' in addons)';
-        }
-
-        return redirect()->back()->with('message', $successMessage);
     }
 
     public function getAddons()
@@ -387,62 +457,88 @@ class BookingController extends BaseController
 
     // Add to your existing Booking controller
     public function history()
-{
-    $clientId = session()->get('client')['id'] ?? null;
+    {
+        // Get user data from session
+        $userData = session()->get('user');
+        $userId = $userData['id'] ?? null;
+        
+        if (!$userId) {
+            return redirect()->to('/login')->with('error', 'Please login to view your booking history.');
+        }
 
-    // if (!$clientId) {
-    //     return redirect()->to('/login')->with('error', 'Please login to view your booking history.');
-    // }
+        // Get client ID using user_id
+        $clientModel = new \App\Models\ClientModel();
+        $client = $clientModel->where('user_id', $userId)->first();
+        
+        if (!$client) {
+            return redirect()->to('/login')->with('error', 'Client profile not found. Please contact support.');
+        }
 
-    $bookingModel = new BookingModel();
-    $paymentModel = new PaymentModel();
+        $clientId = $client['id'];
 
-    $bookings = $bookingModel->getBookingsWithDetails(['bookings.client_id' => $clientId]);
-
-    $bookingIds = array_column($bookings, 'id');
-
-    if (!empty($bookingIds)) {
-        $payments = $paymentModel->whereIn('booking_id', $bookingIds)->findAll();
-    } else {
+        // Get all bookings for this client (using client.id)
+        $bookings = $this->bookingModel->getBookingsWithDetails(['bookings.client_id' => $clientId]);
+        
+        // Get all payments for these bookings
+        $bookingIds = array_column($bookings, 'id');
         $payments = [];
+        if (!empty($bookingIds)) {
+            $payments = $this->paymentModel->whereIn('booking_id', $bookingIds)->findAll();
+        }
+
+        $data = [
+            'title' => 'Booking History | San Isidro Labrador Resort and Leisure Farm',
+            'user' => $userData,
+            'client' => $client,
+            'bookings' => $bookings,
+            'payments' => $payments
+        ];
+
+        return view('client/booking_history', $data);
     }
-
-    $data = [
-        'title' => 'Booking History | San Isidro Labrador Resort and Leisure Farm',
-        'user' => session()->get('user'),
-        'client' => session()->get('client'),
-        'bookings' => $bookings,
-        'payments' => $payments
-    ];
-
-    return view('client/booking_history', $data);
-}
-
 
     public function bookingDetails($bookingId)
     {
-        $clientId = session()->get('client')['id'] ?? null;
+        // Get user data from session
+        $userData = session()->get('user');
+        $userId = $userData['id'] ?? null;
         
-        if (!$clientId) {
+        if (!$userId) {
             return $this->response->setJSON(['error' => 'Please login to view booking details.']);
         }
 
-        $bookingModel = new BookingModel();
-        $paymentModel = new PaymentModel();
+        // Get client ID using user_id
+        $clientModel = new \App\Models\ClientModel();
+        $client = $clientModel->where('user_id', $userId)->first();
+        
+        if (!$client) {
+            return $this->response->setJSON(['error' => 'Client profile not found.']);
+        }
 
-        $booking = $bookingModel->getBookingsWithDetails([
+        $clientId = $client['id'];
+
+        // Get booking with details - ensure it belongs to this client
+        $booking = $this->bookingModel->getBookingsWithDetails([
             'bookings.id' => $bookingId,
-            'bookings.client_id' => $clientId
+            'bookings.client_id' => $clientId 
         ]);
 
-        if (!$booking) {
-            return $this->response->setJSON(['error' => 'Booking not found.']);
+        if (!$booking || empty($booking)) {
+            return $this->response->setJSON(['error' => 'Booking not found or access denied.']);
         }
 
         $bookingDetails = $booking[0];
-        $bookingDetails['payments'] = $paymentModel->getPaymentsByBooking($bookingId);
-        $bookingDetails['total_paid'] = $paymentModel->getTotalPaidAmount($bookingId);
+
+        // Get payments for this booking
+        $bookingDetails['payments'] = $this->paymentModel->getPaymentsByBooking($bookingId);
+        $bookingDetails['total_paid'] = $this->paymentModel->getTotalPaidAmount($bookingId);
         $bookingDetails['balance'] = $bookingDetails['total_amount'] - $bookingDetails['total_paid'];
+        
+        // Get addons for this booking
+        $bookingDetails['addons'] = $this->bookingAddonModel->getAddonsByBooking($bookingId);
+
+        // Debug log to see what's being returned
+        log_message('debug', 'Booking details returned: ' . print_r($bookingDetails, true));
 
         return $this->response->setJSON($bookingDetails);
     }
