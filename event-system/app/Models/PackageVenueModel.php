@@ -74,4 +74,13 @@ class PackageVenueModel extends Model
                     ->set('is_primary', 1)
                     ->update();
     }
+
+    public function getPackageVenues($packageId)
+    {
+        return $this->db->table('package_venues')
+                        ->select('venue_id')
+                        ->where('package_id', $packageId)
+                        ->get()
+                        ->getResultArray();
+    }
 }

@@ -51,14 +51,12 @@ class PaymentModel extends Model
     }
 
     /**
-     * Get payments by booking
+     * Get payments by booking - FIXED VERSION
      */
     public function getPaymentsByBooking($bookingId)
     {
-        return $this->select('payments.*, a.fullname as verified_by_name')
-                    ->join('admins a', 'payments.verified_by = a.id', 'left')
-                    ->where('payments.booking_id', $bookingId)
-                    ->orderBy('payments.created_at', 'DESC')
+        return $this->where('booking_id', $bookingId)
+                    ->orderBy('created_at', 'DESC')
                     ->findAll();
     }
 

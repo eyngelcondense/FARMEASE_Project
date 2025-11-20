@@ -70,26 +70,6 @@ class BookingModel extends Model
     }
 
     /**
-     * Get bookings with client information (UPDATED)
-     */
-    public function getBookingsWithClient($status = null)
-    {
-        $builder = $this->db->table('bookings b');
-        $builder->select('b.*, c.fullname, c.email, c.phone, p.name as package_name, v.name as venue_name');
-        $builder->join('clients c', 'c.id = b.client_id');
-        $builder->join('packages p', 'p.id = b.package_id', 'left');    // NEW
-        $builder->join('venues v', 'v.id = b.venue_id', 'left');        // NEW
-        
-        if ($status) {
-            $builder->where('b.status', $status);
-        }
-        
-        $builder->orderBy('b.created_at', 'DESC');
-        
-        return $builder->get()->getResultArray();
-    }
-
-    /**
      * Get bookings by client (NEW)
      */
     public function getBookingsByClient($clientId)
@@ -163,21 +143,53 @@ class BookingModel extends Model
         return $builder->findAll();
     }
 
+    public function getBookingsWithClient($status = null)
+    {
+        $db = \Config\Database::connect();
+        
+        $sql = "SELECT 
+                    b.*, 
+                    c.fullname, 
+                    c.email, 
+                    c.phone, 
+                    p.name as package_name, 
+                    v.name as venue_name
+                FROM bookings b
+                LEFT JOIN clients c ON b.client_id = c.id
+                LEFT JOIN packages p ON b.package_id = p.id
+                LEFT JOIN venues v ON b.venue_id = v.id";
+        
+        if ($status) {
+            $sql .= " WHERE b.status = ?";
+            return $db->query($sql, [$status])->getResultArray();
+        }
+        
+        $sql .= " ORDER BY b.created_at DESC";
+        return $db->query($sql)->getResultArray();
+    }
+
     /**
-     * Get booking with full details (NEW)
+     * Get booking with full details - FIXED VERSION
      */
     public function getBookingWithDetails($bookingId)
     {
-        $builder = $this->db->table('bookings b');
-        $builder->select('b.*, c.fullname as client_name, c.email as client_email, c.phone as client_phone, 
-                         p.name as package_name, p.base_price as package_base_price,
-                         v.name as venue_name, v.capacity as venue_capacity');
-        $builder->join('clients c', 'b.client_id = c.id');
-        $builder->join('packages p', 'b.package_id = p.id', 'left');
-        $builder->join('venues v', 'b.venue_id = v.id', 'left');
-        $builder->where('b.id', $bookingId);
+        // Use the most basic query builder approach
+        $db = \Config\Database::connect();
         
-        return $builder->get()->getRowArray();
+        $sql = "SELECT 
+                    b.*, 
+                    c.fullname as client_name, 
+                    c.email as client_email, 
+                    c.phone as client_phone,
+                    p.name as package_name, 
+                    v.name as venue_name
+                FROM bookings b
+                LEFT JOIN clients c ON b.client_id = c.id
+                LEFT JOIN packages p ON b.package_id = p.id
+                LEFT JOIN venues v ON b.venue_id = v.id
+                WHERE b.id = ?";
+        
+        return $db->query($sql, [$bookingId])->getRowArray();
     }
 
     /**
