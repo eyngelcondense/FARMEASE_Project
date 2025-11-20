@@ -484,33 +484,17 @@
             
             <!-- Success/Error Messages -->
             <?php if (session()->has('message')): ?>
-                <div class="alert alert-success alert-dismissible fade show">
-                    <i class="bi bi-check-circle-fill"></i>
-                    <?= session('message') ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+                <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: "<?= esc(session('message')) ?>",
+                    timer: 2500,
+                    showConfirmButton: false,
+                });
+                </script>
             <?php endif; ?>
-
-            <?php if (session()->has('error')): ?>
-                <div class="alert alert-danger alert-dismissible fade show">
-                    <i class="bi bi-exclamation-circle-fill"></i>
-                    <?= session('error') ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            <?php endif; ?>
-
-            <?php if (session()->has('errors')): ?>
-                <div class="alert alert-danger alert-dismissible fade show">
-                    <i class="bi bi-exclamation-circle-fill"></i>
-                    <strong>Please fix the following errors:</strong>
-                    <ul class="mb-0 mt-2">
-                        <?php foreach (session('errors') as $error): ?>
-                            <li><?= $error ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            <?php endif; ?>
+                
 
             <!-- BOOKING CALENDAR -->
             <div class="calendar-container">

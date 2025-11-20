@@ -1,28 +1,4 @@
 
-<?php if(session()->getFlashdata('message') || session()->getFlashdata('success') || session()->getFlashdata('error')): ?>
-  <div class="container mt-2">
-    <?php if(session()->getFlashdata('message')): ?>
-      <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <?= session()->getFlashdata('message') ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    <?php endif; ?>
-    
-    <?php if(session()->getFlashdata('success')): ?>
-      <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <?= session()->getFlashdata('success') ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    <?php endif; ?>
-    
-    <?php if(session()->getFlashdata('error')): ?>
-      <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <?= session()->getFlashdata('error') ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    <?php endif; ?>
-  </div>
-<?php endif; ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -38,6 +14,7 @@
 
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
  
 <style>
      /* Header */
