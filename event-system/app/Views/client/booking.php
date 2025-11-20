@@ -343,9 +343,35 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label">Type of Event *</label>
-                            <input type="text" class="form-control" name="event_type" 
-                                value="<?= old('event_type') ?>"
-                                placeholder="e.g., Birthday, Wedding, Corporate Event" required>
+                            <select class="form-select" name="event_type" id="event_type" required>
+                                <option disabled selected>Select Event Type</option>
+                                <option>Social Event</option>
+                                <option>Family Event</option>
+                                <option>Milestone Celebration</option>
+                                <option>Baby & Kids Event</option>
+                                <option>Reunion / Get-Together</option>
+                                <option>Wedding Ceremony</option>
+                                <option>Wedding Reception</option>
+                                <option>Pre-Wedding Event</option>
+                                <option>Corporate Meeting</option>
+                                <option>Team Building</option>
+                                <option>Seminar / Workshop</option>
+                                <option>Training / Leadership Session</option>
+                                <option>Photoshoot Session</option>
+                                <option>Prenup / Creative Shoot</option>
+                                <option>Commercial / Video Shoot</option>
+                                <option>Picnic / Leisure Gathering</option>
+                                <option>Playground Activity</option>
+                                <option value="other">Other</option>
+                            </select>
+
+                            <input type="text" 
+                                  name="event_other"
+                                  id="event_other"
+                                  class="form-control mt-2"
+                                  placeholder="Please specify your event"
+                                  style="display:none;">
+
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Event Date *</label>
@@ -584,5 +610,21 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 </script>
+
+<script>
+document.getElementById("event_type").addEventListener("change", function() {
+    const txt = document.getElementById("event_other");
+
+    if (this.value === "other") {
+        txt.style.display = "block";
+        txt.required = true; 
+    } else {
+        txt.style.display = "none";
+        txt.required = false;
+        txt.value = "";
+    }
+});
+</script>
+
 
 <?php include ('footer.php'); ?>
