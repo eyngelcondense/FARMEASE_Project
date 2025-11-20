@@ -10,26 +10,46 @@ class CreateAddonTable extends Migration
     {
         $this->forge->addField([
             'id' => [
-                'type'           => 'INT',
-                'constraint'     => 11,
-                'unsigned'       => true,
-                'auto_increment' => true,
+                'type' => 'INT',
+                'constraint' => 5,
+                'unsigned' => true,
+                'auto_increment' => true
             ],
             'name' => [
-                'type'       => 'VARCHAR',
-                'constraint' => '255',
+                'type' => 'VARCHAR',
+                'constraint' => 255,
+                'null' => false
             ],
             'description' => [
                 'type' => 'TEXT',
-                'null' => true,
+                'null' => true
             ],
             'price' => [
-                'type'       => 'DECIMAL',
+                'type' => 'DECIMAL',
                 'constraint' => '10,2',
-                'default'    => '0.00',
+                'default' => 0.00
+            ],
+            'type' => [
+                'type' => 'ENUM',
+                'constraint' => ['equipment', 'service', 'food'],
+                'default' => 'equipment'
+            ],
+            'status' => [
+                'type' => 'ENUM',
+                'constraint' => ['active', 'inactive'],
+                'default' => 'active'
+            ],
+            'created_at' => [
+                'type' => 'DATETIME',
+                'null' => true
+            ],
+            'updated_at' => [
+                'type' => 'DATETIME',
+                'null' => true
             ]
         ]);
-        $this->forge->addKey('id', true);
+
+        $this->forge->addPrimaryKey('id');
         $this->forge->createTable('addons');
     }
 

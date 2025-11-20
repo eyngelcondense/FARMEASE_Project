@@ -11,28 +11,34 @@ class CreateClientTable extends Migration
         $this->forge->addField([
             'id' => [
                 'type'           => 'INT',
-                'constraint'     => 11,
+                'constraint'     => 5,
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
             'user_id' => [
                 'type'       => 'INT',
-                'constraint' => 11,
+                'constraint' => 5,
                 'unsigned'   => true,
+            ],
+            'profile_pic' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '255',
+                'null'       => true,
             ],
             'fullname' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '255',
+                'null'       => false,
             ],
             'email' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '255',
-                'unique'     => true,
+                'null'       => false,
             ],
             'phone' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '20',
-                'unique'     => true,
+                'null'       => false,
             ],
             'address' => [
                 'type'       => 'VARCHAR',
@@ -49,8 +55,10 @@ class CreateClientTable extends Migration
             ],
         ]);
 
-        $this->forge->addKey('id', true); // Primary key
-        $this->forge->addForeignKey('user_id','users','id','CASCADE','CASCADE');
+        $this->forge->addPrimaryKey('id');
+        $this->forge->addUniqueKey('email');
+        $this->forge->addUniqueKey('phone');
+        $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('clients');
     }
 
