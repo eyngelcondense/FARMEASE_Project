@@ -471,12 +471,20 @@ function showBookingDetails(booking, payments, totalPaid, balance) {
 function approveBooking(id) {
     currentBookingId = id;
     
+    // Show loading state
+    const approveBtn = $(`button[onclick="approveBooking(${id})"]`);
+    const originalText = approveBtn.text();
+    approveBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Checking...');
+    
     // Check for conflicts first
     $.ajax({
         url: `<?= site_url('bookings/') ?>${id}/approve`,
         type: 'POST',
         dataType: 'json',
         success: function(response) {
+            // Reset button
+            approveBtn.prop('disabled', false).html(originalText);
+            
             if (response.success) {
                 // No conflicts, proceed with approval
                 if (confirm(`Approve booking ${response.booking.booking_reference}?`)) {
@@ -486,11 +494,15 @@ function approveBooking(id) {
                 // Show conflict warning
                 showConflictWarning(id, response.conflicts);
             } else {
-                showToast(response.message, 'error');
+                showToast(response.message || 'Error approving booking', 'error');
             }
         },
-        error: function() {
-            showToast('Error checking booking conflicts', 'error');
+        error: function(xhr, status, error) {
+            // Reset button
+            approveBtn.prop('disabled', false).html(originalText);
+            
+            console.error('Error checking booking conflicts:', error);
+            showToast('Error checking booking conflicts. Please try again.', 'error');
         }
     });
 }
@@ -515,20 +527,32 @@ function showConflictWarning(bookingId, conflicts) {
 
 // Finalize approval (with or without conflicts)
 function finalizeApproval(id) {
+    // Show loading state
+    const approveBtn = $(`button[onclick="approveBooking(${id})"]`);
+    const originalText = approveBtn.text();
+    approveBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Approving...');
+    
     $.ajax({
         url: `<?= site_url('bookings/') ?>${id}/approve`,
         type: 'POST',
         dataType: 'json',
         success: function(response) {
+            // Reset button
+            approveBtn.prop('disabled', false).html(originalText);
+            
             if (response.success) {
                 showToast(response.message, 'success');
                 refreshBookings();
             } else {
-                showToast(response.message, 'error');
+                showToast(response.message || 'Error approving booking', 'error');
             }
         },
-        error: function() {
-            showToast('Error approving booking', 'error');
+        error: function(xhr, status, error) {
+            // Reset button
+            approveBtn.prop('disabled', false).html(originalText);
+            
+            console.error('Error approving booking:', error);
+            showToast('Error approving booking. Please try again.', 'error');
         }
     });
 }

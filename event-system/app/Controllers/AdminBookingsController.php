@@ -180,86 +180,8 @@ class AdminBookingsController extends BaseController
     }
 
     /**
-     * Approve a booking
-     */
-    public function approveBooking($id)
-    {
-        // Check for conflicts first
-        $conflicts = $this->checkBookingConflicts($id);
-        
-        if (!empty($conflicts)) {
-            return $this->response->setJSON([
-                'success' => false,
-                'hasConflicts' => true,
-                'conflicts' => $conflicts,
-                'message' => 'Booking conflicts detected'
-            ]);
-        }
-
-        // Proceed with approval
-        try {
-            $this->bookingModel->update($id, [
-                'status' => 'approved',
-                'updated_at' => date('Y-m-d H:i:s')
-            ]);
-
-            // Get booking details for notification
-            $booking = $this->bookingModel->find($id);
-
-            return $this->response->setJSON([
-                'success' => true,
-                'message' => 'Booking approved successfully',
-                'booking' => $booking
-            ]);
-        } catch (\Exception $e) {
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Error approving booking: ' . $e->getMessage()
-            ]);
-        }
-    }
-
-    /**
      * Approve booking with conflicts (override)
      */
-    public function approveBookingWithConflicts($id)
-    {
-        $conflicts = $this->request->getPost('conflicts') ?? [];
-
-        try {
-            $this->db->transStart();
-
-            // Approve the current booking
-            $this->bookingModel->update($id, [
-                'status' => 'approved',
-                'updated_at' => date('Y-m-d H:i:s')
-            ]);
-
-            // Reject conflicting bookings
-            foreach ($conflicts as $conflictId) {
-                $this->bookingModel->update($conflictId, [
-                    'status' => 'rejected',
-                    'updated_at' => date('Y-m-d H:i:s')
-                ]);
-            }
-
-            $this->db->transComplete();
-
-            if ($this->db->transStatus() === false) {
-                throw new \Exception('Transaction failed');
-            }
-
-            return $this->response->setJSON([
-                'success' => true,
-                'message' => 'Booking approved. ' . count($conflicts) . ' conflicting booking(s) rejected.'
-            ]);
-        } catch (\Exception $e) {
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Error processing approval: ' . $e->getMessage()
-            ]);
-        }
-    }
 
     /**
      * Reject a booking
@@ -292,10 +214,7 @@ class AdminBookingsController extends BaseController
             ]);
         }
     }
-
-    /**
-     * Check for booking conflicts - Updated for packages
-     */
+    
     private function checkBookingConflicts($bookingId)
     {
         $booking = $this->bookingModel->find($bookingId);
@@ -304,47 +223,377 @@ class AdminBookingsController extends BaseController
             return [];
         }
 
-        // Get package venues to check for conflicts
-        $packageVenues = $this->packageModel->getPackageVenues($booking['package_id']);
-        
-        if (empty($packageVenues)) {
+        // Check if venue_id is set
+        if (empty($booking['venue_id'])) {
+            log_message('debug', 'Booking has no venue_id, skipping conflict check');
             return [];
         }
 
-        $venueIds = array_column($packageVenues, 'venue_id');
-        
-        // Find conflicting bookings (same venue, same date, overlapping time, pending status)
-        $conflicts = $this->bookingModel
-            ->whereIn('venue_id', $venueIds)
-            ->where('event_date', $booking['event_date'])
-            ->where('status', 'pending')
-            ->where('id !=', $bookingId)
-            ->where("(
-                (start_time <= '{$booking['start_time']}' AND end_time > '{$booking['start_time']}') OR
-                (start_time < '{$booking['end_time']}' AND end_time >= '{$booking['end_time']}') OR
-                (start_time >= '{$booking['start_time']}' AND end_time <= '{$booking['end_time']}')
-            )")
-            ->findAll();
-
-        $conflictData = [];
-        foreach ($conflicts as $conflict) {
-            $client = $this->clientModel->find($conflict['client_id']);
-            $package = $this->packageModel->find($conflict['package_id']);
-            $venue = $this->venueModel->find($conflict['venue_id']);
+        try {
+            // Use the model's db connection
+            $db = db_connect();
             
-            $conflictData[] = [
-                'id' => $conflict['id'],
-                'booking_reference' => $conflict['booking_reference'],
-                'client_name' => $client ? $client['fullname'] : 'Unknown Client',
-                'package_name' => $package ? $package['name'] : 'Unknown Package',
-                'venue_name' => $venue ? $venue['name'] : 'Unknown Venue',
-                'event_date' => $conflict['event_date'],
-                'start_time' => $conflict['start_time'],
-                'end_time' => $conflict['end_time']
-            ];
+            $startTime = $booking['start_time'];
+            $endTime = $booking['end_time'];
+            
+            // Escape the values for manual query building
+            $escapedStartTime = $db->escape($startTime);
+            $escapedEndTime = $db->escape($endTime);
+            
+            $whereClause = "(
+                (start_time <= {$escapedStartTime} AND end_time > {$escapedStartTime}) OR
+                (start_time < {$escapedEndTime} AND end_time >= {$escapedEndTime}) OR
+                (start_time >= {$escapedStartTime} AND end_time <= {$escapedEndTime})
+            )";
+
+            // Find conflicting bookings
+            $conflicts = $this->bookingModel
+                ->where('venue_id', $booking['venue_id'])
+                ->where('event_date', $booking['event_date'])
+                ->whereIn('status', ['pending', 'approved'])
+                ->where('id !=', $bookingId)
+                ->where($whereClause)
+                ->findAll();
+
+            log_message('debug', 'Found ' . count($conflicts) . ' conflicts for venue ' . $booking['venue_id']);
+
+            $conflictData = [];
+            foreach ($conflicts as $conflict) {
+                $client = $this->clientModel->find($conflict['client_id']);
+                $package = $this->packageModel->find($conflict['package_id']);
+                $venue = $this->venueModel->find($conflict['venue_id']);
+                
+                $conflictData[] = [
+                    'id' => $conflict['id'],
+                    'booking_reference' => $conflict['booking_reference'],
+                    'client_name' => $client ? $client['fullname'] : 'Unknown Client',
+                    'package_name' => $package ? $package['name'] : 'Unknown Package',
+                    'venue_name' => $venue ? $venue['name'] : 'Unknown Venue',
+                    'event_date' => $conflict['event_date'],
+                    'start_time' => $conflict['start_time'],
+                    'end_time' => $conflict['end_time']
+                ];
+            }
+
+            return $conflictData;
+
+        } catch (\Exception $e) {
+            log_message('error', 'Error checking booking conflicts: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Alternative conflict detection using package venues - Fixed database connection
+     */
+    private function checkBookingConflictsByPackage($bookingId)
+    {
+        $booking = $this->bookingModel->find($bookingId);
+        
+        if (!$booking) {
+            return [];
         }
 
-        return $conflictData;
+        try {
+            // Get all venues for this package
+            $packageVenues = $this->packageModel->getPackageVenues($booking['package_id']);
+            
+            if (empty($packageVenues)) {
+                log_message('debug', 'No package venues found for package ' . $booking['package_id']);
+                return [];
+            }
+
+            $venueIds = array_column($packageVenues, 'venue_id');
+            
+            // Make sure we have valid venue IDs
+            $venueIds = array_filter($venueIds);
+            if (empty($venueIds)) {
+                log_message('debug', 'No valid venue IDs found for package ' . $booking['package_id']);
+                return [];
+            }
+
+            log_message('debug', 'Checking conflicts for venues: ' . implode(', ', $venueIds));
+
+            // Use the model's db connection
+            $db = db_connect();
+            
+            $startTime = $booking['start_time'];
+            $endTime = $booking['end_time'];
+            
+            // Escape the values for manual query building
+            $escapedStartTime = $db->escape($startTime);
+            $escapedEndTime = $db->escape($endTime);
+            
+            $whereClause = "(
+                (start_time <= {$escapedStartTime} AND end_time > {$escapedStartTime}) OR
+                (start_time < {$escapedEndTime} AND end_time >= {$escapedEndTime}) OR
+                (start_time >= {$escapedStartTime} AND end_time <= {$escapedEndTime})
+            )";
+
+            // Find conflicts for any venue in the package
+            $conflicts = $this->bookingModel
+                ->whereIn('venue_id', $venueIds)
+                ->where('event_date', $booking['event_date'])
+                ->whereIn('status', ['pending', 'approved'])
+                ->where('id !=', $bookingId)
+                ->where($whereClause)
+                ->findAll();
+
+            log_message('debug', 'Found ' . count($conflicts) . ' package-based conflicts');
+
+            $conflictData = [];
+            foreach ($conflicts as $conflict) {
+                $client = $this->clientModel->find($conflict['client_id']);
+                $package = $this->packageModel->find($conflict['package_id']);
+                $venue = $this->venueModel->find($conflict['venue_id']);
+                
+                $conflictData[] = [
+                    'id' => $conflict['id'],
+                    'booking_reference' => $conflict['booking_reference'],
+                    'client_name' => $client ? $client['fullname'] : 'Unknown Client',
+                    'package_name' => $package ? $package['name'] : 'Unknown Package',
+                    'venue_name' => $venue ? $venue['name'] : 'Unknown Venue',
+                    'event_date' => $conflict['event_date'],
+                    'start_time' => $conflict['start_time'],
+                    'end_time' => $conflict['end_time']
+                ];
+            }
+
+            return $conflictData;
+
+        } catch (\Exception $e) {
+            log_message('error', 'Error checking package booking conflicts: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Simple conflict check - Using direct query builder without complex WHERE
+     */
+    private function checkSimpleConflicts($bookingId)
+    {
+        $booking = $this->bookingModel->find($bookingId);
+        
+        if (!$booking) {
+            return [];
+        }
+
+        try {
+            // Use a simpler approach - check for any overlap
+            $conflicts = $this->bookingModel
+                ->where('event_date', $booking['event_date'])
+                ->whereIn('status', ['pending', 'approved'])
+                ->where('id !=', $bookingId)
+                ->where('start_time <', $booking['end_time'])
+                ->where('end_time >', $booking['start_time'])
+                ->findAll();
+
+            log_message('debug', 'Found ' . count($conflicts) . ' simple conflicts');
+
+            $conflictData = [];
+            foreach ($conflicts as $conflict) {
+                $client = $this->clientModel->find($conflict['client_id']);
+                $package = $this->packageModel->find($conflict['package_id']);
+                $venue = $this->venueModel->find($conflict['venue_id']);
+                
+                $conflictData[] = [
+                    'id' => $conflict['id'],
+                    'booking_reference' => $conflict['booking_reference'],
+                    'client_name' => $client ? $client['fullname'] : 'Unknown Client',
+                    'package_name' => $package ? $package['name'] : 'Unknown Package',
+                    'venue_name' => $venue ? $venue['name'] : 'Unknown Venue',
+                    'event_date' => $conflict['event_date'],
+                    'start_time' => $conflict['start_time'],
+                    'end_time' => $conflict['end_time']
+                ];
+            }
+
+            return $conflictData;
+
+        } catch (\Exception $e) {
+            log_message('error', 'Error in simple conflict check: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Even simpler conflict check - just check same date and venue
+     */
+    private function checkBasicConflicts($bookingId)
+    {
+        $booking = $this->bookingModel->find($bookingId);
+        
+        if (!$booking || empty($booking['venue_id'])) {
+            return [];
+        }
+
+        try {
+            // Just check for any booking on same date and venue
+            $conflicts = $this->bookingModel
+                ->where('venue_id', $booking['venue_id'])
+                ->where('event_date', $booking['event_date'])
+                ->whereIn('status', ['pending', 'approved'])
+                ->where('id !=', $bookingId)
+                ->findAll();
+
+            log_message('debug', 'Found ' . count($conflicts) . ' basic conflicts');
+
+            $conflictData = [];
+            foreach ($conflicts as $conflict) {
+                $client = $this->clientModel->find($conflict['client_id']);
+                $package = $this->packageModel->find($conflict['package_id']);
+                $venue = $this->venueModel->find($conflict['venue_id']);
+                
+                $conflictData[] = [
+                    'id' => $conflict['id'],
+                    'booking_reference' => $conflict['booking_reference'],
+                    'client_name' => $client ? $client['fullname'] : 'Unknown Client',
+                    'package_name' => $package ? $package['name'] : 'Unknown Package',
+                    'venue_name' => $venue ? $venue['name'] : 'Unknown Venue',
+                    'event_date' => $conflict['event_date'],
+                    'start_time' => $conflict['start_time'],
+                    'end_time' => $conflict['end_time']
+                ];
+            }
+
+            return $conflictData;
+
+        } catch (\Exception $e) {
+            log_message('error', 'Error in basic conflict check: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Updated Approve a booking with better error handling
+     */
+    public function approveBooking($id)
+    {
+        try {
+            // Check if booking exists
+            $booking = $this->bookingModel->find($id);
+            if (!$booking) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Booking not found'
+                ]);
+            }
+
+            log_message('debug', 'Approving booking: ' . $id . ' - ' . $booking['booking_reference']);
+            log_message('debug', 'Booking venue_id: ' . ($booking['venue_id'] ?? 'NULL'));
+            log_message('debug', 'Booking package_id: ' . ($booking['package_id'] ?? 'NULL'));
+
+            // Check for conflicts first - try different methods
+            $conflicts = [];
+            
+            // Try basic check first (simplest)
+            $conflicts = $this->checkBasicConflicts($id);
+            
+            // If no conflicts found, try simple time overlap check
+            if (empty($conflicts)) {
+                $conflicts = $this->checkSimpleConflicts($id);
+            }
+            
+            // If still no conflicts, try venue-based check
+            if (empty($conflicts) && !empty($booking['venue_id'])) {
+                $conflicts = $this->checkBookingConflicts($id);
+            }
+            
+            // Finally try package-based check
+            if (empty($conflicts) && !empty($booking['package_id'])) {
+                $conflicts = $this->checkBookingConflictsByPackage($id);
+            }
+
+            if (!empty($conflicts)) {
+                log_message('debug', 'Conflicts detected: ' . count($conflicts));
+                return $this->response->setJSON([
+                    'success' => false,
+                    'hasConflicts' => true,
+                    'conflicts' => $conflicts,
+                    'message' => 'Booking conflicts detected'
+                ]);
+            }
+
+            log_message('debug', 'No conflicts found, proceeding with approval');
+
+            // Proceed with approval
+            $result = $this->bookingModel->update($id, [
+                'status' => 'approved',
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+
+            if ($result) {
+                // Get updated booking details
+                $updatedBooking = $this->bookingModel->find($id);
+
+                log_message('debug', 'Booking approved successfully: ' . $id);
+
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Booking approved successfully',
+                    'booking' => $updatedBooking
+                ]);
+            } else {
+                log_message('error', 'Failed to update booking status: ' . $id);
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Failed to update booking status'
+                ]);
+            }
+
+        } catch (\Exception $e) {
+            log_message('error', 'Error in approveBooking: ' . $e->getMessage());
+            log_message('error', 'Stack trace: ' . $e->getTraceAsString());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Error approving booking: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Approve booking with conflicts (override)
+     */
+    public function approveBookingWithConflicts($id)
+    {
+        $conflicts = $this->request->getPost('conflicts') ?? [];
+
+        try {
+            // Start transaction
+            $db = db_connect();
+            $db->transStart();
+
+            // Approve the current booking
+            $this->bookingModel->update($id, [
+                'status' => 'approved',
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+
+            // Reject conflicting bookings
+            foreach ($conflicts as $conflictId) {
+                $this->bookingModel->update($conflictId, [
+                    'status' => 'rejected',
+                    'updated_at' => date('Y-m-d H:i:s')
+                ]);
+            }
+
+            $db->transComplete();
+
+            if ($db->transStatus() === false) {
+                throw new \Exception('Transaction failed');
+            }
+
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Booking approved. ' . count($conflicts) . ' conflicting booking(s) rejected.'
+            ]);
+        } catch (\Exception $e) {
+            log_message('error', 'Error processing approval with conflicts: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Error processing approval: ' . $e->getMessage()
+            ]);
+        }
     }
 
     /**

@@ -18,6 +18,13 @@ class App extends BaseConfig
      */
     public string $baseURL = 'http://localhost:8080/';
 
+    
+    public $sessionDriver = 'CodeIgniter\Session\Handlers\FileHandler'; // or DatabaseHandler
+    public $sessionSavePath = WRITEPATH . 'sessions';
+    public $sessionExpiration = 2592000; // 30 days in seconds
+    public $cookieLifetime = 2592000;    // 30 days for the cookie
+
+
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
      * If you want to accept multiple Hostnames, set this.
@@ -199,4 +206,7 @@ class App extends BaseConfig
      * @see http://www.w3.org/TR/CSP/
      */
     public bool $CSPEnabled = false;
+
+
+
 }
