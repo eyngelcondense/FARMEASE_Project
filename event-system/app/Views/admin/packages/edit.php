@@ -149,7 +149,7 @@
                                     <button type="submit" class="btn btn-primary btn-lg">
                                         <i class="fas fa-save"></i> Update Package
                                     </button>
-                                    <a href="<?= base_url('packages'); ?>" class="btn btn-secondary">Cancel</a>
+                                    <a href="<?= site_url('packages-view')?>" class="btn btn-secondary">Cancel</a>
                                 </div>
                             </form>
                         </div>
