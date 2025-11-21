@@ -385,19 +385,19 @@
                                 value="<?= old('start_time') ?>" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Duration (Hours) *</label>
-                            <select class="form-select" name="duration" id="duration" required>
-                                <option disabled selected>Select Duration</option>
-                                <option value="4">4 Hours</option>
-                                <option value="5">5 Hours</option>
-                                <option value="6">6 Hours</option>
-                                <option value="8">8 Hours</option>
-                                <option value="10">10 Hours</option>
-                                <option value="12">12 Hours</option>
-                                <option value="13">13 Hours</option>
-                            </select>
+                          <label class="form-label">Duration (Hours) *</label>
+                          <select class="form-select" name="duration_hours" id="duration_hours" required>
+                              <option disabled selected>Select Duration</option>
+                              <option value="4" <?= old('duration_hours') == '4' ? 'selected' : '' ?>>4 Hours</option>
+                              <option value="5" <?= old('duration_hours') == '5' ? 'selected' : '' ?>>5 Hours</option>
+                              <option value="6" <?= old('duration_hours') == '6' ? 'selected' : '' ?>>6 Hours</option>
+                              <option value="8" <?= old('duration_hours') == '8' ? 'selected' : '' ?>>8 Hours</option>
+                              <option value="10" <?= old('duration_hours') == '10' ? 'selected' : '' ?>>10 Hours</option>
+                              <option value="12" <?= old('duration_hours') == '12' ? 'selected' : '' ?>>12 Hours</option>
+                              <option value="13" <?= old('duration_hours') == '13' ? 'selected' : '' ?>>13 Hours</option>
+                          </select>
+                      </div>
 
-                        </div>
 
                         <div class="col-12">
                             <label class="form-label">Number of Guests *</label>
