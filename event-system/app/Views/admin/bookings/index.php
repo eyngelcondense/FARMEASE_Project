@@ -5,6 +5,204 @@ $title = "Bookings - San Isidro Labrador Resort";
 ?>
 
 <?= $this->section('content') ?>
+<style>
+    /* General Page Header */
+.page-header-card {
+    background-color: #f5f0eb; /* soft beige background */
+    padding: 20px 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.page-header-card h1 {
+    color: #5c3a21; /* deep brown */
+    font-weight: 700;
+}
+
+.page-header-card p.text-muted {
+    color: #8c6a4c; /* lighter brown */
+}
+
+/* Statistic Cards */
+.stat-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+    background-color: #fff7f0;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.stat-card h5.card-title {
+    color: #5c3a21;
+    font-weight: 600;
+}
+
+.stat-card h2 {
+    font-weight: 700;
+}
+
+/* Status Colors */
+.text-primary { color: #7a4b2a !important; }
+.text-warning { color: #c49b72 !important; }
+.text-success { color: #a67c52 !important; }
+.text-danger  { color: #b55b33 !important; }
+
+/* Buttons */
+.btn-brown, .btn-brown:hover, .btn-brown:focus, .btn-brown:active {
+    background-color: #7a4b2a;
+    color: #fff;
+    border-color: #7a4b2a;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.btn-brown:hover, .btn-brown:focus {
+    background-color: #935d3a;
+    transform: translateY(-1px);
+    color: #fff;
+}
+
+.btn-outline-brown {
+    background-color: transparent;
+    color: #7a4b2a;
+    border: 2px solid #7a4b2a;
+    transition: all 0.2s;
+}
+
+.btn-outline-brown:hover {
+    background-color: #7a4b2a;
+    color: #fff;
+}
+
+/* Table */
+.table-card {
+    background-color: #fff7f0;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.table th {
+    background-color: #f0e6dc;
+    color: #5c3a21;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* Badges */
+.badge.bg-warning { background-color: #c49b72 !important; color: #fff !important; }
+.badge.bg-success { background-color: #a67c52 !important; color: #fff !important; }
+.badge.bg-danger  { background-color: #b55b33 !important; color: #fff !important; }
+.badge.bg-info    { background-color: #d4a373 !important; color: #fff !important; }
+.badge.bg-primary { background-color: #7a4b2a !important; color: #fff !important; }
+.badge.bg-secondary { background-color: #9b7b5c !important; color: #fff !important; }
+
+/* Filter Section */
+.filter-section {
+    background-color: #f5f0eb;
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+
+/* Search Box */
+.search-box-bookings input {
+    border: 2px solid #7a4b2a;
+    border-radius: 8px;
+}
+
+/* Payment Items */
+.payment-item {
+    background-color: #fff2e6;
+    border-radius: 6px;
+    margin-bottom: 5px;
+    padding: 8px 10px;
+}
+
+/* Conflict Modal */
+.conflict-warning {
+    background-color: #f8f0e0;
+    border-left: 4px solid #c49b72;
+}
+
+/* Modals Header */
+.modal-header {
+    background-color: #f5f0eb;
+    color: #5c3a21;
+    border-bottom: 2px solid #d9b79c;
+}
+
+.modal-footer button.btn-secondary {
+    background-color: #d9b79c;
+    color: #fff;
+    border: none;
+}
+
+.modal-footer button.btn-secondary:hover {
+    background-color: #c49b72;
+}
+
+/* Toast Notifications */
+.alert-info { background-color: #f0e6dc; color: #5c3a21; border: none; }
+.alert-success { background-color: #a67c52; color: #fff; }
+.alert-warning { background-color: #c49b72; color: #fff; }
+.alert-danger { background-color: #b55b33; color: #fff; }
+
+/* Table action buttons */
+#bookingsTable .btn-approve {
+    background-color: #935d3a; /* medium brown */
+    color: #fff;
+    border: 1px solid #935d3a;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    padding: 4px 10px;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+#bookingsTable .btn-approve:hover {
+    background-color: #b07a55; /* lighter brown on hover */
+    transform: translateY(-1px);
+}
+
+#bookingsTable .btn-reject {
+    background-color: #5c3a21; /* dark brown */
+    color: #fff;
+    border: 1px solid #5c3a21;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    padding: 4px 10px;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+#bookingsTable .btn-reject:hover {
+    background-color: #462b17; /* darker brown on hover */
+    transform: translateY(-1px);
+}
+
+#bookingsTable .btn-view {
+    background-color: transparent;
+    color: #7a4b2a; /* medium brown outline */
+    border: 1px solid #7a4b2a;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    padding: 4px 10px;
+    transition: all 0.2s;
+}
+
+#bookingsTable .btn-view:hover {
+    background-color: #7a4b2a;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+
+</style>
     <div class="page-header-card">
         <h1>Bookings Management</h1>
         <p class="text-muted">Manage and approve booking requests for resort packages</p>
