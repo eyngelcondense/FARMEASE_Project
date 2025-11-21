@@ -32,6 +32,7 @@ class LoginController extends ShieldLogin
 
         $email = $this->request->getPost('email');
         $password = $this->request->getPost('password');
+        $remember = $this->request->getPost('remember'); 
 
         $auth = service('auth');
 
@@ -52,7 +53,7 @@ class LoginController extends ShieldLogin
         $result = $auth->attempt([
             'email' => $email,
             'password' => $password
-        ]);
+        ], $remember ? true : false);
 
         if (! $result->isOK()) {
             return redirect()->back()->withInput()->with('error', 'Invalid email or password.');

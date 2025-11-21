@@ -159,4 +159,8 @@ class ClientController extends BaseController
         return redirect()->back()->with('success', 'Feedback submitted!');
     }
 
+    public function requestDataView(){
+        return view('client/requestdata');
+    }
+
 }

@@ -1,28 +1,4 @@
 
-<?php if(session()->getFlashdata('message') || session()->getFlashdata('success') || session()->getFlashdata('error')): ?>
-  <div class="container mt-2">
-    <?php if(session()->getFlashdata('message')): ?>
-      <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <?= session()->getFlashdata('message') ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    <?php endif; ?>
-    
-    <?php if(session()->getFlashdata('success')): ?>
-      <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <?= session()->getFlashdata('success') ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    <?php endif; ?>
-    
-    <?php if(session()->getFlashdata('error')): ?>
-      <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <?= session()->getFlashdata('error') ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    <?php endif; ?>
-  </div>
-<?php endif; ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -38,6 +14,7 @@
 
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
  
 <style>
      /* Header */
@@ -150,28 +127,28 @@
   position: relative;
   text-decoration: none;
   transition: color 0.3s ease;
-}
+  }
 
-/* Hover Effect */
-.navbar-nav .nav-link:hover {
-  color: #8b6f47;
-}
+  /* Hover Effect */
+  .navbar-nav .nav-link:hover {
+    color: #8b6f47;
+  }
 
-/* Active Link (Current Page) */
-.navbar-nav .nav-link.active::after {
-  content: "";
-  position: absolute;
-  bottom: 8px;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background-color: #8b6f47; /* gold-brown underline */
-  transition: width 0.3s ease;
-}
+  /* Active Link (Current Page) */
+  .navbar-nav .nav-link.active::after {
+    content: "";
+    position: absolute;
+    bottom: 8px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #8b6f47; /* gold-brown underline */
+    transition: width 0.3s ease;
+  }
 
-.navbar-nav .nav-link.active {
-  color: #8b6f47;
-}
+  .navbar-nav .nav-link.active {
+    color: #8b6f47;
+  }
 
 
 </style>
@@ -243,8 +220,13 @@
         <li class="nav-item">
         <a class="nav-link <?= (uri_string() == 'testimonials') ? 'active' : '' ?>" href="<?= site_url('testimonials') ?>">TESTIMONIALS</a>
       </li>
-      <li class="nav-item"><a class="nav-link <?= (uri_string() == 'booking') ? 'active' : '' ?>" href="<?= site_url('booking') ?>">CONTACT</a>
+      <li class="nav-item"><a class="nav-link <?= (uri_string() == 'booking') ? 'active' : '' ?>" href="<?= site_url('bookings') ?>">CONTACT</a>
       </li>
+      <li class="nav-item">
+    <a class="nav-link <?= (uri_string() == 'booking_history') ? 'active' : '' ?>" href="<?= site_url('booking_history') ?>">
+        <i class="fas fa-history"></i> MY BOOKINGS
+    </a>
+</li>
       </ul>
     </div>
   </div>
