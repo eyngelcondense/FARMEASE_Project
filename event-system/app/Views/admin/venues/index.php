@@ -2,13 +2,119 @@
 <?= $this->extend('admin/layout') ?>
 
 <?= $this->section('content') ?>
+<style>
+    /* Page Header */
+    .page-header-card {
+        background-color: #f5f0eb;
+        padding: 20px 25px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+
+    .page-header-card h1 {
+        color: #5c3a21;
+        font-weight: 700;
+    }
+
+    /* Buttons */
+   
+
+    .btn-outline-brown {
+        color: #7a4b2a;
+        border-color: #7a4b2a;
+    }
+
+    .btn-outline-brown:hover {
+        background-color: #7a4b2a;
+        color: #fff;
+    }
+
+    /* Venue Cards */
+    .card {
+        border-left: 4px solid #7a4b2a;
+        background-color: #fff7f0;
+        border: 1px solid #e6d9cc;
+    }
+
+    .card:hover {
+        box-shadow: 0 4px 12px rgba(122, 75, 42, 0.15);
+    }
+
+    .text-xs.font-weight-bold {
+        color: #5c3a21 !important;
+    }
+
+    /* Badges */
+    .badge-success {
+        background-color: #a67c52 !important;
+        color: #fff !important;
+    }
+
+    .badge-secondary {
+        background-color: #9b7b5c !important;
+        color: #fff !important;
+    }
+
+    /* Alert Messages */
+    .alert-success {
+        background-color: #a67c52;
+        color: #fff;
+        border: none;
+    }
+
+    .alert-danger {
+        background-color: #b55b33;
+        color: #fff;
+        border: none;
+    }
+
+    /* Button Group */
+    .btn-group .btn-sm {
+        font-size: 0.85rem;
+        padding: 4px 10px;
+    }
+
+    .btn-outline-primary {
+        color: #7a4b2a;
+        border-color: #7a4b2a;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #7a4b2a;
+        color: #fff;
+    }
+
+    .btn-outline-danger {
+        color: #60483eff;
+        border-color: #b55b33;
+    }
+
+    .btn-outline-danger:hover {
+        background-color: #b55b33;
+        color: #fff;
+    }
+
+    .text-gray-600 {
+        color: #8c6a4c !important;
+    }
+
+    .text-muted {
+        color: #9b7b5c !important;
+    }
+
+    .bg-light {
+        background-color: #f5f0eb !important;
+    }
+</style>
+
 <div class="container-fluid">
     <!-- Page Header -->
-     <div class="page-header-card">
-            <h1>Venue Management</h1>
-        </div>
+    <div class="page-header-card">
+        <h1>Venue Management</h1>
+    </div>
+    
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        
         <a href="<?= site_url('venues/create') ?>" class="d-none d-sm-inline-block btn btn-sm btn-brown shadow-sm">
             <i class="fas fa-plus fa-sm text-white-50"></i> Add New Venue
         </a>
@@ -87,7 +193,7 @@
                 <i class="fas fa-building fa-3x text-muted mb-3"></i>
                 <h4 class="text-muted">No Venues Found</h4>
                 <p class="text-muted">Get started by adding your first venue.</p>
-                <a href="<?= site_url('venues/create') ?>" class="btn btn-primary">
+                <a href="<?= site_url('venues/create') ?>" class="btn btn-brown">
                     <i class="fas fa-plus"></i> Add First Venue
                 </a>
             </div>

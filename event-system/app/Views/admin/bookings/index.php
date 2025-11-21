@@ -372,7 +372,7 @@ $title = "Bookings - San Isidro Labrador Resort";
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" onclick="confirmRejection()">Confirm Rejection</button>
+                    <button type="button" class="btn btn-brown" onclick="confirmRejection()">Confirm Rejection</button>
                 </div>
             </div>
         </div>
@@ -381,7 +381,7 @@ $title = "Bookings - San Isidro Labrador Resort";
     <div class="modal fade" id="conflictModal" tabindex="-1" aria-labelledby="conflictModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header bg-warning">
+                <div class="modal-header " style="background-color: #c49b72;">
                     <h5 class="modal-title" id="conflictModalLabel">Booking Conflict Detected</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -394,7 +394,7 @@ $title = "Bookings - San Isidro Labrador Resort";
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-warning" onclick="approveWithConflicts()">Approve Anyway</button>
+                    <button type="button" class="btn btn-brown" onclick="approveWithConflicts()">Approve Anyway</button>
                 </div>
             </div>
         </div>
@@ -446,7 +446,11 @@ $(document).ready(function() {
             { 
                 "data": "actions",
                 "render": function(data, type, row) {
-                    return data; // Already formatted as HTML buttons
+                     let html = data;
+                    html = html.replace(/btn-success/g, 'btn-approve');    // Green → Medium Brown
+                    html = html.replace(/btn-danger/g, 'btn-reject');      // Red → Dark Brown
+                    html = html.replace(/btn-secondary/g, 'btn-view');     // Gray → Brown Outline
+                    return html;
                 }
             }
         ],

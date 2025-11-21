@@ -3,6 +3,64 @@
 <?php $title = "Payments - San Isidro Labrador Resort"; ?>
 
 <?= $this->section('content') ?>
+<style>
+    /* Page Header */
+    .page-header-card {
+        background-color: #f5f0eb;
+        padding: 20px 25px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+
+    .page-header-card h1 {
+        color: #5c3a21;
+        font-weight: 700;
+    }
+
+    /* Filter Section */
+    .filter-section {
+        background-color: #f5f0eb;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    }
+
+    /* Table Card */
+    .table-card {
+        background-color: #fff7f0;
+        border-radius: 12px;
+        padding: 15px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .table th {
+        background-color: #f0e6dc;
+        color: #5c3a21;
+    }
+
+    /* Badges */
+    .badge.bg-success { background-color: #a67c52 !important; color: #fff !important; }
+    .badge.bg-warning { background-color: #c49b72 !important; color: #fff !important; }
+    .badge.bg-danger { background-color: #b55b33 !important; color: #fff !important; }
+
+    /* Search Box */
+    .search-box-payments input {
+        border: 2px solid #7a4b2a;
+        border-radius: 8px;
+    }
+
+    /* Form Controls */
+    .form-select {
+        border-color: #d9b79c;
+    }
+
+    .form-select:focus {
+        border-color: #7a4b2a;
+        box-shadow: 0 0 0 0.2rem rgba(122, 75, 42, 0.25);
+    }
+</style>
+
     <div class="page-header-card">
         <h1>Payments</h1>
     </div>

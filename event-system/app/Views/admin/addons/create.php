@@ -6,10 +6,7 @@
 <div class="container-fluid">
     <!-- Page Header -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Add New Add-on</h1>
-        <a href="<?= site_url('addons') ?>" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
-            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Add-ons
-        </a>
+        <h1 class="h3 mb-0 text-brown-800">Add New Add-on</h1>
     </div>
 
     <!-- Alert Messages -->
@@ -27,9 +24,9 @@
     <?php endif; ?>
 
     <!-- Form -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Add-on Information</h6>
+    <div class="card shadow mb-4 ">
+        <div class="card-header py-3 bg-brown">
+            <h6 class="m-0 font-weight-bold text-brown">Add-on Information</h6>
         </div>
         <div class="card-body">
             <form action="<?= site_url('addons/store') ?>" method="post">
@@ -73,7 +70,7 @@
                 </div>
 
                 <div class="form-group text-right">
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-brown">
                         <i class="fas fa-save"></i> Save Add-on
                     </button>
                     <a href="<?= site_url('addons') ?>" class="btn btn-secondary">Cancel</a>
