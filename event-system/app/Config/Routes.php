@@ -68,7 +68,14 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:client'
 $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin'], static function ($routes) {
     $routes->get('dashboard', 'AdminController::dashboardView');
 
-    $routes->get('admin/bookings', 'AdminController::bookingsView');
+    $routes->get('admin/bookings', 'AdminBookingsController::index');
+    $routes->get('bookings/data', 'AdminBookingsController::getBookingsAjax');
+    $routes->get('bookings/(:num)/details', 'AdminBookingsController::getBookingDetails/$1');
+    $routes->post('bookings/(:num)/approve', 'AdminBookingsController::approveBooking/$1');
+    $routes->post('bookings/(:num)/approve-with-conflicts', 'AdminBookingsController::approveBookingWithConflicts/$1');
+    $routes->post('bookings/(:num)/reject', 'AdminBookingsController::rejectBooking/$1');
+    $routes->get('bookings/stats', 'AdminBookingsController::getBookingStats');
+
     $routes->get('admin/payments', 'AdminController::paymentsView');
 
     $routes->get('feedback', 'AdminFeedbacksController::feedbackView');
@@ -93,7 +100,7 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->get('venues/delete/(:num)', 'VenueController::delete/$1');
     $routes->post('venues/upload-image', 'VenueController::uploadImage');
 
-    $routes->get('packages', 'PackageController::index');
+    $routes->get('packages-view', 'PackageController::index');
     $routes->get('packages/create', 'PackageController::create');
     $routes->post('packages/store', 'PackageController::store');
     $routes->get('packages/edit/(:num)', 'PackageController::edit/$1');

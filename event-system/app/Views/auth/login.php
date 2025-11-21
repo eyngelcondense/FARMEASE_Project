@@ -233,6 +233,9 @@
           </div>
         </div>
 
+        <input type="checkbox" name="remember">
+        <label for="rememberme" class="">remember me</label>
+
         <a href="<?= site_url('forgot-password')?>" class="forgot">Forgot password?</a>
 
         <button type="submit" class="btn-login">Log in</button>
