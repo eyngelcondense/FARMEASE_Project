@@ -144,7 +144,7 @@
                                 </div>
 
                                 <div class="form-group mt-4">
-                                    <button type="submit" class="btn btn-primary btn-lg">
+                                    <button type="submit" class="btn btn-brown">
                                         <i class="fas fa-save"></i> Create Package
                                     </button>
                                     <a href="<?= base_url('packages'); ?>" class="btn btn-secondary">Cancel</a>
