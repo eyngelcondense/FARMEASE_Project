@@ -149,13 +149,27 @@ $title = "Booking History | San Isidro Labrador Resort and Leisure Farm";
         color: white;
         text-decoration: none;
     }
+
+    /* Buttons */
+    .btn-brown {
+        background-color: #5f493aff;
+        color: #fff;
+        border-color: #7a4b2a;
+    }
+
+    .btn-brown:hover {
+        background-color: #935d3a;
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(122, 75, 42, 0.3);
+    }
 </style>
 
 <div class="container">
     <div class="history-section">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="mb-0" style="color: #3b2a18; font-weight: bold;">My Bookings & Payments</h2>
-            <a href="<?= site_url('booking') ?>" class="btn btn-primary">
+            <a href="<?= site_url('booking') ?>" class="btn btn-brown">
                 <i class="fas fa-plus"></i> New Booking
             </a>
         </div>

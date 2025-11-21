@@ -222,11 +222,8 @@
       </li>
       <li class="nav-item"><a class="nav-link <?= (uri_string() == 'booking') ? 'active' : '' ?>" href="<?= site_url('bookings') ?>">CONTACT</a>
       </li>
-      <li class="nav-item">
-    <a class="nav-link <?= (uri_string() == 'booking_history') ? 'active' : '' ?>" href="<?= site_url('booking_history') ?>">
-        <i class="fas fa-history"></i> MY BOOKINGS
-    </a>
-</li>
+      <li class="nav-item"><a class="nav-link <?= (uri_string() == 'booking_history') ? 'active' : '' ?>" href="<?= site_url('booking_history') ?>">MY BOOKINGS</a> 
+      </li>
       </ul>
     </div>
   </div>
