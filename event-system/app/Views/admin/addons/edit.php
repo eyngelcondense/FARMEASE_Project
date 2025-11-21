@@ -6,9 +6,6 @@
     <!-- Page Header -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-brown">Edit Add-on</h1>
-        <a href="<?= site_url('addons') ?>" class="d-none d-sm-inline-block btn btn-sm btn-brown shadow-sm">
-            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Add-ons
-        </a>
     </div>
 
     <!-- Alert Messages -->
