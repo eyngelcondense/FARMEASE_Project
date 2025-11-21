@@ -250,6 +250,8 @@ $title = "Testimonials | San Isidro Labrador Resort and Leisure Farm";
     }
 </style>
 
+
+
 <!-- Testimonials Header -->
 <section class="testimonials-header">
     <h1>Client Testimonials</h1>
@@ -367,10 +369,11 @@ $title = "Testimonials | San Isidro Labrador Resort and Leisure Farm";
                 <div class="rating-stars">
                     <label class="form-label">Your Rating</label>
                     <div class="star-rating">
-                        <?php for ($i = 5; $i >= 1; $i--): ?>
+                        <?php for ($i = 1; $i <= 5; $i++): ?>
                             <input type="radio" id="star<?= $i ?>" name="rating" value="<?= $i ?>" required>
                             <label for="star<?= $i ?>">★</label>
                         <?php endfor; ?>
+
                     </div>
                 </div>
 
@@ -389,6 +392,8 @@ $title = "Testimonials | San Isidro Labrador Resort and Leisure Farm";
     </div>
 </section>
 
+
+
 <?php include ('footer.php'); ?>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -401,11 +406,12 @@ $title = "Testimonials | San Isidro Labrador Resort and Leisure Farm";
         stars.forEach((star, index) => {
             star.addEventListener('change', function() {
                 labels.forEach((label, labelIndex) => {
-                    if (labelIndex >= (5 - index)) {
+                    if (labelIndex <= index) {
                         label.style.color = '#ffc107';
                     } else {
                         label.style.color = '#ddd';
                     }
+
                 });
             });
         });
