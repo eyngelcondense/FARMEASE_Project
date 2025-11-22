@@ -633,11 +633,11 @@
                             <label class="form-label">Duration (hours) *</label>
                             <select class="form-control" name="duration_hours" id="duration_hours" required>
                                 <option value="">Select Duration</option>
-                                <option value="4" <?= old('duration_hours') == '4' ? 'selected' : '' ?>>4 hours (ends by 11 PM)</option>
-                                <option value="6" <?= old('duration_hours') == '6' ? 'selected' : '' ?>>6 hours (must start by 5 PM)</option>
-                                <option value="8" <?= old('duration_hours') == '8' ? 'selected' : '' ?>>8 hours (must start by 3 PM)</option>
-                                <option value="10" <?= old('duration_hours') == '10' ? 'selected' : '' ?>>10 hours (must start by 1 PM)</option>
-                                <option value="12" <?= old('duration_hours') == '12' ? 'selected' : '' ?>>12 hours (must start by 11 AM)</option>
+                                <option value="4" <?= old('duration_hours') == '4' ? 'selected' : '' ?>>4 hours</option>
+                                <option value="6" <?= old('duration_hours') == '6' ? 'selected' : '' ?>>6 hours</option>
+                                <option value="8" <?= old('duration_hours') == '8' ? 'selected' : '' ?>>8 hours</option>
+                                <option value="10" <?= old('duration_hours') == '10' ? 'selected' : '' ?>>10 hours</option>
+                                <option value="12" <?= old('duration_hours') == '12' ? 'selected' : '' ?>>12 hours</option>
                             </select>
                             <small class="form-text text-muted">All events must conclude by 11 PM</small>
                         </div>

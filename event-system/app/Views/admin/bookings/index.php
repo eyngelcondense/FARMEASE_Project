@@ -904,11 +904,10 @@ function confirmRejection() {
     });
 }
 
-// View calendar
 function viewCalendar() {
-    // Implement calendar view if needed
-    alert('Calendar view would be implemented here');
+    window.location.href = "<?= site_url('admin/calendar'); ?>";
 }
+
 
 // Utility functions
 function formatDate(dateString) {
