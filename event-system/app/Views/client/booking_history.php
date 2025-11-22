@@ -54,10 +54,24 @@ $title = "Booking History | San Isidro Labrador Resort and Leisure Farm";
         font-size: 11px;
         font-weight: bold;
     }
-    .payment-pending { background: #fff3cd; color: #856404; }
-    .payment-partial { background: #d1edff; color: #0c5460; }
-    .payment-paid { background: #d4edda; color: #155724; }
-    .payment-overdue { background: #f8d7da; color: #721c24; }
+    .payment-pending { 
+    background: #fcf8e3; /* Very light, creamy brown/yellow */
+    color: #8a6d3b; /* Medium brown text */
+    }
+    .payment-partial { 
+        background: #faebd7; /* Off-white/Antique white */
+        color: #a0522d; /* Sienna/Terracotta text */
+    }
+
+    .payment-paid { 
+        background: #e6e0d4; /* Light taupe/Muted khaki */
+        color: #4b3832; /* Dark coffee brown text */
+    }
+
+    .payment-overdue { 
+        background: #d2b48c; /* Tan/Light brown (to signify attention) */
+        color: #5d4037; /* Darker, rich brown text */
+    }
     .booking-details {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

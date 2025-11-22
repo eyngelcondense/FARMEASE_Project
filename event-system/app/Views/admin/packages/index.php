@@ -2,6 +2,35 @@
 
 <?= $this->section('content'); ?>
 <style>
+/* Card Styling - Brown Theme */
+.card {
+    background-color: #fff7f0;
+    border: 1px solid #e6d9cc;
+}
+
+.card-body {
+    background-color: #fff7f0;
+}
+
+.table thead th {
+    background-color: #f0e6dc;
+}
+
+* Buttons */
+.btn-brown {
+    background-color: #7a4b2a;
+    color: #fff;
+    border-color: #7a4b2a;
+    transition: all 0.3s ease;
+}
+
+.btn-brown:hover {
+    background-color: #935d3a;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(122, 75, 42, 0.3);
+}
+
 /* Themed Action Buttons */
 .btn-edit-theme {
     background-color: #b9a782;
