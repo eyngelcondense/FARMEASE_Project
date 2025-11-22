@@ -78,13 +78,18 @@
     box-shadow: 0 4px 8px rgba(139, 115, 85, 0.3);
 }
 
+/* Page Header */
+    .page-header-card h1 {
+        color: #5c3a21;
+        font-weight: 700;
+    }
 </style>
 
     <section class="content-header">
         <div class="container-fluid">
             <div class="page-header-card">
             <h1>Package Management</h1>
-        </div>
+            </div>
             <div class="row mb-2">
                 <div class="col-sm-6 text-right mb-3">
                     <a href="<?= base_url('packages/create'); ?>" class="d-none d-sm-inline-block btn btn-sm btn-brown shadow-sm">

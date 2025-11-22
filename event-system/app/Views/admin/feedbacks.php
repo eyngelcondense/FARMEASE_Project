@@ -114,12 +114,18 @@ td .btn {
 td {
     white-space: nowrap;
 }
+
+/* Page Header */
+    .page-header-card h1 {
+        color: #5c3a21;
+        font-weight: 700;
+    }
 </style>
 
 <div class="container-fluid">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3">Feedback / Testimonials</h1>
+    <div class="page-header-card">
+        <h1>Feedback / Testimonials</h1>
     </div>
 
     <!-- SUCCESS / ERROR -->

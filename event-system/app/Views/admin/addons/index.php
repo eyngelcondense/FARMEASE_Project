@@ -67,11 +67,18 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(139, 115, 85, 0.3);
 }
+
+/* Page Header */
+    .page-header-card h1 {
+        color: #5c3a21;
+        font-weight: 700;
+    }
 </style>
+
 
 <div class="container-fluid">
     <!-- Page Header -->
-    <div class="page-header-card brown-header">
+    <div class="page-header-card">
         <h1 class="text-brown">Add-ons Management</h1>
     </div>
 
