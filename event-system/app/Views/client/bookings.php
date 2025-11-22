@@ -1405,7 +1405,7 @@ document.getElementById("event_type").addEventListener("change", function() {
 
     if (this.value === "other") {
         txt.style.display = "block";
-        txt.required = true;  // kailangan sagutin pag Other
+        txt.required = true;
     } else {
         txt.style.display = "none";
         txt.required = false;
