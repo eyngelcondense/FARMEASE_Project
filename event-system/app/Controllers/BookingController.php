@@ -69,6 +69,8 @@ class BookingController extends BaseController
         return view('client/bookings', $data);
     }
 
+    
+
     public function submit()
     {
         // Get session instance
@@ -233,11 +235,20 @@ class BookingController extends BaseController
 
             $totalAmount = $baseAmount + $overtimeAmount + $addonsAmount;
 
+            $eventType = $this->request->getPost('event_type');
+            $eventOther = $this->request->getPost('event_other');
+
+            if ($eventType === 'other' && !empty($eventOther)) {
+                $eventType = 'Other - ' . $eventOther;
+            }
+
+
+
             // Prepare booking data with the actual client_id from clients table
             $bookingData = [
                 'client_id' => $clientId,
                 'booking_reference' => $this->bookingModel->generateBookingReference(),
-                'event_type' => $this->request->getPost('event_type'),
+                'event_type' => $eventType,
                 'event_date' => $eventDate,
                 'start_time' => $startTime,
                 'end_time' => $endTime,

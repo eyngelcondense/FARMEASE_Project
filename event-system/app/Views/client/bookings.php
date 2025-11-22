@@ -598,7 +598,7 @@
                     
                     <div class="row g-3">
                         <div class="col-md-6">
-                        <label class="form-label">Type of Event *</label>
+                            <label class="form-label">Type of Event *</label>
                             <select class="form-select" name="event_type" id="event_type" required>
                                 <option disabled selected>Select Event Type</option>
                                 <option>Social Event</option>
@@ -621,12 +621,13 @@
                                 <option value="other">Other</option>
                             </select>
 
+                            <!-- textbox na lalabas lang pag Other -->
                             <input type="text" 
-                                  name="event_other"
-                                  id="event_other"
-                                  class="form-control mt-2"
-                                  placeholder="Please specify your event"
-                                  style="display:none;">
+                                name="event_other"
+                                id="event_other"
+                                class="form-control mt-2"
+                                placeholder="Please specify your event"
+                                style="display:none;">
 
                         </div>
                         <div class="col-md-6">
@@ -1422,6 +1423,22 @@ document.addEventListener("DOMContentLoaded", function() {
     initializeBookingSystem();
 });
 </script>
+
+<script>
+document.getElementById("event_type").addEventListener("change", function() {
+    const txt = document.getElementById("event_other");
+
+    if (this.value === "other") {
+        txt.style.display = "block";
+        txt.required = true;
+    } else {
+        txt.style.display = "none";
+        txt.required = false;
+        txt.value = "";
+    }
+});
+</script>
+
 
 <?php include ('footer.php'); ?>
 

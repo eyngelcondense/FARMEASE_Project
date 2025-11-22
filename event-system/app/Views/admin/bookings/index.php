@@ -550,7 +550,13 @@ function showBookingDetails(booking, payments, totalPaid, balance) {
         const clientName = booking.client_name || booking.fullname || 'N/A';
         const clientPhone = booking.client_phone || 'N/A';
         const clientEmail = booking.client_email || 'N/A';
-        const eventType = booking.event_type || 'N/A';
+        let eventType = booking.event_type || 'N/A';
+
+// Show custom event type when "Others" is selected
+if (booking.event_type === 'Others' && booking.other_event_type) {
+    eventType = `Others - ${booking.other_event_type}`;
+}
+
         const packageName = booking.package_name || 'N/A';
         const venueName = booking.venue_name || 'N/A';
         const eventDate = booking.event_date ? formatDate(booking.event_date) : 'N/A';
@@ -886,11 +892,10 @@ function confirmRejection() {
     });
 }
 
-// View calendar
 function viewCalendar() {
-    // Implement calendar view if needed
-    alert('Calendar view would be implemented here');
+    window.location.href = "<?= site_url('admin/calendar'); ?>";
 }
+
 
 // Utility functions
 function formatDate(dateString) {
