@@ -62,9 +62,20 @@ $booking = !empty($booking) ? array_values($booking)[0] : null;
 
     <?php if ($payment['receipt_image']): ?>
     <div class="mt-3">
-        <a href="<?= base_url($payment['receipt_image']) ?>" target="_blank" class="btn-pay" style="background: #28a745;">
+        <?php
+        // Check if it's already a full URL or needs base_url
+        if (strpos($payment['receipt_image'], 'http') === 0) {
+            $receiptUrl = $payment['receipt_image'];
+        } elseif (strpos($payment['receipt_image'], 'uploads/') === 0) {
+            $receiptUrl = base_url($payment['receipt_image']);
+        } else {
+            // If it's stored as just a filename from writable folder
+            $receiptUrl = base_url('uploads/receipts/' . basename($payment['receipt_image']));
+        }
+        ?>
+        <a href="<?= $receiptUrl ?>" target="_blank" class="btn-pay" style="background: #28a745;">
             <i class="fas fa-receipt"></i> View Receipt
         </a>
     </div>
-    <?php endif; ?>
+<?php endif; ?>
 </div>

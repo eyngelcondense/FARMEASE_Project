@@ -49,6 +49,7 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:client'
     $routes->get('booking/booked-dates', 'BookingController::bookedDates');
     $routes->get('booking/available-time-slots', 'BookingController::availableTimeSlots');
     $routes->get('booking/package-venues', 'BookingController::packageVenues');
+
     $routes->get('booking_history', 'BookingController::history');
     $routes->get('booking/details/(:num)', 'BookingController::bookingDetails/$1');
     $routes->get('booking/get-addons', 'BookingController::getAddons');
@@ -56,12 +57,26 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:client'
     $routes->post('booking/submit', 'BookingController::submitBooking');
     $routes->get('booking/booked-dates', 'BookingController::getBookedDates');
     $routes->get('booking/get-addons', 'BookingController::getAddons');
+
+    $routes->post('payments/process/(:num)', 'PaymentsController::process/$1');
+    $routes->post('payments/create-redirect', 'PaymentsController::createRedirect');
+    $routes->get('payments/success', 'PaymentsController::success');
+    $routes->post('payments/manual/(:num)', 'PaymentsController::manual/$1');
+    $routes->get('payments/modal/(:num)', 'PaymentsController::modal/$1');
+    $routes->post('payments/submit', 'PaymentsController::submit');
+    $routes->get('payments/failed', 'PaymentsController::failed');
+    $routes->get('receipts/(:any)', 'PaymentsController::showReceipt/$1');
+
     $routes->get('packages', 'ClientController::packages');
     $routes->get('gallery', 'ClientController::gallery');
     $routes->get('testimonials', 'FeedbackController::testimonials');
     $routes->post('feedback/submit', 'FeedbackController::submitFeedback');
     $routes->get('profile', 'ClientController::profileView');
     $routes->post('profile-update', 'ClientController::profileUpdate');
+
+    $routes->get('payments/debug-keys', 'PaymentsController::debugKeys');
+    $routes->get('payments/test-paymongo', 'PaymentsController::testPayMongoDirect');
+    $routes->get('payments/db-test/(:num)', 'PaymentsController::dbTest/$1');
 });
 
 //admin routes

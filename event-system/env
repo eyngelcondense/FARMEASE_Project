@@ -17,6 +17,8 @@
 CI_ENVIRONMENT = development
 app.forceGlobalSecureRequests = false
 GOOGLE_MAPS_API_KEY = AIzaSyDFyO7SREaFQwLZ1fIX0EjInXwOflI1qVQ
+PAYMONGO_PUBLIC_KEY = pk_test_9u7U6qEt2uiuvj1WVNx6n6o3
+PAYMONGO_SECRET_KEY = sk_test_vsbYDXKYZd3Lqm4nAdMMVYX8
 #--------------------------------------------------------------------
 # APP
 #--------------------------------------------------------------------

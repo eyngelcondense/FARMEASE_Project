@@ -5,9 +5,13 @@ $bookingPayments = array_filter($payments, function($payment) use ($booking) {
 });
 
 $totalPaid = 0;
+$hasFailedPayments = false;
 foreach ($bookingPayments as $payment) {
     if ($payment['status'] === 'verified') {
         $totalPaid += $payment['amount'];
+    }
+    if ($payment['status'] === 'failed') {
+        $hasFailedPayments = true;
     }
 }
 
@@ -17,6 +21,8 @@ if ($totalPaid >= $booking['total_amount']) {
     $paymentStatus = 'paid';
 } elseif ($totalPaid > 0) {
     $paymentStatus = 'partial';
+} elseif ($hasFailedPayments) {
+    $paymentStatus = 'failed';
 } elseif (strtotime($booking['event_date']) < time() && $booking['status'] === 'approved') {
     $paymentStatus = 'overdue';
 }
@@ -31,6 +37,9 @@ if ($totalPaid >= $booking['total_amount']) {
             </span>
             <span class="payment-status payment-<?= $paymentStatus ?>">
                 Payment: <?= ucfirst($paymentStatus) ?>
+                <?php if ($paymentStatus === 'failed'): ?>
+                    <small style="display: block; font-size: 0.7em; opacity: 0.8;">Recent payment failed</small>
+                <?php endif; ?>
             </span>
         </div>
         <div>
@@ -90,6 +99,9 @@ if ($totalPaid >= $booking['total_amount']) {
                     <span>₱<?= number_format($payment['amount'], 2) ?></span><br>
                     <span class="payment-status payment-<?= $payment['status'] ?>">
                         <?= ucfirst($payment['status']) ?>
+                        <?php if ($payment['status'] === 'failed'): ?>
+                            <br><small style="font-size: 0.7em; opacity: 0.8;">Try again</small>
+                        <?php endif; ?>
                     </span>
                 </div>
             </div>
@@ -103,9 +115,10 @@ if ($totalPaid >= $booking['total_amount']) {
         </button>
         
         <?php if ($booking['status'] === 'approved' && $balance > 0): ?>
-            <a href="<?= site_url('payments/make-payment/' . $booking['id']) ?>" class="btn-pay">
-                <i class="fas fa-credit-card"></i> Make Payment
-            </a>
+            <button class="btn-pay" data-bs-toggle="modal" data-bs-target="#paymentModal" onclick="showPaymentModal(<?= $booking['id'] ?>)">
+                <i class="fas fa-credit-card"></i>
+                <?= $hasFailedPayments ? 'Retry Payment' : 'Make Payment' ?>
+            </button>
         <?php endif; ?>
     </div>
 </div>

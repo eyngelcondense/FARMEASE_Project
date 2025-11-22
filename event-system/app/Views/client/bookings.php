@@ -7,6 +7,14 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
   <style>
+    .payment-failed {
+    background: #dc3545;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: bold;
+}
     .section-title {
       text-align: center;
       font-weight: bold;
@@ -376,62 +384,62 @@
     border-radius: 8px;
     padding: 10px;
     background: white;
-}
-.time-slot {
-    padding: 8px 12px;
-    margin: 5px 0;
-    border: 2px solid #e8e3da;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s;
-    background: white;
-    display: block;
-    width: 100%;
-    text-align: center;
-}
-.time-slot:hover {
-    border-color: #7c6a43;
-    background: #f8f6f3;
-}
-.time-slot.selected {
-    background: #7c6a43;
-    color: white;
-    border-color: #3b2a18;
-}
-.time-slot.unavailable {
-    background: #f8d7da;
-    color: #721c24;
-    border-color: #f5c6cb;
-    cursor: not-allowed;
-}
-.duration-info {
-    font-size: 12px;
-    color: #666;
-    margin-top: 2px;
-}
-.addon-card {
-    transition: all 0.3s ease;
-    background: white;
-}
+    }
+    .time-slot {
+        padding: 8px 12px;
+        margin: 5px 0;
+        border: 2px solid #e8e3da;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        background: white;
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+    .time-slot:hover {
+        border-color: #7c6a43;
+        background: #f8f6f3;
+    }
+    .time-slot.selected {
+        background: #7c6a43;
+        color: white;
+        border-color: #3b2a18;
+    }
+    .time-slot.unavailable {
+        background: #f8d7da;
+        color: #721c24;
+        border-color: #f5c6cb;
+        cursor: not-allowed;
+    }
+    .duration-info {
+        font-size: 12px;
+        color: #666;
+        margin-top: 2px;
+    }
+    .addon-card {
+        transition: all 0.3s ease;
+        background: white;
+    }
 
-.addon-card:hover {
-    border-color: #7c6a43 !important;
-    box-shadow: 0 2px 8px rgba(124, 106, 67, 0.1);
-}
+    .addon-card:hover {
+        border-color: #7c6a43 !important;
+        box-shadow: 0 2px 8px rgba(124, 106, 67, 0.1);
+    }
 
-.addon-checkbox:checked ~ label {
-    color: #7c6a43;
-    font-weight: bold;
-}
+    .addon-checkbox:checked ~ label {
+        color: #7c6a43;
+        font-weight: bold;
+    }
 
-.addon-card .form-check-input:checked {
-    background-color: #7c6a43;
-    border-color: #7c6a43;
-}
+    .addon-card .form-check-input:checked {
+        background-color: #7c6a43;
+        border-color: #7c6a43;
+    }
 
-.addon-quantity .input-group {
-    width: 120px;
-}
+    .addon-quantity .input-group {
+        width: 120px;
+    }
   </style>
 
 
@@ -590,10 +598,36 @@
                     
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label">Type of Event *</label>
-                            <input type="text" class="form-control" name="event_type" 
-                                value="<?= old('event_type') ?>"
-                                placeholder="e.g., Birthday, Wedding, Corporate Event" required>
+                        <label class="form-label">Type of Event *</label>
+                            <select class="form-select" name="event_type" id="event_type" required>
+                                <option disabled selected>Select Event Type</option>
+                                <option>Social Event</option>
+                                <option>Family Event</option>
+                                <option>Milestone Celebration</option>
+                                <option>Baby & Kids Event</option>
+                                <option>Reunion / Get-Together</option>
+                                <option>Wedding Ceremony</option>
+                                <option>Wedding Reception</option>
+                                <option>Pre-Wedding Event</option>
+                                <option>Corporate Meeting</option>
+                                <option>Team Building</option>
+                                <option>Seminar / Workshop</option>
+                                <option>Training / Leadership Session</option>
+                                <option>Photoshoot Session</option>
+                                <option>Prenup / Creative Shoot</option>
+                                <option>Commercial / Video Shoot</option>
+                                <option>Picnic / Leisure Gathering</option>
+                                <option>Playground Activity</option>
+                                <option value="other">Other</option>
+                            </select>
+
+                            <input type="text" 
+                                  name="event_other"
+                                  id="event_other"
+                                  class="form-control mt-2"
+                                  placeholder="Please specify your event"
+                                  style="display:none;">
+
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Event Date *</label>
@@ -605,12 +639,14 @@
                         <div class="col-md-6">
                             <label class="form-label">Duration (hours) *</label>
                             <select class="form-control" name="duration_hours" id="duration_hours" required>
-                                <option value="">Select Duration</option>
-                                <option value="4" <?= old('duration_hours') == '4' ? 'selected' : '' ?>>4 hours (ends by 11 PM)</option>
-                                <option value="6" <?= old('duration_hours') == '6' ? 'selected' : '' ?>>6 hours (must start by 5 PM)</option>
-                                <option value="8" <?= old('duration_hours') == '8' ? 'selected' : '' ?>>8 hours (must start by 3 PM)</option>
-                                <option value="10" <?= old('duration_hours') == '10' ? 'selected' : '' ?>>10 hours (must start by 1 PM)</option>
-                                <option value="12" <?= old('duration_hours') == '12' ? 'selected' : '' ?>>12 hours (must start by 11 AM)</option>
+                                <option disabled selected>Select Duration</option>
+                                <option value="4" <?= old('duration_hours') == '4' ? 'selected' : '' ?>>4 Hours</option>
+                                <option value="5" <?= old('duration_hours') == '5' ? 'selected' : '' ?>>5 Hours</option>
+                                <option value="6" <?= old('duration_hours') == '6' ? 'selected' : '' ?>>6 Hours</option>
+                                <option value="8" <?= old('duration_hours') == '8' ? 'selected' : '' ?>>8 Hours</option>
+                                <option value="10" <?= old('duration_hours') == '10' ? 'selected' : '' ?>>10 Hours</option>
+                                <option value="12" <?= old('duration_hours') == '12' ? 'selected' : '' ?>>12 Hours</option>
+                                <option value="13" <?= old('duration_hours') == '13' ? 'selected' : '' ?>>13 Hours</option>
                             </select>
                             <small class="form-text text-muted">All events must conclude by 11 PM</small>
                         </div>
@@ -695,6 +731,21 @@
         </div>
     </div>
 </div>
+
+<script>
+document.getElementById("event_type").addEventListener("change", function() {
+    const txt = document.getElementById("event_other");
+
+    if (this.value === "other") {
+        txt.style.display = "block";
+        txt.required = true; 
+    } else {
+        txt.style.display = "none";
+        txt.required = false;
+        txt.value = "";
+    }
+});
+</script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {

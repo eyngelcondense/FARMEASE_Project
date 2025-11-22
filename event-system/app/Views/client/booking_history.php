@@ -267,7 +267,6 @@ $title = "Booking History | San Isidro Labrador Resort and Leisure Farm";
 
 <script>
 function switchTab(tabName) {
-    // Hide all tab contents
     document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
     });
@@ -288,7 +287,6 @@ function viewBookingDetails(bookingId) {
     fetch(`<?= site_url('booking/details/') ?>${bookingId}`)
         .then(response => response.json())
         .then(booking => {
-            // Create a modal or show details in an alert
             const details = `
 Booking Details:
 
@@ -310,6 +308,83 @@ Balance: ₱${parseFloat(booking.balance || 0).toFixed(2)}
             alert('Error loading booking details.');
         });
 }
+
+// Payment Modal Functions
+function showPaymentModal(bookingId) {
+    const modal = document.getElementById('paymentModal');
+    const modalBody = document.getElementById('paymentModalBody');
+    
+    // Clear previous content and remove any existing backdrop
+    modalBody.innerHTML = '';
+    const existingBackdrop = document.querySelector('.modal-backdrop');
+    if (existingBackdrop) {
+        existingBackdrop.remove();
+    }
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+    
+    // Show loading state
+    modalBody.innerHTML = '<div class="text-center p-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div><p class="mt-3">Loading payment form...</p></div>';
+    
+    // Show modal
+    const bsModal = new bootstrap.Modal(modal, {
+        backdrop: true,
+        keyboard: true
+    });
+    bsModal.show();
+    
+    // Load modal content via AJAX
+    fetch(`<?= site_url('payments/modal/') ?>${bookingId}`, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.text())
+    .then(html => {
+        modalBody.innerHTML = html;
+        
+        // Re-execute scripts in the loaded content
+        const scripts = modalBody.querySelectorAll('script');
+        scripts.forEach(oldScript => {
+            const newScript = document.createElement('script');
+            if (oldScript.src) {
+                newScript.src = oldScript.src;
+            } else {
+                newScript.textContent = oldScript.textContent;
+            }
+            document.body.appendChild(newScript);
+            oldScript.remove();
+        });
+    })
+    .catch(error => {
+        console.error('Error loading payment modal:', error);
+        modalBody.innerHTML = '<div class="alert alert-danger">Error loading payment form. Please try again.</div>';
+    });
+    
+    // Clean up backdrop when modal is hidden
+    modal.addEventListener('hidden.bs.modal', function() {
+        const backdrop = document.querySelector('.modal-backdrop');
+        if (backdrop) {
+            backdrop.remove();
+        }
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+    }, { once: true });
+}
 </script>
+
+<!-- Payment Modal -->
+<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-body" id="paymentModalBody">
+                <!-- Content will be loaded here via AJAX -->
+            </div>
+        </div>
+    </div>
+</div>
 
 <?php include ('footer.php'); ?>
