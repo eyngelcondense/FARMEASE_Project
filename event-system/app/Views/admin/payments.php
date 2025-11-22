@@ -4,19 +4,6 @@
 
 <?= $this->section('content') ?>
 <style>
-    /* Page Header */
-    .page-header-card {
-        background-color: #f5f0eb;
-        padding: 20px 25px;
-        border-radius: 10px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        margin-bottom: 20px;
-    }
-
-    .page-header-card h1 {
-        color: #5c3a21;
-        font-weight: 700;
-    }
 
     /* Filter Section */
     .filter-section {
@@ -58,6 +45,11 @@
     .form-select:focus {
         border-color: #7a4b2a;
         box-shadow: 0 0 0 0.2rem rgba(122, 75, 42, 0.25);
+    }
+    /* Page Header */
+    .page-header-card h1 {
+        color: #5c3a21;
+        font-weight: 700;
     }
 </style>
 

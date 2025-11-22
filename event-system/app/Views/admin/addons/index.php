@@ -2,6 +2,25 @@
 <?= $this->extend('admin/layout') ?>
 <?= $this->section('content') ?>
 <style>
+/* Card Styling - Brown Theme */
+.card {
+    background-color: #fff7f0;
+    border: 1px solid #e6d9cc;
+}
+
+.card-header {
+    background-color: #f0e6dc;
+    border-color: #d9b79c;
+}
+
+.card-body {
+    background-color: #fff7f0;
+}
+
+.table thead th {
+    background-color: #f0e6dc;
+}
+
 /* Themed Action Buttons */
 .btn-edit-theme {
     background-color: #b9a782;
@@ -49,12 +68,17 @@
     box-shadow: 0 4px 8px rgba(139, 115, 85, 0.3);
 }
 
-
-
+/* Page Header */
+    .page-header-card h1 {
+        color: #5c3a21;
+        font-weight: 700;
+    }
 </style>
+
+
 <div class="container-fluid">
     <!-- Page Header -->
-    <div class="page-header-card brown-header">
+    <div class="page-header-card">
         <h1 class="text-brown">Add-ons Management</h1>
     </div>
 

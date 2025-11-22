@@ -5,10 +5,127 @@ $current_page = isset($current_page) ? $current_page : 'feedback';
 
 <?= $this->section('content') ?>
 
+<style>
+/* Table & Card Styling - Brown Theme */
+.table {
+    background-color: #fff7f0;
+}
+
+.table-light {
+    background-color: #f0e6dc;
+}
+
+.table-light th {
+    color: #5c3a21;
+    font-weight: 600;
+}
+
+.table tbody tr {
+    border-color: #e6d9cc;
+}
+
+.table tbody tr:hover {
+    background-color: #fffaf4;
+}
+
+/* Buttons - Brown Theme with distinct shades */
+.btn-success {
+    background-color: #a67c52;
+    border-color: #a67c52;
+    color: #fff;
+}
+
+.btn-success:hover {
+    background-color: #935d3a;
+    border-color: #935d3a;
+    transform: translateY(-1px);
+}
+
+.btn-danger {
+    background-color: #5c3a21;
+    border-color: #5c3a21;
+    color: #fff;
+}
+
+.btn-danger:hover {
+    background-color: #462b17;
+    border-color: #462b17;
+    transform: translateY(-1px);
+}
+
+/* Badges - Distinct brown shades */
+.badge.bg-warning {
+    background-color: #d4a373 !important;
+    color: #fff !important;
+}
+
+.badge.bg-success {
+    background-color: #a67c52 !important;
+    color: #fff !important;
+}
+
+.badge.bg-secondary {
+    background-color: #7a4b2a !important;
+    color: #fff !important;
+}
+
+/* Button Styling */
+.btn-sm {
+    padding: 0.35rem 0.6rem;
+    white-space: nowrap;
+}
+
+/* Keep buttons on one row */
+td .btn {
+    display: inline-block;
+    margin-right: 0.25rem;
+}
+
+/* Alert Styling */
+.alert-success {
+    background-color: #a67c52;
+    color: #fff;
+    border: none;
+}
+
+.alert-danger {
+    background-color: #b55b33;
+    color: #fff;
+    border: none;
+}
+
+/* Page Title */
+.h3 {
+    color: #5c3a21;
+    font-weight: 700;
+}
+
+.h4 {
+    color: #5c3a21;
+    font-weight: 600;
+}
+
+td .btn {
+    display: inline-block;
+    margin-right: 0.25rem;
+    white-space: nowrap;
+}
+
+td {
+    white-space: nowrap;
+}
+
+/* Page Header */
+    .page-header-card h1 {
+        color: #5c3a21;
+        font-weight: 700;
+    }
+</style>
+
 <div class="container-fluid">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3">Feedback / Testimonials</h1>
+    <div class="page-header-card">
+        <h1>Feedback / Testimonials</h1>
     </div>
 
     <!-- SUCCESS / ERROR -->
