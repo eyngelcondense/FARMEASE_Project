@@ -5,10 +5,7 @@
 <div class="container-fluid">
     <!-- Page Header -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Edit Add-on</h1>
-        <a href="<?= site_url('addons') ?>" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
-            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Add-ons
-        </a>
+        <h1 class="h3 mb-0 text-brown">Edit Add-on</h1>
     </div>
 
     <!-- Alert Messages -->
@@ -26,9 +23,9 @@
     <?php endif; ?>
 
     <!-- Form -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Edit Add-on Information</h6>
+    <div class="card shadow mb-4 border-brown">
+        <div class="card-header py-3 brown-card-header">
+            <h6 class="m-0 font-weight-bold text-brown">Edit Add-on Information</h6>
         </div>
         <div class="card-body">
             <form action="<?= site_url('addons/update/' . $addon['id']) ?>" method="post">
@@ -37,15 +34,15 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="name">Add-on Name *</label>
-                            <input type="text" class="form-control" id="name" name="name" 
+                            <label for="name" class="text-brown">Add-on Name *</label>
+                            <input type="text" class="form-control border-brown" id="name" name="name" 
                                    value="<?= old('name', $addon['name']) ?>" required>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="type">Type *</label>
-                            <select class="form-control" id="type" name="type" required>
+                            <label for="type" class="text-brown">Type *</label>
+                            <select class="form-control border-brown" id="type" name="type" required>
                                 <option value="equipment" <?= $addon['type'] == 'equipment' ? 'selected' : '' ?>>Equipment</option>
                                 <option value="service" <?= $addon['type'] == 'service' ? 'selected' : '' ?>>Service</option>
                                 <option value="food" <?= $addon['type'] == 'food' ? 'selected' : '' ?>>Food & Beverage</option>
@@ -57,15 +54,15 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="price">Price (₱) *</label>
-                            <input type="number" class="form-control" id="price" name="price" 
+                            <label for="price" class="text-brown">Price (₱) *</label>
+                            <input type="number" class="form-control border-brown" id="price" name="price" 
                                    value="<?= old('price', $addon['price']) ?>" step="0.01" min="0" required>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="status">Status *</label>
-                            <select class="form-control" id="status" name="status" required>
+                            <label for="status" class="text-brown">Status *</label>
+                            <select class="form-control border-brown" id="status" name="status" required>
                                 <option value="active" <?= $addon['status'] == 'active' ? 'selected' : '' ?>>Active</option>
                                 <option value="inactive" <?= $addon['status'] == 'inactive' ? 'selected' : '' ?>>Inactive</option>
                             </select>
@@ -74,13 +71,12 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="description">Description *</label>
-                    <textarea class="form-control" id="description" name="description" rows="4" 
-                              required><?= old('description', $addon['description']) ?></textarea>
+                    <label for="description" class="text-brown">Description *</label>
+                    <textarea class="form-control border-brown" id="description" name="description" rows="4" required><?= old('description', $addon['description']) ?></textarea>
                 </div>
 
                 <div class="form-group text-right">
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-brown">
                         <i class="fas fa-save"></i> Update Add-on
                     </button>
                     <a href="<?= site_url('addons') ?>" class="btn btn-secondary">Cancel</a>

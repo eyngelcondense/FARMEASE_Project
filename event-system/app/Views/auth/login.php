@@ -76,17 +76,47 @@
       color: #b9a782;
     }
 
+    /* Remember Me & Forgot Password Row */
+    .remember-forgot-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      margin-bottom: 5px;
+    }
+
+    .remember-me-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .remember-me-wrapper input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: #7c6a43;
+      border: 2px solid #b9a782;
+      border-radius: 4px;
+    }
+
+    .remember-me-wrapper label {
+      font-size: 0.85rem;
+      color: #4b4b4b;
+      margin: 0;
+      cursor: pointer;
+      user-select: none;
+    }
+
     .forgot {
-      display: block;
-      text-align: right;
       font-size: 0.85rem;
       color: #4b4b4b;
       text-decoration: none;
-      margin-top: 5px;
     }
 
     .forgot:hover {
       text-decoration: underline;
+      color: #7c6a43;
     }
 
     .btn-login {
@@ -233,11 +263,15 @@
           </div>
         </div>
 
-        <input type="checkbox" name="remember">
-        <label for="rememberme" class="">remember me</label>
+         <div class="remember-forgot-row">
+          <div class="remember-me-wrapper">
+            <input type="checkbox" name="remember" id="rememberme">
+            <label for="rememberme">Remember me</label>
+          </div>
+          <a href="<?= site_url('forgot-password')?>" class="forgot">Forgot password?</a>
+        </div>
 
-        <a href="<?= site_url('forgot-password')?>" class="forgot">Forgot password?</a>
-
+        
         <button type="submit" class="btn-login">Log in</button>
         <button type="button" class="btn-signup" id="signupBtn">Sign up</button>
         

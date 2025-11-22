@@ -6,9 +6,6 @@
     <!-- Page Header -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Edit Venue</h1>
-        <a href="<?= site_url('venues') ?>" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
-            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Venues
-        </a>
     </div>
 
     <!-- Alert Messages -->
@@ -28,7 +25,7 @@
     <!-- Form -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Edit Venue Information</h6>
+            <h6 class="m-0 font-weight-bold" style="color: dark brown">Edit Venue Information</h6>
         </div>
         <div class="card-body">
             <form action="<?= site_url('venues/update/' . $venue['id']) ?>" method="post" enctype="multipart/form-data">
@@ -80,7 +77,7 @@
                 </div>
 
                 <div class="form-group text-right">
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-brown">
                         <i class="fas fa-save"></i> Update Venue
                     </button>
                     <a href="<?= site_url('venues') ?>" class="btn btn-secondary">Cancel</a>
