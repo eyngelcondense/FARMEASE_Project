@@ -12,35 +12,38 @@ class PaymentModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
+    
     protected $allowedFields    = [
-        'booking_id', 'payment_reference', 'amount', 
-        'payment_method', 'payment_date', 'receipt_image',
-        'status', 'verified_by', 'verified_at', 'notes', 'created_at'
+        'booking_id', 
+        'client_id',           // Now exists in database
+        'payment_reference', 
+        'ref_number',          // Now exists in database  
+        'amount', 
+        'payment_method', 
+        'payment_date', 
+        'receipt_image',
+        'status', 
+        'verified_by', 
+        'verified_at', 
+        'notes', 
+        'created_at'
     ];
 
-    protected bool $allowEmptyInserts = false;
+    protected $useTimestamps = false;
 
-    // Dates
-    protected $useTimestamps = true;
-    protected $dateFormat    = 'datetime';
-    protected $createdField  = 'created_at';
-    protected $updatedField  = null;
-
-    // Validation
-    protected $validationRules      = [
-        'booking_id' => 'required|integer',
-        'amount'     => 'required|decimal',
-        'payment_method' => 'required|in_list[gcash,paymaya,bank_transfer,cash]',
-        'payment_date' => 'required|valid_date',
-        'status'     => 'required|in_list[pending,verified,rejected]'
+    // Validation rules
+    protected $validationRules = [
+        'booking_id' => 'required|is_natural_no_zero',
+        'client_id' => 'required|is_natural_no_zero',
+        'amount' => 'required|decimal|greater_than[0]',
+        'payment_method' => 'required',
+        'payment_date' => 'required|valid_date'
     ];
-    protected $validationMessages   = [];
-    protected $skipValidation       = false;
+
+    protected $validationMessages = [];
+    protected $skipValidation = false;
     protected $cleanValidationRules = true;
 
-    /**
-     * Generate unique payment reference
-     */
     public function generatePaymentReference()
     {
         $prefix = 'PAY';
@@ -51,7 +54,7 @@ class PaymentModel extends Model
     }
 
     /**
-     * Get payments by booking - FIXED VERSION
+     * Get payments by booking
      */
     public function getPaymentsByBooking($bookingId)
     {
@@ -110,5 +113,28 @@ class PaymentModel extends Model
             'verified_at' => date('Y-m-d H:i:s'),
             'notes' => $notes
         ]);
+    }
+
+    /**
+     * Create payment with proper reference number
+     */
+    public function createPayment($data)
+    {
+        // Generate payment reference if not provided
+        if (!isset($data['payment_reference'])) {
+            $data['payment_reference'] = $this->generatePaymentReference();
+        }
+        
+        // Ensure ref_number is set (for PayMongo compatibility)
+        if (!isset($data['ref_number']) && isset($data['payment_reference'])) {
+            $data['ref_number'] = $data['payment_reference'];
+        }
+        
+        // Set created_at if not provided
+        if (!isset($data['created_at'])) {
+            $data['created_at'] = date('Y-m-d H:i:s');
+        }
+        
+        return $this->insert($data);
     }
 }

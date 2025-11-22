@@ -6,23 +6,12 @@ $title = "Bookings - San Isidro Labrador Resort";
 
 <?= $this->section('content') ?>
 <style>
-    /* General Page Header */
-.page-header-card {
-    background-color: #f5f0eb; /* soft beige background */
-    padding: 20px 25px;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-}
 
-.page-header-card h1 {
-    color: #5c3a21; /* deep brown */
-    font-weight: 700;
-}
-
-.page-header-card p.text-muted {
-    color: #8c6a4c; /* lighter brown */
-}
+/* Page Header */
+    .page-header-card h1 {
+        color: #5c3a21;
+        font-weight: 700;
+    }
 
 /* Statistic Cards */
 .stat-card {
@@ -205,7 +194,6 @@ $title = "Bookings - San Isidro Labrador Resort";
 </style>
     <div class="page-header-card">
         <h1>Bookings Management</h1>
-        <p class="text-muted">Manage and approve booking requests for resort packages</p>
     </div>
 
     <!-- Statistics Cards -->
@@ -562,7 +550,13 @@ function showBookingDetails(booking, payments, totalPaid, balance) {
         const clientName = booking.client_name || booking.fullname || 'N/A';
         const clientPhone = booking.client_phone || 'N/A';
         const clientEmail = booking.client_email || 'N/A';
-        const eventType = booking.event_type || 'N/A';
+        let eventType = booking.event_type || 'N/A';
+
+// Show custom event type when "Others" is selected
+if (booking.event_type === 'Others' && booking.other_event_type) {
+    eventType = `Others - ${booking.other_event_type}`;
+}
+
         const packageName = booking.package_name || 'N/A';
         const venueName = booking.venue_name || 'N/A';
         const eventDate = booking.event_date ? formatDate(booking.event_date) : 'N/A';
@@ -898,11 +892,10 @@ function confirmRejection() {
     });
 }
 
-// View calendar
 function viewCalendar() {
-    // Implement calendar view if needed
-    alert('Calendar view would be implemented here');
+    window.location.href = "<?= site_url('admin/calendar'); ?>";
 }
+
 
 // Utility functions
 function formatDate(dateString) {
