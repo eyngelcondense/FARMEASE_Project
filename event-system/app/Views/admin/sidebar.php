@@ -35,7 +35,7 @@ if (!isset($current_page)) {
         </div>
         <ul class="nav-menu">
             <li class="nav-item">
-                <a href="<?= site_url('dashboard')?>" 
+                <a href="<?= site_url('admin/dashboard')?>" 
                    class="nav-link <?= $current_page === 'dashboard' ? 'active' : '' ?>">
                     <i class="fas fa-th-large"></i>
                     <span>Dashboard</span>
@@ -123,7 +123,7 @@ if (!isset($current_page)) {
                 </a>
             </li>
             <li class="nav-item">
-                <a href="<?= site_url('admin/transactions')?>" 
+                <a href="<?= site_url('admin/client-transactions')?>" 
                    class="nav-link <?= $current_page === 'transactions' ? 'active' : '' ?>">
                     <i class="fas fa-history"></i>
                     <span>Transactions</span>

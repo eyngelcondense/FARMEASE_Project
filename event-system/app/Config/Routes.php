@@ -83,7 +83,12 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:client'
 
 //admin routes
 $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin'], static function ($routes) {
-    $routes->get('dashboard', 'AdminController::dashboardView');
+    
+    $routes->get('admin/dashboard', 'DashboardController::index');
+    $routes->get('admin/dashboard/stats', 'DashboardController::getStats');
+    $routes->get('admin/dashboard/chart-data', 'DashboardController::getChartData');
+    $routes->get('admin/dashboard/recent-bookings', 'DashboardController::getRecentBookings');
+    $routes->get('admin/dashboard/upcoming-events', 'DashboardController::getUpcomingEvents');
 
     $routes->get('admin/bookings', 'AdminBookingsController::index');
     $routes->get('bookings/data', 'AdminBookingsController::getBookingsAjax');
@@ -93,7 +98,10 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->post('bookings/(:num)/reject', 'AdminBookingsController::rejectBooking/$1');
     $routes->get('bookings/stats', 'AdminBookingsController::getBookingStats');
 
-    $routes->get('admin/payments', 'AdminController::paymentsView');
+    $routes->get('admin/payments', 'AdminPaymentsController::index');
+    $routes->get('admin/payments/(:num)', 'AdminPaymentsController::show/$1');
+    $routes->post('admin/payments/verify/(:num)', 'AdminPaymentsController::verify/$1');
+    $routes->post('admin/payments/reject/(:num)', 'AdminPaymentsController::reject/$1');
 
     $routes->get('feedback', 'AdminFeedbacksController::feedbackView');
     $routes->post('feedback/reject/(:num)', 'AdminFeedbacksController::reject/$1');
@@ -106,13 +114,20 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->delete('admin/gallery/delete/(:num)', 'AdminGalleryController::delete/$1');
     $routes->get('admin/gallery/items', 'AdminGalleryController::items');
     
-    $routes->get('admin/calendar', 'AdminController::calendarView');
+    $routes->get('admin/calendar', 'CalendarController::index');
+    $routes->get('admin/calendar/data', 'CalendarController::getCalendarData');
+    $routes->get('admin/calendar/time-slots', 'CalendarController::getTimeSlots');
+    $routes->get('admin/calendar/booking/(:num)', 'CalendarController::getBookingDetails/$1');
+    $routes->get('admin/calendar/grid-data', 'CalendarController::getCalendarGridData');
+    $routes->post('admin/calendar/update-status', 'CalendarController::updateBookingStatus');   
+
     $routes->get('manage-staff', 'AdminController::manageStaffView');
 
     $routes->get('notifications', 'NotificationsController::index');
     $routes->get('notifications/get', 'NotificationsController::get');
     $routes->post('notifications/mark-read/(:num)', 'NotificationsController::markRead/$1');
     $routes->post('notifications/mark-all-read', 'NotificationsController::markAllRead');
+    
 
     $routes->get('venues', 'VenueController::index');
     $routes->get('venues/create', 'VenueController::create');
@@ -139,5 +154,19 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->post('packages/link-venue', 'PackageController::linkVenue');
     $routes->post('packages/unlink-venue/(:num)', 'PackageController::unlinkVenue/$1');
     $routes->post('packages/set-primary-venue', 'PackageController::setPrimaryVenue');
+
+    $routes->post('admin/users/add-to-group/(:num)', 'UsersController::addToGroup/$1');
+    $routes->post('admin/users/remove-from-group/(:num)', 'UsersController::removeFromGroup/$1');
+    $routes->get('admin/users', 'UsersController::index');
+    $routes->get('admin/users/(:num)', 'UsersController::show/$1');
+    $routes->post('admin/users/toggle-status/(:num)', 'UsersController::toggleStatus/$1');
+    $routes->post('admin/users/make-admin/(:num)', 'UsersController::makeAdmin/$1');
+    $routes->post('admin/users/make-client/(:num)', 'UsersController::makeClient/$1');
+    $routes->post('admin/users/update/(:num)', 'UsersController::update/$1');
+    $routes->post('admin/users/delete/(:num)', 'UsersController::delete/$1');
+
+    $routes->get('admin/client-transactions', 'ClientTransactionsController::index');
+    $routes->get('admin/client-transactions/(:num)', 'ClientTransactionsController::show/$1');
+    $routes->get('admin/client-transactions/print/(:num)', 'ClientTransactionsController::printHistory/$1');
     
 });

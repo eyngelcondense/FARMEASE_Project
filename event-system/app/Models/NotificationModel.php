@@ -17,7 +17,8 @@ class NotificationModel extends Model
         'user_id',
         'related_type',
         'related_id',
-        'created_at'
+        'created_at',
+        'updated_at'
     ];
     
     protected $useTimestamps = true;

@@ -22,7 +22,8 @@ class AdminGalleryController extends BaseController
         $data = [
             'title' => 'Venue Gallery Management',
             'venues' => $this->venueModel->where('status', 'active')->findAll(),
-            'venueImages' => $this->venueImageModel->getVenueImagesWithDetails()
+            'venueImages' => $this->venueImageModel->getVenueImagesWithDetails(),
+            'current_page' => 'gallery'
         ];
         
         return view('admin/gallery', $data);
