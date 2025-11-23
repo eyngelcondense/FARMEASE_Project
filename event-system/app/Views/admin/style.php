@@ -14,6 +14,64 @@
             transition: all 0.3s ease;
         }
 
+        .gallery-card .card {
+    min-height: 400px;
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+}
+
+.gallery-card .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+    border-color: #007bff;
+}
+
+.gallery-card .card-img-container {
+    border-bottom: 1px solid #e9ecef;
+}
+
+.gallery-card .card-body {
+    padding: 1.25rem;
+    flex: 1;
+}
+
+.gallery-card .card-title {
+    font-size: 1.1rem;
+    color: #2c3e50;
+    line-height: 1.4;
+}
+
+.gallery-card .card-meta {
+    font-size: 0.85rem;
+}
+
+.gallery-card .card-footer {
+    padding: 1rem 1.25rem;
+    background: #f8f9fa !important;
+    border-top: 1px solid #e9ecef !important;
+}
+
+.gallery-card .btn-group .btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+    border: 1px solid #dee2e6;
+}
+
+.gallery-card .btn-group .btn:hover {
+    transform: none;
+}
+
+/* Ensure consistent card heights */
+.gallery-grid .row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.gallery-grid .row > [class*='col-'] {
+    display: flex;
+    flex-direction: column;
+}
+
         /* ===== SIDEBAR STYLES ===== */
         .star{
             color: yellow;

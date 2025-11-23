@@ -393,7 +393,7 @@ window.initializePayMongo = function() {
     function initializePayMongoInstance() {
         try {
         // TEMPORARY: Hardcode your actual public key for testing
-        const publicKey = 'pk_test_9u7U6qEt2uiuvj1WVNx6n6o3';
+        const publicKey = 'pk_test_9u7U6qEt2uiuvj1WVNx6n6o3 ';
         
         console.log('Initializing PayMongo with key:', publicKey.substring(0, 10) + '...');
         

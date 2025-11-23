@@ -141,4 +141,42 @@ class PackageController extends BaseController
         $this->packageModel->delete($id);
         return redirect()->to('/admin/packages')->with('success', 'Package deleted successfully!');
     }
+
+    public function getPackagesWithVenues()
+    {
+        $packageModel = new PackageModel();
+        
+        $packages = $packageModel->where('status', 'active')->findAll();
+        $packageData = [];
+        
+        foreach ($packages as $package) {
+            // Get venues for this package
+            $venues = $packageModel->getPackageVenues($package['id']);
+            
+            if (!empty($venues)) {
+                $packageVenues = [];
+                foreach ($venues as $venue) {
+                    $packageVenues[] = [
+                        'id' => $venue['id'], // Make sure this is included
+                        'name' => $venue['name'],
+                        'description' => $venue['description'],
+                        'image_url' => base_url($venue['image_url']),
+                        'is_primary' => $venue['is_primary'] ?? 0
+                    ];
+                }
+                
+                $packageData[] = [
+                    'id' => $package['id'],
+                    'name' => $package['name'],
+                    'description' => $package['description'],
+                    'venues' => $packageVenues
+                ];
+            }
+        }
+        
+        return $this->response->setJSON([
+            'success' => true,
+            'data' => $packageData
+        ]);
+    }
 }

@@ -38,7 +38,7 @@ $routes->group('', ['namespace' => 'App\Controllers\Auth'], static function ($ro
     $routes->post('reset-password', 'ForgotPasswordController::handleResetPassword');
 
 });
-service('auth')->routes($routes);
+// service('auth')->routes($routes);
 
 //client routes
 $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:client'], static function ($routes) {
@@ -69,6 +69,8 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:client'
 
     $routes->get('packages', 'ClientController::packages');
     $routes->get('gallery', 'ClientController::gallery');
+    $routes->get('api/gallery/getVenueImages', 'AdminGalleryController::getVenueImages');
+    $routes->get('api/packages/getPackagesWithVenues', 'PackageController::getPackagesWithVenues');
     $routes->get('testimonials', 'FeedbackController::testimonials');
     $routes->post('feedback/submit', 'FeedbackController::submitFeedback');
     $routes->get('profile', 'ClientController::profileView');
@@ -98,7 +100,12 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->post('feedback/delete/(:num)', 'AdminFeedbacksController::delete/$1');
     $routes->post('feedback/approve/(:num)', 'AdminFeedbacksController::approve/$1');
 
-    $routes->get('admin/gallery', 'AdminController::galleryView');
+    $routes->get('admin/gallery', 'AdminGalleryController::index');
+    $routes->post('admin/gallery/upload', 'AdminGalleryController::upload');
+    $routes->post('admin/gallery/toggle/(:num)', 'AdminGalleryController::toggle/$1');
+    $routes->delete('admin/gallery/delete/(:num)', 'AdminGalleryController::delete/$1');
+    $routes->get('admin/gallery/items', 'AdminGalleryController::items');
+    
     $routes->get('admin/calendar', 'AdminController::calendarView');
     $routes->get('manage-staff', 'AdminController::manageStaffView');
 
