@@ -7,8 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= $title ?? 'San Isidro Labrador Resort and Leisure Farm' ?></title>
    <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="bootstrap5/css/bootstrap.min.css">
-
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
@@ -163,8 +162,9 @@
     <?php endif; ?>
   <div class="header-bar">
     <div class="header-container">
+      
       <div class="header-logo">
-        <img src="images/LOGO NG SAN ISIDRO.png" alt="San Isidro Labrador Logo">
+        <img src="<?= base_url('images/LOGO NG SAN ISIDRO.png') ?>" alt="San Isidro Labrador Logo">
         <div class="header-logo-text">
           <h5>SAN ISIDRO LABRADOR</h5>
           <p>RESORT AND LEISURE FARM</p>
@@ -223,6 +223,8 @@
       <li class="nav-item"><a class="nav-link <?= (uri_string() == 'booking') ? 'active' : '' ?>" href="<?= site_url('bookings') ?>">CONTACT</a>
       </li>
       <li class="nav-item"><a class="nav-link <?= (uri_string() == 'booking_history') ? 'active' : '' ?>" href="<?= site_url('booking_history') ?>">MY BOOKINGS</a> 
+      </li>
+      <li class="nav-item"><a class="nav-link <?= (uri_string() == '') ? 'active' : '' ?>" href="<?= site_url('client/contracts') ?>">MY CONTRACTS</a> 
       </li>
       </ul>
     </div>

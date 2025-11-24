@@ -57,8 +57,7 @@
 
 <div class="filter-section d-flex flex-wrap align-items-center gap-3 mb-3">
     <div class="search-box-users flex-grow-1">
-        <input type="text" id="searchAdmins" class="form-control mb-2" placeholder="Search admins...">
-        <input type="text" id="searchClients" class="form-control" placeholder="Search clients...">
+        <input type="text" id="searchClients" class="form-control" placeholder="Search clients by name, email, or phone...">
     </div>
 </div>
 
@@ -287,9 +286,9 @@ $(document).ready(function() {
     var adminsTable = $('#adminsTable').DataTable({
         "order": [[3, "desc"]],
         "responsive": true,
+        "searching": false, // Disable search for admins table
         "language": {
             "emptyTable": "No administrators found",
-            "search": "Search:",
             "zeroRecords": "No matching administrators found"
         }
     });
@@ -299,16 +298,12 @@ $(document).ready(function() {
         "responsive": true,
         "language": {
             "emptyTable": "No clients found",
-            "search": "Search:",
+            "search": "Search clients:",
             "zeroRecords": "No matching clients found"
         }
     });
 
-    // Search functionality
-    $('#searchAdmins').on('keyup', function() {
-        adminsTable.search(this.value).draw();
-    });
-
+    // Search functionality for clients only
     $('#searchClients').on('keyup', function() {
         clientsTable.search(this.value).draw();
     });

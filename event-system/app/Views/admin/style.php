@@ -2596,4 +2596,87 @@
         flex: 0 0 calc(50% - 10px);
     }
 }
+
+    /* Contracts Specific Styles */
+.contracts-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.avatar-sm {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.status-indicator {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.timeline {
+    position: relative;
+    padding-left: 20px;
+}
+
+.timeline:before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #dee2e6;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -20px;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #dee2e6;
+    border: 2px solid white;
+    z-index: 1;
+}
+
+.timeline-item.active .timeline-marker {
+    background: #28a745;
+}
+
+.timeline-content h6 {
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+/* Print styles for contracts */
+@media print {
+    .sidebar, .top-header, .card-header, .btn {
+        display: none !important;
+    }
+    
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+    }
+    
+    .card-body {
+        padding: 0 !important;
+    }
+}
     </style>

@@ -10,11 +10,13 @@ class UsersController extends BaseController
 {
     protected $userModel;
     protected $clientModel;
+    protected $db;
 
     public function __construct()
     {
         $this->userModel = new UserModel();
         $this->clientModel = new ClientModel();
+        $this->db = \Config\Database::connect();
     }
 
     public function index()
@@ -39,11 +41,12 @@ class UsersController extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'User not found']);
         }
 
-        $clientInfo = $this->clientModel->where('user_id', $user->id)->first();
+        $clientInfo = $this->clientModel->where('user_id', $user->id)->where('is_deleted', 0)->first();
         $groups = $user->getGroups();
         $isAdmin = in_array('admin', $groups) || in_array('superadmin', $groups);
+        $lastLogin = $this->getLastLogin($user->id);
 
-        $html = $this->generateUserDetailsHtml($user, $clientInfo, $groups, $isAdmin);
+        $html = $this->generateUserDetailsHtml($user, $clientInfo, $groups, $isAdmin, $lastLogin);
 
         return $this->response->setJSON(['success' => true, 'html' => $html]);
     }
@@ -131,7 +134,7 @@ class UsersController extends BaseController
             $this->userModel->update($id, $data);
 
             // Update client info if it's a client
-            $clientInfo = $this->clientModel->where('user_id', $id)->first();
+            $clientInfo = $this->clientModel->where('user_id', $id)->where('is_deleted', 0)->first();
             if ($clientInfo && $this->request->getPost('fullname')) {
                 $this->clientModel->update($clientInfo['id'], [
                     'fullname' => $this->request->getPost('fullname')
@@ -168,13 +171,13 @@ class UsersController extends BaseController
         }
 
         try {
-            // Delete client profile if exists
-            $clientInfo = $this->clientModel->where('user_id', $id)->first();
+            // Soft delete client profile if exists
+            $clientInfo = $this->clientModel->where('user_id', $id)->where('is_deleted', 0)->first();
             if ($clientInfo) {
-                $this->clientModel->delete($clientInfo['id']);
+                $this->clientModel->softDelete($clientInfo['id']);
             }
 
-            // Delete user
+            // Delete user (hard delete - or implement soft delete for users if needed)
             $this->userModel->delete($id);
 
             return $this->response->setJSON([
@@ -199,13 +202,15 @@ class UsersController extends BaseController
             $isAdmin = in_array('admin', $groups) || in_array('superadmin', $groups);
             
             if ($isAdmin) {
+                $lastLogin = $this->getLastLogin($user->id);
+                
                 $adminUsers[] = [
                     'id' => $user->id,
                     'username' => $user->username,
                     'email' => $user->email,
                     'active' => $user->active,
                     'created_at' => $user->created_at,
-                    'last_login' => $user->last_login,
+                    'last_login' => $lastLogin,
                     'groups' => $groups
                 ];
             }
@@ -224,26 +229,46 @@ class UsersController extends BaseController
             $isClient = in_array('client', $groups) && !in_array('admin', $groups) && !in_array('superadmin', $groups);
             
             if ($isClient) {
-                $clientInfo = $this->clientModel->where('user_id', $user->id)->first();
+                $clientInfo = $this->clientModel->where('user_id', $user->id)->where('is_deleted', 0)->first();
+                $lastLogin = $this->getLastLogin($user->id);
                 
-                $clientUsers[] = [
-                    'id' => $user->id,
-                    'username' => $user->username,
-                    'email' => $user->email,
-                    'active' => $user->active,
-                    'created_at' => $user->created_at,
-                    'last_login' => $user->last_login,
-                    'fullname' => $clientInfo['fullname'] ?? 'N/A',
-                    'phone' => $clientInfo['phone'] ?? 'N/A',
-                    'groups' => $groups
-                ];
+                if ($clientInfo) {
+                    $clientUsers[] = [
+                        'id' => $user->id,
+                        'username' => $user->username,
+                        'email' => $user->email,
+                        'active' => $user->active,
+                        'created_at' => $user->created_at,
+                        'last_login' => $lastLogin,
+                        'fullname' => $clientInfo['fullname'] ?? 'N/A',
+                        'phone' => $clientInfo['phone'] ?? 'N/A',
+                        'groups' => $groups
+                    ];
+                }
             }
         }
 
         return $clientUsers;
     }
 
-    private function generateUserDetailsHtml($user, $clientInfo, $groups, $isAdmin)
+    /**
+     * Get last login from auth_logins table
+     */
+    private function getLastLogin($userId)
+    {
+        $builder = $this->db->table('auth_logins');
+        $lastLogin = $builder->select('date')
+                            ->where('user_id', $userId)
+                            ->where('success', 1)
+                            ->orderBy('date', 'DESC')
+                            ->limit(1)
+                            ->get()
+                            ->getRow();
+
+        return $lastLogin ? $lastLogin->date : null;
+    }
+
+    private function generateUserDetailsHtml($user, $clientInfo, $groups, $isAdmin, $lastLogin)
     {
         $html = '
         <div class="row">
@@ -256,7 +281,7 @@ class UsersController extends BaseController
                     <tr><td><strong>Status:</strong></td><td><span class="badge bg-' . ($user->active ? 'success' : 'danger') . '">' . ($user->active ? 'Active' : 'Inactive') . '</span></td></tr>
                     <tr><td><strong>Roles:</strong></td><td>' . implode(', ', $groups) . '</td></tr>
                     <tr><td><strong>Created:</strong></td><td>' . date('M j, Y g:i A', strtotime($user->created_at)) . '</td></tr>
-                    <tr><td><strong>Last Login:</strong></td><td>' . ($user->last_login ? date('M j, Y g:i A', strtotime($user->last_login)) : 'Never') . '</td></tr>
+                    <tr><td><strong>Last Login:</strong></td><td>' . ($lastLogin ? date('M j, Y g:i A', strtotime($lastLogin)) : 'Never') . '</td></tr>
                 </table>
             </div>
             <div class="col-md-6">';
@@ -268,6 +293,7 @@ class UsersController extends BaseController
                     <tr><td><strong>Full Name:</strong></td><td>' . $clientInfo['fullname'] . '</td></tr>
                     <tr><td><strong>Phone:</strong></td><td>' . $clientInfo['phone'] . '</td></tr>
                     <tr><td><strong>Address:</strong></td><td>' . $clientInfo['address'] . '</td></tr>
+                    <tr><td><strong>Status:</strong></td><td><span class="badge bg-success">Active</span></td></tr>
                 </table>';
         } else {
             $html .= '<h6>Admin Account</h6><p class="text-muted">Administrator account</p>';

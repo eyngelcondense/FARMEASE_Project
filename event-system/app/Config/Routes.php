@@ -79,6 +79,12 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:client'
     $routes->get('payments/debug-keys', 'PaymentsController::debugKeys');
     $routes->get('payments/test-paymongo', 'PaymentsController::testPayMongoDirect');
     $routes->get('payments/db-test/(:num)', 'PaymentsController::dbTest/$1');
+
+    $routes->get('client/contracts', 'ContractsController::index');
+    $routes->get('client/contracts/view/(:num)', 'ContractsController::view/$1');
+    $routes->post('client/contracts/sign/(:num)', 'ContractsController::sign/$1');
+    $routes->get('client/contracts/download/(:num)', 'ContractsController::download/$1');
+    $routes->post('client/contracts/agree/(:num)', 'ContractsController::agree/$1');
 });
 
 //admin routes
@@ -127,8 +133,8 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->get('notifications/get', 'NotificationsController::get');
     $routes->post('notifications/mark-read/(:num)', 'NotificationsController::markRead/$1');
     $routes->post('notifications/mark-all-read', 'NotificationsController::markAllRead');
-    
 
+    
     $routes->get('venues', 'VenueController::index');
     $routes->get('venues/create', 'VenueController::create');
     $routes->post('venues/store', 'VenueController::store');
@@ -168,5 +174,13 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->get('admin/client-transactions', 'ClientTransactionsController::index');
     $routes->get('admin/client-transactions/(:num)', 'ClientTransactionsController::show/$1');
     $routes->get('admin/client-transactions/print/(:num)', 'ClientTransactionsController::printHistory/$1');
-    
+
+    $routes->get('admin/contracts', 'AdminContractsController::index');
+    $routes->get('admin/contracts/create', 'AdminContractsController::create');
+    $routes->post('admin/contracts/store', 'AdminContractsController::store');
+    $routes->post('admin/contracts/preview/(:num)', 'AdminContractsController::preview/$1');
+    $routes->post('admin/contracts/send/(:num)', 'AdminContractsController::send/$1');
+    $routes->post('admin/contracts/delete/(:num)', 'AdminContractsController::delete/$1');
+    $routes->get('admin/contracts/download/(:num)', 'AdminContractsController::download/$1');
+    $routes->post('admin/contracts/upload-signed/(:num)', 'AdminContractsController::uploadSigned/$1');
 });
