@@ -48,13 +48,41 @@
       margin-bottom: 0;
     }
 
-    /* Package Cards Section */
-    .packages-section {
+    /* Package Sections */
+    .package-section {
       padding: 40px 0 60px;
       background-color: #f8f6f3;
     }
 
-    .package-card {
+    .section-divider {
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .section-divider img {
+      height: 50px;
+    }
+
+    .section-title {
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 2.5rem;
+      font-weight: 400;
+      text-align: center;
+      margin: 30px 0 40px;
+      color: #3b2a18;
+    }
+
+    /* Venue Cards - Centered Layout */
+    .venue-cards-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .venue-card {
       background-color: #e8e2d8;
       border-radius: 0;
       overflow: hidden;
@@ -62,41 +90,52 @@
       height: 100%;
       display: flex;
       flex-direction: column;
+      width: 100%;
+      max-width: 380px;
+      min-width: 320px;
+      flex: 0 1 380px;
     }
 
-    .package-card:hover {
+    .venue-card:hover {
       transform: translateY(-5px);
       box-shadow: 0 8px 20px rgba(0,0,0,0.15);
     }
 
-    .package-card img {
+    .venue-card img {
       width: 100%;
       height: 280px;
       object-fit: cover;
+      cursor: pointer;
+      transition: opacity 0.3s ease;
     }
 
-    .package-card-body {
+    .venue-card img:hover {
+      opacity: 0.9;
+    }
+
+    .venue-card-body {
       padding: 30px 25px;
       flex-grow: 1;
       display: flex;
       flex-direction: column;
     }
 
-    .package-card-body h5 {
+    .venue-card-body h5 {
       font-size: 1.3rem;
       font-weight: 600;
       color: #3b2a18;
       margin-bottom: 10px;
     }
 
-    .package-card-body p {
+    .venue-card-body p {
       font-size: 0.95rem;
       color: #5a4a3a;
       margin-bottom: 20px;
       flex-grow: 1;
     }
 
-    .btn-inquiry {
+    /* View More button styles */
+    .btn-view-more {
       background-color: #3b2a18;
       color: white;
       border: none;
@@ -105,9 +144,13 @@
       font-weight: 500;
       transition: background-color 0.3s ease;
       width: 100%;
+      text-decoration: none;
+      display: block;
+      text-align: center;
+      cursor: pointer;
     }
 
-    .btn-inquiry:hover {
+    .btn-view-more:hover {
       background-color: #2a1f12;
       color: white;
     }
@@ -135,45 +178,6 @@
       color: #3b2a18;
       margin-bottom: 20px;
       text-align: justify;
-    }
-
-    /* Images Section */
-    .images-section {
-      background-color: #ffffff;
-      padding: 20px 0 60px;
-    }
-
-    .image-container {
-      display: flex;
-      gap: 20px;
-      margin-bottom: 40px;
-    }
-
-    .image-container img {
-      width: 100%;
-      height: auto;
-      object-fit: cover;
-      border-radius: 0;
-    }
-
-    .image-left {
-      flex: 1;
-    }
-
-    .image-right {
-      flex: 1;
-    }
-
-    /* Logo Section */
-    .logo-section {
-      background-color: #ffffff;
-      padding: 10px 0 20px;
-      text-align: center;
-    }
-
-    .logo-section img {
-      max-width: 200px;
-      height: 50px;
     }
 
     /* Package Inclusions Section */
@@ -282,6 +286,20 @@
       background-color: #a89b88;
     }
 
+    /* No Packages Message */
+    .no-packages {
+      text-align: center;
+      padding: 60px 20px;
+      color: #7a6a58;
+      font-size: 1.1rem;
+    }
+
+    .no-packages i {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      display: block;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .packages-hero {
@@ -297,13 +315,14 @@
         font-size: 1rem;
       }
 
-      .package-card img {
-        height: 220px;
+      .venue-card {
+        min-width: 280px;
+        max-width: 400px;
       }
 
-      .image-container {
-        flex-direction: column;
-        gap: 15px;
+      .venue-cards-container {
+        gap: 1.5rem;
+        padding: 0 15px;
       }
 
       .description-section {
@@ -312,10 +331,6 @@
 
       .description-section p {
         font-size: 0.95rem;
-      }
-
-      .logo-section img {
-        max-width: 150px;
       }
 
       .inclusions-title {
@@ -327,30 +342,32 @@
         margin-bottom: 20px;
       }
 
-      .header-container {
-        padding: 0 20px;
-        flex-direction: column;
-        text-align: center;
+      .section-title {
+        font-size: 2rem;
       }
+    }
 
-      .header-logo {
-        flex-direction: column;
-        gap: 10px;
+    @media (max-width: 576px) {
+      .venue-card {
+        min-width: 250px;
+        max-width: 100%;
+      }
+      
+      .venue-cards-container {
+        gap: 1rem;
       }
     }
 
     button:focus,
     .modal-close:focus {
       outline: none;
-      box-shadow: 0 0 0 3px rgba(122, 106, 88, 0.4); /* subtle brown glow */
+      box-shadow: 0 0 0 3px rgba(122, 106, 88, 0.4);
     }
-
   </style>
-
 
   <!-- Top Divider -->
   <div class="top-divider">
-    <img src="images/divider.png" alt="Decorative Divider">
+    <img src="<?= base_url('images/divider.png') ?>" alt="Decorative Divider">
   </div>
 
   <!-- Packages Hero Section -->
@@ -359,102 +376,40 @@
     <p>San Isidro Labrador Resort and Leisure Farm is gearing up to be the premiere location for your once-in-a-lifetime event</p>
   </section>
 
-  <!-- Package Cards -->
-  <section class="packages-section">
+  <!-- Package Sections will be dynamically loaded here -->
+  <div id="packageSections"></div>
+
+  <!-- Bottom Divider -->
+  <div class="bottom-divider">
+    <img src="<?= base_url('images/divider.png') ?>" alt="Decorative Divider">
+  </div>
+
+  <!-- Description Section -->
+  <section class="description-section py-5">
     <div class="container">
-      <div class="row g-4">
-        
-        <!-- Package Card 1 -->
-        <div class="col-lg-4 col-md-6">
-          <div class="package-card">
-            <img src="images/san isidroweas.jpg" alt="Package 1">
-            <div class="package-card-body">
-              <h5>Cafe Meetings</h5>
-              <p><strong>Your Perfect Café Meeting Awaits </strong></p>
-              <p>Host your next meeting in our exclusive 2nd floor space – where productivity meets comfort. Up to 50 guests, 3 hours of privacy, and ₱20,000 worth of delicious refreshments included.
-                Ready to elevate your meetings? <br>Make an inquiry and let's get started! ☕✨</p>
-              <a href="<?= site_url('booking') ?>" 
-                class="btn btn-inquiry <?= (service('uri')->getSegment(1) == 'booking') ? 'active' : '' ?>">
-                Make an Inquiry
-            </a>
-            </div>
-          </div>
+      <div class="row">
+        <div class="col-12">
+          <p>
+            At <strong>San Isidro Labrador Resort and Leisure Farm</strong>, we believe that the most beautiful celebrations begin with a setting that inspires. Surrounded by nature's calm and kissed by golden sunsets, our resort provides the ideal canvas for your most unforgettable moments.
+          </p>
+          <p>
+            Each of our <strong>packages</strong> is crafted to bring together elegance, comfort, and personalized service. From breathtaking outdoor ceremonies and charming indoor receptions to relaxing leisure stays, we offer a complete experience designed to match your vision and personality.
+          </p>
+          <p>
+            Whether you dream of a fairy-tale wedding, a joyful reunion, or a serene corporate retreat, our team ensures that every detail is handled with care — so you can focus on what truly matters: celebrating, connecting, and creating memories that last a lifetime.
+          </p>
+          <p>
+            Discover how <strong>San Isidro Labrador Resort and Leisure Farm</strong> can turn your special moments into timeless stories. Because here, every celebration is more than a day — it's an experience to remember.
+          </p>
         </div>
-
-        <!-- Package Card 2 -->
-        <div class="col-lg-4 col-md-6">
-          <div class="package-card">
-            <img src="images/wed_eventspic.jpg" alt="Package 2">
-            <div class="package-card-body">
-              <h5>Special Occasions</h5>
-              <p><strong>Celebrate Life's Beautiful Moments</strong></p>
-                <p>From weddings to milestones, make your special occasions truly unforgettable at San Isidro Labrador Resort and Leisure Farm. Our picturesque venue and dedicated team are here to bring your dream celebration to life. <br>
-                Let us be part of your story. Make an inquiry today! 💐✨</p>
-              <a href="<?= site_url('booking') ?>" 
-                class="btn btn-inquiry <?= (service('uri')->getSegment(1) == 'booking') ? 'active' : '' ?>">
-                Make an Inquiry
-            </a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Package Card 3 -->
-        <div class="col-lg-4 col-md-6">
-          <div class="package-card">
-            <img src="images/IMG_7373.jpeg" alt="Package 3">
-            <div class="package-card-body">
-              <h5>Venues</h5>
-              <p><strong>Your Dream Reception Awaits</strong></p>
-              <p>Picture your perfect celebration under our elegant chandeliers and open skies. 
-                Our stunning event space blends natural beauty with sophisticated elegance – the 
-                ideal setting for weddings, debuts, and grand celebrations. <br>
-                Turn your vision into reality. Make an inquiry and let's plan something extraordinary! ✨
-              </p>
-              <a href="<?= site_url('booking') ?>" 
-                class="btn btn-inquiry <?= (service('uri')->getSegment(1) == 'booking') ? 'active' : '' ?>">
-                Make an Inquiry
-            </a>
-            </div>
-          </div>
-        </div>
-
       </div>
     </div>
   </section>
 
-  <!-- Bottom Divider -->
-  <div class="bottom-divider">
-    <img src="images/divider.png" alt="Decorative Divider">
-  </div>
-
- <!-- Description Section -->
-<section class="description-section py-5">
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <p>
-          At <strong>San Isidro Labrador Resort and Leisure Farm</strong>, we believe that the most beautiful celebrations begin with a setting that inspires. Surrounded by nature’s calm and kissed by golden sunsets, our resort provides the ideal canvas for your most unforgettable moments.
-        </p>
-        <p>
-          Each of our <strong>packages</strong> is crafted to bring together elegance, comfort, and personalized service. From breathtaking outdoor ceremonies and charming indoor receptions to relaxing leisure stays, we offer a complete experience designed to match your vision and personality.
-        </p>
-        <p>
-          Whether you dream of a fairy-tale wedding, a joyful reunion, or a serene corporate retreat, our team ensures that every detail is handled with care — so you can focus on what truly matters: celebrating, connecting, and creating memories that last a lifetime.
-        </p>
-        <p>
-          Discover how <strong>San Isidro Labrador Resort and Leisure Farm</strong> can turn your special moments into timeless stories. Because here, every celebration is more than a day — it’s an experience to remember.
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-
   <!-- Logo Section -->
   <section class="logo-section">
     <div class="container">
-      <img src="images/divider.png" alt="Decorative Divider">
+      <img src="<?= base_url('images/divider.png') ?>" alt="Decorative Divider">
     </div>
   </section>
 
@@ -468,35 +423,35 @@
         <!-- Café Package -->
         <div class="col-lg-2 col-md-4 col-6">
           <div class="package-image-wrapper">
-            <img src="images/cafe.jpeg" alt="Café Package" class="package-img" onclick="openModal('images/cafe.jpeg', 'Café 2nd Floor Venue')">
+            <img src="<?= base_url('images/cafe.jpeg') ?>" alt="Café Package" class="package-img" onclick="openModal('<?= base_url('images/cafe.jpeg') ?>', 'Café 2nd Floor Venue')">
           </div>
         </div>
 
         <!-- Playground Package -->
         <div class="col-lg-2 col-md-4 col-6">
           <div class="package-image-wrapper">
-            <img src="images/playground.jpeg" alt="Playground Package" class="package-img" onclick="openModal('images/playground.jpeg', 'Playground')">
+            <img src="<?= base_url('images/playground.jpeg') ?>" alt="Playground Package" class="package-img" onclick="openModal('<?= base_url('images/playground.jpeg') ?>', 'Playground')">
           </div>
         </div>
 
         <!-- Venue Package -->
         <div class="col-lg-2 col-md-4 col-6">
           <div class="package-image-wrapper">
-            <img src="images/venue.jpeg" alt="Venue Package" class="package-img" onclick="openModal('images/venue.jpeg', 'Venue')">
+            <img src="<?= base_url('images/venue.jpeg') ?>" alt="Venue Package" class="package-img" onclick="openModal('<?= base_url('images/venue.jpeg') ?>', 'Venue')">
           </div>
         </div>
 
         <!-- Prep Package -->
         <div class="col-lg-2 col-md-4 col-6">
           <div class="package-image-wrapper">
-            <img src="images/prep.jpeg" alt="Prep & Photoshoot Package" class="package-img" onclick="openModal('images/prep.jpeg', 'Prep & Photoshoot')">
+            <img src="<?= base_url('images/prep.jpeg') ?>" alt="Prep & Photoshoot Package" class="package-img" onclick="openModal('<?= base_url('images/prep.jpeg') ?>', 'Prep & Photoshoot')">
           </div>
         </div>
 
         <!-- Meeting Package -->
         <div class="col-lg-2 col-md-4 col-6">
           <div class="package-image-wrapper">
-            <img src="images/meeting.jpeg" alt="Meeting Package" class="package-img" onclick="openModal('images/meeting.jpeg', 'Meeting Room')">
+            <img src="<?= base_url('images/meeting.jpeg') ?>" alt="Meeting Package" class="package-img" onclick="openModal('<?= base_url('images/meeting.jpeg') ?>', 'Meeting Room')">
           </div>
         </div>
 
@@ -527,8 +482,105 @@
     include ('footer.php');
   ?>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Global variables
+    let allPackages = [];
+
+    // Fetch packages and venues from API
+    async function loadPackagesData() {
+      try {
+        console.log('Loading packages data...');
+        const response = await fetch('<?= site_url('api/packages/getPackagesWithVenues') ?>');
+        const data = await response.json();
+        
+        console.log('API Response:', data);
+        
+        if (data.success) {
+          allPackages = data.data;
+          console.log('Packages loaded:', allPackages);
+          renderPackageSections();
+        } else {
+          showError('Failed to load packages data: ' + (data.message || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Error loading packages:', error);
+        showError('Failed to load packages. Please try again later. Error: ' + error.message);
+      }
+    }
+
+    // Render package sections
+    function renderPackageSections() {
+      const container = document.getElementById('packageSections');
+      container.innerHTML = '';
+
+      if (allPackages.length === 0) {
+        container.innerHTML = `
+          <div class="no-packages">
+            <i class="fas fa-box-open"></i>
+            <h3>No Packages Available</h3>
+            <p>No packages found in the system.</p>
+          </div>
+        `;
+        return;
+      }
+
+      allPackages.forEach((pkg, index) => {
+        if (!pkg.venues || pkg.venues.length === 0) return;
+
+        const section = document.createElement('section');
+        section.className = 'package-section';
+        
+        section.innerHTML = `
+          <div class="section-divider">
+            <img src="<?= base_url('images/divider.png') ?>" alt="Decorative Divider">
+          </div>
+          <h2 class="section-title">${pkg.name}</h2>
+          <div class="container">
+            <div class="venue-cards-container">
+              ${pkg.venues.map(venue => `
+                <div class="venue-card">
+                  <img src="${venue.image_url || '<?= base_url('images/placeholder.jpg') ?>'}" 
+                       alt="${venue.name}" 
+                       onerror="this.src='<?= base_url('images/placeholder.jpg') ?>'"
+                       onclick="goToGallery(${venue.id})">
+                  <div class="venue-card-body">
+                    <h5>${venue.name}</h5>
+                    <p>${venue.description || 'No description available.'}</p>
+                    <button class="btn-view-more" onclick="goToGallery(${venue.id})">
+                      View Gallery
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+        container.appendChild(section);
+      });
+    }
+
+    // Function to redirect to gallery page
+    function goToGallery(venueId) {
+      window.location.href = '<?= site_url('gallery') ?>?venue=' + venueId;
+    }
+
+    // Show error message
+    function showError(message) {
+      const container = document.getElementById('packageSections');
+      container.innerHTML = `
+        <div class="no-packages">
+          <i class="fas fa-exclamation-triangle"></i>
+          <h3>Error Loading Packages</h3>
+          <p>${message}</p>
+          <button onclick="loadPackagesData()" class="btn-view-more" style="margin-top: 20px; width: auto; display: inline-block;">
+            <i class="fas fa-redo"></i> Try Again
+          </button>
+        </div>
+      `;
+    }
+
+    // Modal functions for the inclusions section
     function openModal(imgSrc, caption) {
       var modal = document.getElementById('imageModal');
       var modalImg = document.getElementById('modalImage');
@@ -550,4 +602,7 @@
         closeModal();
       }
     });
-  </script>
+
+    // Load packages data when page loads
+    document.addEventListener('DOMContentLoaded', loadPackagesData);
+</script>

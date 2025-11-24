@@ -15,9 +15,9 @@ class PaymentModel extends Model
     
     protected $allowedFields    = [
         'booking_id', 
-        'client_id',           // Now exists in database
+        'client_id',           
         'payment_reference', 
-        'ref_number',          // Now exists in database  
+        'ref_number',       
         'amount', 
         'payment_method', 
         'payment_date', 

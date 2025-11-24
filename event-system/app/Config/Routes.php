@@ -38,7 +38,7 @@ $routes->group('', ['namespace' => 'App\Controllers\Auth'], static function ($ro
     $routes->post('reset-password', 'ForgotPasswordController::handleResetPassword');
 
 });
-service('auth')->routes($routes);
+// service('auth')->routes($routes);
 
 //client routes
 $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:client'], static function ($routes) {
@@ -69,6 +69,8 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:client'
 
     $routes->get('packages', 'ClientController::packages');
     $routes->get('gallery', 'ClientController::gallery');
+    $routes->get('api/gallery/getVenueImages', 'AdminGalleryController::getVenueImages');
+    $routes->get('api/packages/getPackagesWithVenues', 'PackageController::getPackagesWithVenues');
     $routes->get('testimonials', 'FeedbackController::testimonials');
     $routes->post('feedback/submit', 'FeedbackController::submitFeedback');
     $routes->get('profile', 'ClientController::profileView');
@@ -77,11 +79,22 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:client'
     $routes->get('payments/debug-keys', 'PaymentsController::debugKeys');
     $routes->get('payments/test-paymongo', 'PaymentsController::testPayMongoDirect');
     $routes->get('payments/db-test/(:num)', 'PaymentsController::dbTest/$1');
+
+    $routes->get('client/contracts', 'ContractsController::index');
+    $routes->get('client/contracts/view/(:num)', 'ContractsController::view/$1');
+    $routes->post('client/contracts/sign/(:num)', 'ContractsController::sign/$1');
+    $routes->get('client/contracts/download/(:num)', 'ContractsController::download/$1');
+    $routes->post('client/contracts/agree/(:num)', 'ContractsController::agree/$1');
 });
 
 //admin routes
 $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin'], static function ($routes) {
-    $routes->get('dashboard', 'AdminController::dashboardView');
+    
+    $routes->get('admin/dashboard', 'DashboardController::index');
+    $routes->get('admin/dashboard/stats', 'DashboardController::getStats');
+    $routes->get('admin/dashboard/chart-data', 'DashboardController::getChartData');
+    $routes->get('admin/dashboard/recent-bookings', 'DashboardController::getRecentBookings');
+    $routes->get('admin/dashboard/upcoming-events', 'DashboardController::getUpcomingEvents');
 
     $routes->get('admin/bookings', 'AdminBookingsController::index');
     $routes->get('bookings/data', 'AdminBookingsController::getBookingsAjax');
@@ -91,15 +104,29 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->post('bookings/(:num)/reject', 'AdminBookingsController::rejectBooking/$1');
     $routes->get('bookings/stats', 'AdminBookingsController::getBookingStats');
 
-    $routes->get('admin/payments', 'AdminController::paymentsView');
+    $routes->get('admin/payments', 'AdminPaymentsController::index');
+    $routes->get('admin/payments/(:num)', 'AdminPaymentsController::show/$1');
+    $routes->post('admin/payments/verify/(:num)', 'AdminPaymentsController::verify/$1');
+    $routes->post('admin/payments/reject/(:num)', 'AdminPaymentsController::reject/$1');
 
     $routes->get('feedback', 'AdminFeedbacksController::feedbackView');
     $routes->post('feedback/reject/(:num)', 'AdminFeedbacksController::reject/$1');
     $routes->post('feedback/delete/(:num)', 'AdminFeedbacksController::delete/$1');
     $routes->post('feedback/approve/(:num)', 'AdminFeedbacksController::approve/$1');
 
-    $routes->get('admin/gallery', 'AdminController::galleryView');
-    $routes->get('admin/calendar', 'AdminController::calendarView');
+    $routes->get('admin/gallery', 'AdminGalleryController::index');
+    $routes->post('admin/gallery/upload', 'AdminGalleryController::upload');
+    $routes->post('admin/gallery/toggle/(:num)', 'AdminGalleryController::toggle/$1');
+    $routes->delete('admin/gallery/delete/(:num)', 'AdminGalleryController::delete/$1');
+    $routes->get('admin/gallery/items', 'AdminGalleryController::items');
+    
+    $routes->get('admin/calendar', 'CalendarController::index');
+    $routes->get('admin/calendar/data', 'CalendarController::getCalendarData');
+    $routes->get('admin/calendar/time-slots', 'CalendarController::getTimeSlots');
+    $routes->get('admin/calendar/booking/(:num)', 'CalendarController::getBookingDetails/$1');
+    $routes->get('admin/calendar/grid-data', 'CalendarController::getCalendarGridData');
+    $routes->post('admin/calendar/update-status', 'CalendarController::updateBookingStatus');   
+
     $routes->get('manage-staff', 'AdminController::manageStaffView');
 
     $routes->get('notifications', 'NotificationsController::index');
@@ -107,6 +134,7 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->post('notifications/mark-read/(:num)', 'NotificationsController::markRead/$1');
     $routes->post('notifications/mark-all-read', 'NotificationsController::markAllRead');
 
+    
     $routes->get('venues', 'VenueController::index');
     $routes->get('venues/create', 'VenueController::create');
     $routes->post('venues/store', 'VenueController::store');
@@ -132,5 +160,27 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->post('packages/link-venue', 'PackageController::linkVenue');
     $routes->post('packages/unlink-venue/(:num)', 'PackageController::unlinkVenue/$1');
     $routes->post('packages/set-primary-venue', 'PackageController::setPrimaryVenue');
-    
+
+    $routes->post('admin/users/add-to-group/(:num)', 'UsersController::addToGroup/$1');
+    $routes->post('admin/users/remove-from-group/(:num)', 'UsersController::removeFromGroup/$1');
+    $routes->get('admin/users', 'UsersController::index');
+    $routes->get('admin/users/(:num)', 'UsersController::show/$1');
+    $routes->post('admin/users/toggle-status/(:num)', 'UsersController::toggleStatus/$1');
+    $routes->post('admin/users/make-admin/(:num)', 'UsersController::makeAdmin/$1');
+    $routes->post('admin/users/make-client/(:num)', 'UsersController::makeClient/$1');
+    $routes->post('admin/users/update/(:num)', 'UsersController::update/$1');
+    $routes->post('admin/users/delete/(:num)', 'UsersController::delete/$1');
+
+    $routes->get('admin/client-transactions', 'ClientTransactionsController::index');
+    $routes->get('admin/client-transactions/(:num)', 'ClientTransactionsController::show/$1');
+    $routes->get('admin/client-transactions/print/(:num)', 'ClientTransactionsController::printHistory/$1');
+
+    $routes->get('admin/contracts', 'AdminContractsController::index');
+    $routes->get('admin/contracts/create', 'AdminContractsController::create');
+    $routes->post('admin/contracts/store', 'AdminContractsController::store');
+    $routes->post('admin/contracts/preview/(:num)', 'AdminContractsController::preview/$1');
+    $routes->post('admin/contracts/send/(:num)', 'AdminContractsController::send/$1');
+    $routes->post('admin/contracts/delete/(:num)', 'AdminContractsController::delete/$1');
+    $routes->get('admin/contracts/download/(:num)', 'AdminContractsController::download/$1');
+    $routes->post('admin/contracts/upload-signed/(:num)', 'AdminContractsController::uploadSigned/$1');
 });

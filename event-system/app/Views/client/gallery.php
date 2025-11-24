@@ -97,140 +97,90 @@
       margin: 30px 0 40px;
       color: #3b2a18;
     }
+    /* Grid layout for venue images */
+    .venue-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* center the row items */
+  gap: 20px;
+  margin-bottom: 40px;
+}
 
-    /* Gallery Grid */
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-      margin-bottom: 60px;
-    }
+.venue-grid-item {
+  background-color: #fff;
+  border: 2px solid #3b2a18;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 250px; /* card width */
+  height: 250px; /* card height */
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
 
-    .gallery-item {
-      position: relative;
-      overflow: hidden;
-      border-radius: 0;
-      cursor: pointer;
-      aspect-ratio: 4/3;
-      border: 8px solid #3b2a18;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+.venue-grid-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
 
-    .gallery-item img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.4s ease;
-    }
+.venue-grid-item img {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+  display: block;
+  margin: auto;
+  transition: transform 0.3s ease;
+}
 
-    .gallery-item:hover img {
-      transform: scale(1.1);
-    }
+.venue-grid-item:hover img {
+  transform: scale(1.05);
+}
 
-    .gallery-item-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(59, 42, 24, 0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
+.venue-grid-item::after {
+  content: attr(data-name);
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  background: rgba(59, 42, 24, 0.7);
+  color: #fff;
+  font-weight: 500;
+  padding: 10px 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
 
-    .gallery-item:hover .gallery-item-overlay {
-      opacity: 1;
-    }
+.venue-grid-item:hover::after {
+  opacity: 1;
+}
 
-    .gallery-item-title {
-      color: white;
-      font-size: 1.3rem;
-      font-weight: 500;
+
+
+  /* Modal styles remain same as before */
+  .modal-overlay { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.95); justify-content: center; align-items: center; }
+  .modal-overlay.active { display: flex; }
+  .modal-content-wrapper { position: relative; max-width: 90%; max-height: 90%; text-align: center; }
+  .modal-image { max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 10px; }
+  .modal-close { position: absolute; top: 20px; right: 40px; color: #fff; font-size: 50px; font-weight: bold; cursor: pointer; }
+  .modal-caption { color: #fff; font-size: 1.2rem; margin-top: 15px; font-weight: 500; }
+
+    /* No Images Message */
+    .no-images {
       text-align: center;
-      padding: 20px;
+      padding: 60px 20px;
+      color: #7a6a58;
+      font-size: 1.1rem;
     }
 
-    /* Modal Styles */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      z-index: 9999;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.95);
-      justify-content: center;
-      align-items: center;
+    .no-images i {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      display: block;
     }
-
-    .modal-overlay.active {
-      display: flex;
-    }
-
-    .modal-content-wrapper {
-      position: relative;
-      max-width: 90%;
-      max-height: 90%;
-      text-align: center;
-    }
-
-    .modal-image {
-      max-width: 100%;
-      max-height: 85vh;
-      object-fit: contain;
-      border-radius: 10px;
-    }
-
-    .modal-close {
-      position: absolute;
-      top: 20px;
-      right: 40px;
-      color: #fff;
-      font-size: 50px;
-      font-weight: bold;
-      cursor: pointer;
-      z-index: 10000;
-    }
-
-    .modal-close:hover {
-      color: #c19a6b;
-    }
-
-    .modal-nav {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      color: white;
-      font-size: 40px;
-      cursor: pointer;
-      padding: 20px;
-      user-select: none;
-      transition: color 0.3s ease;
-    }
-
-    .modal-nav:hover {
-      color: #c19a6b;
-    }
-
-    .modal-prev {
-      left: 20px;
-    }
-
-    .modal-next {
-      right: 20px;
-    }
-
-    .modal-caption {
-      color: #fff;
-      font-size: 1.2rem;
-      margin-top: 15px;
-      font-weight: 500;
-    }
-
 
     /* Responsive */
     @media (max-width: 768px) {
@@ -257,37 +207,11 @@
         font-size: 0.85rem;
       }
 
-      .gallery-grid {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 15px;
-      }
-
-      .header-container {
-        padding: 0 20px;
-        flex-direction: column;
-        text-align: center;
-      }
-
-      .header-logo {
-        flex-direction: column;
-        gap: 10px;
-      }
-
-      .modal-nav {
-        font-size: 30px;
-        padding: 10px;
-      }
-
-      .modal-close {
-        font-size: 40px;
-        right: 20px;
-      }
-    }
-
     /* Hide sections based on filter */
     .gallery-section.hidden {
       display: none;
-    }
+    }}
+
   </style>
 
 
@@ -305,106 +229,14 @@
   <!-- Filter Buttons -->
   <section class="filter-section">
     <button class="filter-btn active" onclick="filterGallery('all')">All</button>
-    <button class="filter-btn" onclick="filterGallery('weddings')">Weddings</button>
-    <button class="filter-btn" onclick="filterGallery('birthdays')">Birthdays</button>
-    <button class="filter-btn" onclick="filterGallery('corporate')">Corporate</button>
   </section>
 
-  <!-- Garden Cafe Section -->
-  <section class="gallery-section" data-category="all">
-    <div class="section-divider">
-      <img src="images/divider.png" alt="Decorative Divider">
-    </div>
-    <h2 class="section-title">Garden Cafe</h2>
-    <div class="container">
-      <div class="gallery-grid">
-        <div class="gallery-item" onclick="openModal(0)">
-          <img src="cafe1.jpg" alt="Garden Cafe 1">
-          <div class="gallery-item-overlay">
-            <div class="gallery-item-title">Garden Cafe</div>
-          </div>
-        </div>
-        <div class="gallery-item" onclick="openModal(1)">
-          <img src="cafe2.jpg" alt="Garden Cafe 2">
-          <div class="gallery-item-overlay">
-            <div class="gallery-item-title">Garden Cafe</div>
-          </div>
-        </div>
-        <div class="gallery-item" onclick="openModal(2)">
-          <img src="cafe3.jpg" alt="Garden Cafe 3">
-          <div class="gallery-item-overlay">
-            <div class="gallery-item-title">Garden Cafe</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Rooms Section -->
-  <section class="gallery-section" data-category="all">
-    <div class="section-divider">
-      <img src="images/divider.png" alt="Decorative Divider">
-    </div>
-    <h2 class="section-title">Rooms</h2>
-    <div class="container">
-      <div class="gallery-grid">
-        <div class="gallery-item" onclick="openModal(3)">
-          <img src="room1.jpg" alt="Room 1">
-          <div class="gallery-item-overlay">
-            <div class="gallery-item-title">Rooms</div>
-          </div>
-        </div>
-        <div class="gallery-item" onclick="openModal(4)">
-          <img src="room2.jpg" alt="Room 2">
-          <div class="gallery-item-overlay">
-            <div class="gallery-item-title">Rooms</div>
-          </div>
-        </div>
-        <div class="gallery-item" onclick="openModal(5)">
-          <img src="room3.jpg" alt="Room 3">
-          <div class="gallery-item-overlay">
-            <div class="gallery-item-title">Rooms</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Garden Venue Section -->
-  <section class="gallery-section" data-category="all">
-    <div class="section-divider">
-      <img src="images/divider.png" alt="Decorative Divider">
-    </div>
-    <h2 class="section-title">Garden Venue</h2>
-    <div class="container">
-      <div class="gallery-grid">
-        <div class="gallery-item" onclick="openModal(6)">
-          <img src="garden1.jpg" alt="Garden Venue 1">
-          <div class="gallery-item-overlay">
-            <div class="gallery-item-title">Garden Venue</div>
-          </div>
-        </div>
-        <div class="gallery-item" onclick="openModal(7)">
-          <img src="garden2.jpg" alt="Garden Venue 2">
-          <div class="gallery-item-overlay">
-            <div class="gallery-item-title">Garden Venue</div>
-          </div>
-        </div>
-        <div class="gallery-item" onclick="openModal(8)">
-          <img src="garden3.jpg" alt="Garden Venue 3">
-          <div class="gallery-item-overlay">
-            <div class="gallery-item-title">Garden Venue</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  <!-- Venue Sections will be dynamically loaded here -->
+  <div id="venueSections"></div>
 
   <!-- Modal for Image Popup -->
   <div id="imageModal" class="modal-overlay" onclick="closeModalOnBackground(event)">
     <span class="modal-close" onclick="closeModal()">&times;</span>
-    <span class="modal-nav modal-prev" onclick="previousImage(event)">&#10094;</span>
-    <span class="modal-nav modal-next" onclick="nextImage(event)">&#10095;</span>
     <div class="modal-content-wrapper">
       <img id="modalImage" class="modal-image" src="" alt="">
       <div id="modalCaption" class="modal-caption"></div>
@@ -415,32 +247,181 @@
     include ('footer.php');
   ?>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    // Gallery images array
-    const galleryImages = [
-      { src: 'cafe1.jpg', caption: 'Garden Cafe' },
-      { src: 'cafe2.jpg', caption: 'Garden Cafe' },
-      { src: 'cafe3.jpg', caption: 'Garden Cafe' },
-      { src: 'room1.jpg', caption: 'Rooms' },
-      { src: 'room2.jpg', caption: 'Rooms' },
-      { src: 'room3.jpg', caption: 'Rooms' },
-      { src: 'garden1.jpg', caption: 'Garden Venue' },
-      { src: 'garden2.jpg', caption: 'Garden Venue' },
-      { src: 'garden3.jpg', caption: 'Garden Venue' }
-    ];
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Global variables
+    let allVenues = [];
     let currentImageIndex = 0;
+    let currentVenueImages = [];
 
-    function openModal(index) {
-      currentImageIndex = index;
+    // Get URL parameter function
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+
+    // Fetch venues and images from API
+    async function loadGalleryData() {
+      try {
+        console.log('Loading gallery data...');
+        const response = await fetch('<?= site_url('api/gallery/getVenueImages') ?>');
+        const data = await response.json();
+        
+        console.log('API Response:', data);
+        
+        if (data.success) {
+          allVenues = data.data;
+          console.log('Venues loaded:', allVenues);
+          renderVenueSections();
+          autoFilterGallery(); // Auto-filter after loading data
+        } else {
+          showError('Failed to load gallery data: ' + (data.message || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Error loading gallery:', error);
+        showError('Failed to load gallery. Please try again later. Error: ' + error.message);
+      }
+    }
+
+    // Render venue sections
+    function renderVenueSections() {
+      const container = document.getElementById('venueSections');
+      const filterSection = document.querySelector('.filter-section');
+
+      if (!container || !filterSection) return;
+
+      container.innerHTML = ''; // Clear old content
+
+      if (!allVenues || allVenues.length === 0) {
+        container.innerHTML = `<div class="no-images"><h3>No Images Available</h3></div>`;
+        return;
+      }
+
+      // Build filter buttons
+      let filterButtonsHTML = `<button class="filter-btn active" onclick="filterVenue('all', this)">All</button>`;
+      allVenues.forEach(venue => {
+        const key = venue.name.toLowerCase().replace(/\s+/g, '-');
+        filterButtonsHTML += `<button class="filter-btn" data-venue-id="${venue.id}" onclick="filterVenue('${key}', this)">${venue.name}</button>`;
+      });
+      filterSection.innerHTML = filterButtonsHTML;
+
+      // Build venue sections
+      allVenues.forEach((venue, venueIndex) => {
+        if (!venue.images || venue.images.length === 0) return;
+
+        const key = venue.name.toLowerCase().replace(/\s+/g, '-');
+        const section = document.createElement('section');
+        section.className = 'gallery-section';
+        section.dataset.category = key;
+        section.dataset.venueId = venue.id; // Add venue ID to section
+
+        section.innerHTML = `
+          <div class="section-divider">
+            <img src="images/divider.png" alt="Divider">
+          </div>
+          <h2 class="section-title">${venue.name}</h2>
+          <div class="venue-grid">
+            ${venue.images.map((img, i) => `
+              <div class="venue-grid-item" data-name="${venue.name}" onclick="openModal(${venueIndex}, ${i})">
+                <img src="${img.path}" alt="${venue.name}">
+              </div>
+            `).join('')}
+          </div>
+        `;
+
+        container.appendChild(section);
+      });
+    }
+
+    // Auto-filter gallery when venue parameter is present
+    function autoFilterGallery() {
+      const venueId = getUrlParameter('venue');
+      console.log('URL venue parameter:', venueId);
+      
+      if (venueId) {
+        // Find the venue by ID
+        const venue = allVenues.find(v => v.id == venueId);
+        console.log('Found venue:', venue);
+        
+        if (venue) {
+          // Get the category key from the venue name
+          const category = venue.name.toLowerCase().replace(/\s+/g, '-');
+          console.log('Filtering by category:', category);
+          
+          // Find the corresponding filter button and click it
+          const filterButtons = document.querySelectorAll('.filter-btn');
+          let foundButton = null;
+          
+          filterButtons.forEach(button => {
+            if (button.textContent.trim() === venue.name) {
+              foundButton = button;
+            }
+          });
+          
+          if (foundButton) {
+            console.log('Clicking filter button for:', venue.name);
+            foundButton.click();
+            
+            // Scroll to the section after a short delay to ensure it's visible
+            setTimeout(() => {
+              const targetSection = document.querySelector(`[data-venue-id="${venueId}"]`);
+              if (targetSection) {
+                targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }, 300);
+          }
+        }
+      }
+    }
+
+    function filterVenue(category, button) {
+    // Get all elements
+    const sections = document.querySelectorAll('.gallery-section');
+    const buttons = document.querySelectorAll('.filter-btn');
+    
+    // Reset all buttons
+    buttons.forEach(btn => btn.classList.remove('active'));
+    
+    // Activate clicked button
+    if (button) button.classList.add('active');
+    
+    // Filter sections - using multiple methods for compatibility
+    sections.forEach(section => {
+        const sectionCategory = section.dataset.category;
+        const shouldShow = category === 'all' || sectionCategory === category;
+        
+        // Method 1: CSS class
+        if (shouldShow) {
+            section.classList.remove('hidden');
+        } else {
+            section.classList.add('hidden');
+        }
+        
+        // Method 2: Direct display property (backup)
+        section.style.display = shouldShow ? 'block' : 'none';
+        
+        // Method 3: Visibility (additional backup)
+        section.style.visibility = shouldShow ? 'visible' : 'hidden';
+        section.style.opacity = shouldShow ? '1' : '0';
+        section.style.height = shouldShow ? 'auto' : '0';
+        section.style.overflow = shouldShow ? 'visible' : 'hidden';
+    });
+}
+
+    function openModal(venueIndex, imageIndex) {
+      const venue = allVenues[venueIndex];
+      currentVenueImages = venue.images;
+      currentImageIndex = imageIndex;
+
       const modal = document.getElementById('imageModal');
       const modalImg = document.getElementById('modalImage');
       const modalCaption = document.getElementById('modalCaption');
-      
+
       modal.classList.add('active');
-      modalImg.src = galleryImages[index].src;
-      modalCaption.textContent = galleryImages[index].caption;
+      modalImg.src = currentVenueImages[currentImageIndex].path;
+      modalCaption.textContent = venue.name;
       document.body.style.overflow = 'hidden';
     }
 
@@ -451,64 +432,33 @@
     }
 
     function closeModalOnBackground(event) {
-      if (event.target.id === 'imageModal') {
-        closeModal();
-      }
+      if (event.target.id === 'imageModal') closeModal();
     }
 
-    function nextImage(event) {
-      event.stopPropagation();
-      currentImageIndex = (currentImageIndex + 1) % galleryImages.length;
-      const modalImg = document.getElementById('modalImage');
-      const modalCaption = document.getElementById('modalCaption');
-      modalImg.src = galleryImages[currentImageIndex].src;
-      modalCaption.textContent = galleryImages[currentImageIndex].caption;
+    function nextImage() {
+      currentImageIndex = (currentImageIndex + 1) % currentVenueImages.length;
+      document.getElementById('modalImage').src = currentVenueImages[currentImageIndex].path;
+      document.getElementById('modalCaption').textContent = allVenues.find(venue =>
+        venue.images.some(img => img.id === currentVenueImages[currentImageIndex].id)
+      )?.name || 'Venue Image';
     }
 
-    function previousImage(event) {
-      event.stopPropagation();
-      currentImageIndex = (currentImageIndex - 1 + galleryImages.length) % galleryImages.length;
-      const modalImg = document.getElementById('modalImage');
-      const modalCaption = document.getElementById('modalCaption');
-      modalImg.src = galleryImages[currentImageIndex].src;
-      modalCaption.textContent = galleryImages[currentImageIndex].caption;
+    function previousImage() {
+      currentImageIndex = (currentImageIndex - 1 + currentVenueImages.length) % currentVenueImages.length;
+      document.getElementById('modalImage').src = currentVenueImages[currentImageIndex].path;
+      document.getElementById('modalCaption').textContent = allVenues.find(venue =>
+        venue.images.some(img => img.id === currentVenueImages[currentImageIndex].id)
+      )?.name || 'Venue Image';
     }
 
-    // Filter functionality
-    function filterGallery(category) {
-      const sections = document.querySelectorAll('.gallery-section');
-      const buttons = document.querySelectorAll('.filter-btn');
-      
-      // Update active button
-      buttons.forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
-      
-      // Show/hide sections based on category
-      if (category === 'all') {
-        sections.forEach(section => section.classList.remove('hidden'));
-      } else {
-        sections.forEach(section => {
-          if (section.dataset.category === category || section.dataset.category === 'all') {
-            section.classList.remove('hidden');
-          } else {
-            section.classList.add('hidden');
-          }
-        });
-      }
-    }
-
-    // Close modal with Escape key
     document.addEventListener('keydown', function(event) {
-      if (event.key === 'Escape') {
-        closeModal();
-      } else if (event.key === 'ArrowRight') {
-        if (document.getElementById('imageModal').classList.contains('active')) {
-          nextImage(event);
-        }
-      } else if (event.key === 'ArrowLeft') {
-        if (document.getElementById('imageModal').classList.contains('active')) {
-          previousImage(event);
-        }
-      }
+      if (!document.getElementById('imageModal').classList.contains('active')) return;
+
+      if (event.key === 'Escape') closeModal();
+      else if (event.key === 'ArrowRight') nextImage();
+      else if (event.key === 'ArrowLeft') previousImage();
     });
-  </script>
+
+    // Load gallery data when page loads
+    document.addEventListener('DOMContentLoaded', loadGalleryData);
+</script>

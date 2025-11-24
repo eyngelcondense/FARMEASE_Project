@@ -15,6 +15,9 @@
     
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="<?= base_url('assets/plugins/select2/css/select2.min.css') ?>">
+<link rel="stylesheet" href="<?= base_url('assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') ?>">
+
     
 </head>
 <?= $this->include('admin/style')?>
@@ -126,5 +129,8 @@
     </script>
 
     <?= $this->renderSection('scripts') ?>
+    <script src="<?= base_url('assets/plugins/select2/js/select2.full.min.js') ?>"></script>
+<script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js') ?>"></script>
+<script src="<?= base_url('assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') ?>"></script>
 </body>
 </html>

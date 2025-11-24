@@ -63,7 +63,7 @@ class LoginController extends ShieldLogin
         $user = $auth->user();
 
         if ($user->inGroup('admin')) {
-            return redirect()->to('/dashboard');
+            return redirect()->to('/admin/dashboard');
         } elseif ($user->inGroup('staff')) {
             return redirect()->to('/staff/dashboard');
         } elseif ($user->inGroup('client')) {
