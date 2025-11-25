@@ -220,11 +220,11 @@
         <li class="nav-item">
         <a class="nav-link <?= (uri_string() == 'testimonials') ? 'active' : '' ?>" href="<?= site_url('testimonials') ?>">TESTIMONIALS</a>
       </li>
-      <li class="nav-item"><a class="nav-link <?= (uri_string() == 'booking') ? 'active' : '' ?>" href="<?= site_url('bookings') ?>">CONTACT</a>
+      <li class="nav-item"><a class="nav-link <?= (uri_string() == 'bookings') ? 'active' : '' ?>" href="<?= site_url('bookings') ?>">CONTACT</a>
       </li>
       <li class="nav-item"><a class="nav-link <?= (uri_string() == 'booking_history') ? 'active' : '' ?>" href="<?= site_url('booking_history') ?>">MY BOOKINGS</a> 
       </li>
-      <li class="nav-item"><a class="nav-link <?= (uri_string() == '') ? 'active' : '' ?>" href="<?= site_url('client/contracts') ?>">MY CONTRACTS</a> 
+      <li class="nav-item"><a class="nav-link <?= (uri_string() == 'client/contracts') ? 'active' : '' ?>" href="<?= site_url('client/contracts') ?>">MY CONTRACTS</a>
       </li>
       </ul>
     </div>
