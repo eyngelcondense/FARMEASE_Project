@@ -83,6 +83,11 @@
       width: 100%;
       height: 350px;
       object-fit: cover;
+      transition: transform 0.3s;
+    }
+
+    .about-section img:hover {
+      transform: scale(1.05);
     }
 
     .about-section h2 {
@@ -124,7 +129,6 @@
     .special-section img:hover {
       transform: scale(1.05);
     }
-
 
     .special-section {
       background-color: #f7f3ef;
