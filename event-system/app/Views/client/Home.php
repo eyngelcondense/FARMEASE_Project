@@ -58,12 +58,17 @@
       border-radius: 10px;
       height: 250px;
       object-fit: cover;
+      transition: transform 0.3s;
+    }
+
+    .feature-card img:hover {
+      transform: scale(1.05);
     }
 
     .feature-card h5 {
       margin-top: 12px;
       font-weight: 600;
-      text-align: center;
+      text-align:;
       color: #3b2a18;
     }
 
@@ -112,6 +117,15 @@
     }
 
     /* Special Section */
+    .special-section img {
+      transition: transform 0.3s;
+    }
+
+    .special-section img:hover {
+      transform: scale(1.05);
+    }
+
+
     .special-section {
       background-color: #f7f3ef;
       padding: 60px 0;
@@ -267,7 +281,7 @@
     <div class="container">
       <div class="row align-items-center">
         <div class="col-lg-6 mb-4 mb-lg-0">
-          <img src="images/pic 1.jpg" alt="Resort Image" class="img-fluid rounded">
+          <img src="images/pic 1.jpg" alt="Resort Image" class="img-fluid rounded" >
         </div>
 
         <div class="col-lg-6">
