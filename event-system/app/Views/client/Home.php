@@ -250,19 +250,22 @@
       <div class="row g-4">
         <div class="col-md-4">
           <div class="feature-card">
-            <img src="images/san isidroweas.jpg">
+            <img src="images/san isidroweas.jpg" alt="Package Lounge" class="img-fluid rounded clickable-img"
+              onclick="openModal('images/san isidroweas.jpg')">
             <h5>Package Lounge</h5>
           </div>
         </div>
         <div class="col-md-4">
           <div class="feature-card">
-            <img src="images/wed_eventspic.jpg" alt="">
+            <img src="images/wed_eventspic.jpg" alt="Wedding Events" class="img-fluid rounded clickable-img"
+              onclick="openModal('images/wed_eventspic.jpg')">
             <h5>Wedding Events</h5>
           </div>
         </div>
         <div class="col-md-4">
           <div class="feature-card">
-            <img src="images/priv_gathetingspic.jpg" alt="">
+            <img src="images/priv_gathetingspic.jpg" alt="Private Gatherings" class="img-fluid rounded clickable-img"
+              onclick="openModal('images/priv_gathetingspic.jpg')">
             <h5>Private Gatherings</h5>
           </div>
         </div>
@@ -285,7 +288,8 @@
     <div class="container">
       <div class="row align-items-center">
         <div class="col-lg-6 mb-4 mb-lg-0">
-          <img src="images/pic 1.jpg" alt="Resort Image" class="img-fluid rounded" >
+          <img src="images/pic 1.jpg" alt="Resort Image" class="img-fluid rounded clickable-img"
+           onclick="openModal('images/pic 1.jpg')">
         </div>
 
         <div class="col-lg-6">
@@ -410,7 +414,8 @@
       </div>
       
       <div class="col-lg-6 mt-4 mt-lg-0">
-        <img src="images/pic 2.jpg" alt="Resort" class="img-fluid rounded">
+        <img src="images/pic 2.jpg" alt="Resort" class="img-fluid rounded"  onclick="openModal('images/pic 2.jpg')"
+     style="cursor: pointer;">
       </div>
     </div>
   </div>
@@ -453,15 +458,44 @@ function toggleContent() {
     <div class="container">
       <h3>Recent Events</h3>
       <div class="row g-3 event-gallery">
-        <div class="col-md-4 col-sm-6"><img src="images/pic 3.jpg" alt=""></div>
-        <div class="col-md-4 col-sm-6"><img src="images/pic 4.jpg" alt=""></div>
-        <div class="col-md-4 col-sm-6"><img src="images/pic 5.jpg" alt=""></div>
-        <div class="col-md-4 col-sm-6"><img src="images/pic 6.jpg" alt=""></div>
-        <div class="col-md-4 col-sm-6"><img src="images/pic 7.jpg" alt=""></div>
-        <div class="col-md-4 col-sm-6"><img src="images/pic 8.jpg" alt=""></div>
+        <div class="col-md-4 col-sm-6"><img src="images/pic 3.jpg" alt="" onclick="openModal('images/pic 3.jpg')"></div>
+        <div class="col-md-4 col-sm-6"><img src="images/pic 4.jpg" alt="" onclick="openModal('images/pic 4.jpg')"></div>
+        <div class="col-md-4 col-sm-6"><img src="images/pic 5.jpg" alt="" onclick="openModal('images/pic 5.jpg')"></div>
+        <div class="col-md-4 col-sm-6"><img src="images/pic 6.jpg" alt="" onclick="openModal('images/pic 6.jpg')"></div>
+        <div class="col-md-4 col-sm-6"><img src="images/pic 7.jpg" alt="" onclick="openModal('images/pic 7.jpg')"></div>
+        <div class="col-md-4 col-sm-6"><img src="images/pic 8.jpg" alt="" onclick="openModal('images/pic 8.jpg')"></div>
       </div>
     </div>
   </section>
+
+  <script>
+function openModal(imgSrc, caption) {
+  const modalImage = document.getElementById('modalImage');
+  const modalCaption = document.getElementById('modalCaption');
+  
+  modalImage.src = imgSrc;
+  modalCaption.textContent = caption;
+
+  // Open modal
+  const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+  modal.show();
+}
+</script>
+
+
+  <!-- Modal for viewing large image -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content bg-transparent border-0">
+      <div class="modal-body p-0">
+        <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+        <img id="modalImage" src="" alt="" class="img-fluid rounded w-100">
+        <p id="modalCaption" class="text-center text-white mt-2"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
 
   <?php
     include ('footer.php');
