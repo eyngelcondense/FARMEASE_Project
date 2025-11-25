@@ -27,7 +27,8 @@ class ContractsController extends BaseController
         return view('client/contracts/index', [
             'contracts' => $contracts,
             'user' => $this->getUserData(),
-            'client' => $this->getClientData()
+            'client' => $this->getClientData(),
+            'current_page' => 'contract'
         ]);
     }
     public function view($id)

@@ -2,7 +2,7 @@
 // app/Views/admin/contracts/create.php
 ?>
 
-<?= $this->extend('admin/layout/template') ?>
+<?= $this->extend('admin/layout') ?>
 <?= $this->section('content') ?>
 
 <div class="content-wrapper">
