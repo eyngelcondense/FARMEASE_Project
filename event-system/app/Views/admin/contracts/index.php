@@ -1,5 +1,5 @@
 <?php
-// app/Views/admin/contracts/index.php
+$current_page = isset($current_page) ? $current_page : 'contract';
 ?>
 
 <?= $this->extend('admin/layout') ?>
@@ -11,12 +11,6 @@
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h1>Contract Management</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="<?= base_url('admin') ?>">Home</a></li>
-                        <li class="breadcrumb-item active">Contracts</li>
-                    </ol>
                 </div>
             </div>
         </div>
@@ -295,23 +289,37 @@ $(document).ready(function() {
     });
 
     // Send contract to client
-    $('.send-contract').on('click', function() {
+    $('.send-contract').on('click', function(e) {
+        e.preventDefault();
+        
         const contractId = $(this).data('id');
+        const button = $(this);
         
         if (confirm('Are you sure you want to send this contract to the client? This will start the signing process.')) {
+            // Show loading state
+            button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Sending...');
+            
             $.ajax({
                 url: '<?= base_url('admin/contracts/send') ?>/' + contractId,
                 type: 'POST',
                 dataType: 'json',
+                data: {
+                    <?= csrf_token() ?>: '<?= csrf_hash() ?>' // Add CSRF protection
+                },
                 success: function(response) {
                     if (response.success) {
+                        // Show success message and reload
+                        alert('Success: ' + response.message);
                         location.reload();
                     } else {
                         alert('Error: ' + response.message);
+                        button.prop('disabled', false).html('<i class="fas fa-paper-plane"></i> Send');
                     }
                 },
-                error: function() {
-                    alert('Error sending contract.');
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', error);
+                    alert('Error sending contract. Please check console for details.');
+                    button.prop('disabled', false).html('<i class="fas fa-paper-plane"></i> Send');
                 }
             });
         }

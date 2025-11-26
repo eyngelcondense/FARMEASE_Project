@@ -3,16 +3,10 @@
 
 <?= $this->section('content') ?>
 <style>
-    /* Page Header */
-    
-
     .page-header-card h1 {
         color: #5c3a21;
         font-weight: 700;
     }
-
-    /* Buttons */
-   
 
     .btn-outline-brown {
         color: #7a4b2a;
@@ -24,7 +18,6 @@
         color: #fff;
     }
 
-    /* Venue Cards */
     .card {
         border-left: 4px solid #7a4b2a;
         background-color: #fff7f0;
@@ -39,7 +32,6 @@
         color: #5c3a21 !important;
     }
 
-    /* Badges */
     .badge-success {
         background-color: #a67c52 !important;
         color: #fff !important;
@@ -48,25 +40,6 @@
     .badge-secondary {
         background-color: #9b7b5c !important;
         color: #fff !important;
-    }
-
-    /* Alert Messages */
-    .alert-success {
-        background-color: #a67c52;
-        color: #fff;
-        border: none;
-    }
-
-    .alert-danger {
-        background-color: #b55b33;
-        color: #fff;
-        border: none;
-    }
-
-    /* Button Group */
-    .btn-group .btn-sm {
-        font-size: 0.85rem;
-        padding: 4px 10px;
     }
 
     .btn-outline-primary {
@@ -114,25 +87,6 @@
         </a>
     </div>
 
-    <!-- Alert Messages -->
-    <?php if (session()->getFlashdata('success')): ?>
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <?= session()->getFlashdata('success') ?>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    <?php endif; ?>
-
-    <?php if (session()->getFlashdata('error')): ?>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <?= session()->getFlashdata('error') ?>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    <?php endif; ?>
-
     <!-- Venues Grid -->
     <div class="row">
         <?php foreach ($venues as $venue): ?>
@@ -168,9 +122,10 @@
                                    class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-edit"></i> Edit
                                 </a>
-                                <a href="<?= site_url('venues/delete/' . $venue['id']) ?>" 
-                                   class="btn btn-sm btn-outline-danger" 
-                                   onclick="return confirm('Are you sure you want to delete this venue?')">
+                                <a href="#" 
+                                   class="btn btn-sm btn-outline-danger delete-venue" 
+                                   data-id="<?= $venue['id'] ?>" 
+                                   data-name="<?= $venue['name'] ?>">
                                     <i class="fas fa-trash"></i> Delete
                                 </a>
                             </div>
@@ -195,4 +150,68 @@
         <?php endif; ?>
     </div>
 </div>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+// SweetAlert for success messages
+<?php if (session()->getFlashdata('success')): ?>
+    Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: '<?= session()->getFlashdata('success') ?>',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: '#a67c52',
+        color: '#fff',
+        iconColor: '#fff'
+    });
+<?php endif; ?>
+
+<?php if (session()->getFlashdata('error')): ?>
+    Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: '<?= session()->getFlashdata('error') ?>',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 4000,
+        timerProgressBar: true,
+        background: '#b55b33',
+        color: '#fff',
+        iconColor: '#fff'
+    });
+<?php endif; ?>
+
+// Delete confirmation with SweetAlert
+document.querySelectorAll('.delete-venue').forEach(button => {
+    button.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const venueId = this.getAttribute('data-id');
+        const venueName = this.getAttribute('data-name');
+        
+        Swal.fire({
+            title: 'Are you sure?',
+            text: `You are about to delete "${venueName}". This action cannot be undone!`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#b55b33',
+            cancelButtonColor: '#7a4b2a',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel',
+            background: '#fff7f0',
+            color: '#5c3a21'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = `<?= site_url('venues/delete/') ?>${venueId}`;
+            }
+        });
+    });
+});
+</script>
 <?= $this->endSection() ?>

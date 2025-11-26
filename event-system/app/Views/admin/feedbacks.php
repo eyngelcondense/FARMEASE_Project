@@ -125,7 +125,7 @@ td {
 <div class="container-fluid">
 
     <div class="page-header-card">
-        <h1>Feedback / Testimonials</h1>
+        <h1>Feedback</h1>
     </div>
 
     <!-- SUCCESS / ERROR -->

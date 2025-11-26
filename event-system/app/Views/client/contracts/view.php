@@ -26,10 +26,17 @@ $title = "Contract - " . $contract['title'] . " | San Isidro Labrador Resort and
                         <div class="alert alert-info">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <h5 class="alert-heading mb-1"><i class="fas fa-paper-plane"></i> Contract Sent for Signature</h5>
-                                    <p class="mb-0">Please review and sign this contract. It will expire on 
-                                        <strong><?= date('F j, Y g:i A', strtotime($contract['expires_at'])) ?></strong>
-                                    </p>
+                                <?php if ($contract['status'] == 'sent'): ?>
+                                    <div class="alert alert-info">
+                                        <h5><i class="fas fa-file-signature"></i> Contract Sent for Signature</h5>
+                                        <p class="mb-1">Please review and sign this contract.</p>
+                                        <?php if (!empty($contract['expires_at']) && $contract['expires_at'] != '0000-00-00 00:00:00'): ?>
+                                            <p class="mb-0"><strong>Expires on:</strong> <?= date('F j, Y g:i A', strtotime($contract['expires_at'])) ?></p>
+                                        <?php else: ?>
+                                            <p class="mb-0"><strong>No expiration date set.</strong></p>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endif; ?>
                                 </div>
                                 <div>
                                     <button type="button" class="btn btn-success btn-lg sign-contract-main"
@@ -87,14 +94,23 @@ $title = "Contract - " . $contract['title'] . " | San Isidro Labrador Resort and
                             <div class="row">
                                 <div class="col-md-6">
                                     <h5>Client Information</h5>
-                                    <p class="mb-1"><strong>Name:</strong> <?= $contract['client_name'] ?></p>
-                                    <p class="mb-1"><strong>Email:</strong> <?= $contract['client_email'] ?></p>
+                                    <p class="mb-1"><strong>Name:</strong> <?= esc($contract['client_name'] ?? 'Not specified') ?></p>
+                                    <p class="mb-1"><strong>Email:</strong> <?= esc($contract['client_email'] ?? $client['email'] ?? 'Not specified') ?></p>
+                                    <?php if (!empty($contract['client_phone'])): ?>
+                                        <p class="mb-1"><strong>Phone:</strong> <?= esc($contract['client_phone']) ?></p>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="col-md-6">
                                     <h5>Event Details</h5>
-                                    <p class="mb-1"><strong>Booking Reference:</strong> <?= $contract['booking_reference'] ?></p>
-                                    <p class="mb-1"><strong>Event Date:</strong> <?= date('F j, Y', strtotime($contract['event_date'])) ?></p>
-                                    <p class="mb-1"><strong>Event Type:</strong> <?= $contract['event_type'] ?></p>
+                                    <p class="mb-1"><strong>Booking Reference:</strong> <?= esc($contract['booking_reference'] ?? 'Not specified') ?></p>
+                                    <p class="mb-1"><strong>Event Date:</strong> <?= !empty($contract['event_date']) ? date('F j, Y', strtotime($contract['event_date'])) : 'Not specified' ?></p>
+                                    <p class="mb-1"><strong>Event Type:</strong> <?= esc($contract['event_type'] ?? 'Not specified') ?></p>
+                                    <?php if (!empty($contract['venue_name'])): ?>
+                                        <p class="mb-1"><strong>Venue:</strong> <?= esc($contract['venue_name']) ?></p>
+                                    <?php endif; ?>
+                                    <?php if (!empty($contract['package_name'])): ?>
+                                        <p class="mb-1"><strong>Package:</strong> <?= esc($contract['package_name']) ?></p>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>

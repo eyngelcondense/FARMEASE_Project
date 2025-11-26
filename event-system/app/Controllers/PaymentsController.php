@@ -13,8 +13,6 @@ class PaymentsController extends Controller
     protected $clientModel;
     protected $paymentModel;
 
-    // (Removed duplicate __construct, nothing needed here)
-
     public function __construct()
     {
         $this->bookingModel = new BookingModel();
@@ -76,9 +74,11 @@ class PaymentsController extends Controller
         }
 
         // Get client ID properly
-        $userData = session('user');
+        $session = session();
+        $userData = $session->get('user') ?? $session->get('user_data') ?? null;
+
         if (!$userData || !isset($userData['id'])) {
-            log_message('error', 'No user session found');
+            log_message('error', 'No user session found - session data: ' . print_r($session->get(), true));
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'Please login to make a payment.'
@@ -154,20 +154,11 @@ class PaymentsController extends Controller
             $amountInCentavos = (int)($amount * 100);
             log_message('error', 'Amount in centavos: ' . $amountInCentavos);
 
-            // Create payment record first
-            $paymentData = [
-                'booking_id' => $bookingId,
-                'client_id' => $clientId,
-                'amount' => $amount,
-                'payment_method' => $paymentMethod,
-                'payment_reference' => $this->paymentModel->generatePaymentReference(),
-                'ref_number' => 'PM_' . random_string('alnum', 12),
-                'payment_date' => date('Y-m-d H:i:s'),
-                'status' => 'pending',
-                'created_at' => date('Y-m-d H:i:s')
-            ];
-
-            $paymentId = $this->paymentModel->insert($paymentData);
+            // Create payment record using PaymentModel method
+            $paymentId = $this->paymentModel->createPayMongoPayment($bookingId, $clientId, $amount, $paymentMethod, [
+                'payment_intent_id' => 'temp_' . random_string('alnum', 12) // Will be updated with real ID
+            ]);
+            
             log_message('error', 'Payment record created with ID: ' . $paymentId);
 
             // Create PayMongo Payment Intent
@@ -180,7 +171,6 @@ class PaymentsController extends Controller
 
             log_message('error', 'Creating PayMongo payment intent...');
             
-            // Alternative: Use flat metadata (all values as strings)
             $response = $httpClient->post('https://api.paymongo.com/v1/payment_intents', [
                 'headers' => [
                     'Authorization' => 'Basic ' . base64_encode($secretKey . ':'),
@@ -198,7 +188,6 @@ class PaymentsController extends Controller
                             ],
                             'currency' => 'PHP',
                             'description' => 'Payment for Booking #' . $booking['booking_reference'],
-                            // Flat metadata (no nested objects)
                             'metadata' => [
                                 'booking_id' => (string)$bookingId,
                                 'payment_id' => (string)$paymentId
@@ -273,7 +262,9 @@ class PaymentsController extends Controller
         }
 
         // Get client ID properly
-        $userData = session('user');
+        $session = session();
+        $userData = $session->get('user') ?? $session->get('user_data') ?? null;
+
         if (!$userData || !isset($userData['id'])) {
             return $this->response->setJSON([
                 'success' => false,
@@ -351,23 +342,13 @@ class PaymentsController extends Controller
                 ]);
             }
             
-            // Create payment record first
-            $paymentData = [
-                'booking_id' => $bookingId,
-                'client_id' => $clientId,
-                'amount' => $amount,
-                'payment_method' => $paymentMethod,
-                'payment_reference' => $this->paymentModel->generatePaymentReference(),
-                'ref_number' => 'PM_' . random_string('alnum', 12),
-                'payment_date' => date('Y-m-d H:i:s'),
-                'status' => 'pending', // Make sure this is always set
-                'created_at' => date('Y-m-d H:i:s')
-            ];
-
-            $paymentId = $this->paymentModel->insert($paymentData);
+            // Create payment record using PaymentModel method
+            $paymentId = $this->paymentModel->createPayMongoPayment($bookingId, $clientId, $amount, $paymentMethod, [
+                'source_id' => 'temp_' . random_string('alnum', 12)
+            ]);
 
             // Create PayMongo Source
-            $httpClient = \Config\Services::curlrequest(); // Renamed
+            $httpClient = \Config\Services::curlrequest();
             $secretKey = $this->getPayMongoSecretKey();
             
             if (!$secretKey) {
@@ -489,7 +470,7 @@ class PaymentsController extends Controller
                     
                     if ($payment) {
                         if ($status === 'succeeded') {
-                            $this->paymentModel->update($payment['id'], ['status' => 'verified']);
+                            $this->paymentModel->verifyPayMongoPayment($paymentIntentId);
                             return redirect()->to('/booking_history')->with('success', 'Payment completed successfully!');
                         } else {
                             $this->paymentModel->update($payment['id'], ['status' => 'failed']);
@@ -529,55 +510,13 @@ class PaymentsController extends Controller
         return redirect()->to('/booking_history')->with('error', 'Payment was cancelled or failed. Please try again.');
     }
 
-    private function createPaymentFromSource($sourceId, $paymentId)
-    {
-        try {
-            $payment = $this->paymentModel->find($paymentId);
-            if (!$payment) return;
-            
-            $client = \Config\Services::curlrequest();
-            $secretKey = $this->getPayMongoSecretKey();
-            
-            $response = $client->post('https://api.paymongo.com/v1/payments', [
-                'headers' => [
-                    'Authorization' => 'Basic ' . base64_encode($secretKey . ':'),
-                    'Content-Type' => 'application/json',
-                ],
-                'json' => [
-                    'data' => [
-                        'attributes' => [
-                            'amount' => (int)($payment['amount'] * 100),
-                            'currency' => 'PHP',
-                            'source' => [
-                                'id' => $sourceId,
-                                'type' => 'source'
-                            ],
-                            'description' => 'Payment for Booking #' . $payment['booking_id']
-                        ]
-                    ]
-                ]
-            ]);
-            
-            $responseData = json_decode($response->getBody(), true);
-            
-            if ($response->getStatusCode() === 200 && isset($responseData['data'])) {
-                $paymongoPayment = $responseData['data'];
-                if ($paymongoPayment['attributes']['status'] === 'paid') {
-                    $this->paymentModel->update($paymentId, ['status' => 'verified']);
-                }
-            }
-        } catch (\Exception $e) {
-            log_message('error', 'Create payment from source error: ' . $e->getMessage());
-        }
-    }
-
     public function manual($bookingId)
     {
         helper(['form', 'text']);
         
         log_message('error', '=== MANUAL PAYMENT START ===');
         
-        // Get client ID properly (same way you do in bookings)
+        // Get client ID properly
         $userData = session('user');
         if (!$userData || !isset($userData['id'])) {
             log_message('error', 'No user session found');
@@ -587,7 +526,6 @@ class PaymentsController extends Controller
         $userId = $userData['id'];
         log_message('error', 'User ID from session: ' . $userId);
         
-        // Get client ID using user_id (same as your booking code)
         $clientModel = new ClientModel();
         $client = $clientModel->where('user_id', $userId)->first();
         
@@ -599,7 +537,6 @@ class PaymentsController extends Controller
         $clientId = $client['id'];
         log_message('error', 'Client ID found: ' . $clientId);
         
-        // Check if booking exists and belongs to this client
         $booking = $this->bookingModel->where('id', $bookingId)->where('client_id', $clientId)->first();
         
         if (!$booking) {
@@ -610,6 +547,7 @@ class PaymentsController extends Controller
         log_message('error', 'Booking found: ' . $booking['booking_reference']);
         log_message('error', 'POST data: ' . print_r($this->request->getPost(), true));
         
+        // Updated rules for 2MB file size
         $rules = [
             'amount' => 'required|decimal|greater_than[0]',
             'payment_method' => 'required|in_list[bank_transfer,cash,gcash,paymaya]',
@@ -617,8 +555,8 @@ class PaymentsController extends Controller
             'payment_date' => 'required|valid_date',
             'receipt_image' => [
                 'uploaded[receipt_image]',
-                'mime_in[receipt_image,image/jpeg,image/png,image/gif,application/pdf]',
-                'max_size[receipt_image,5120]',
+                'mime_in[receipt_image,image/jpeg,image/png,image/gif,image/webp,application/pdf]',
+                'max_size[receipt_image,2048]', // 2MB in KB
             ]
         ];
 
@@ -641,17 +579,14 @@ class PaymentsController extends Controller
         $receiptPath = null;
 
         if ($receiptFile && $receiptFile->isValid() && !$receiptFile->hasMoved()) {
-            // Define upload path in public folder
-            $uploadPath = FCPATH . 'uploads/receipts/'; // FCPATH points to public folder
+            $uploadPath = FCPATH . 'uploads/receipts/';
             
-            // Create directory if it doesn't exist
             if (!is_dir($uploadPath)) {
                 mkdir($uploadPath, 0755, true);
             }
             
             $newName = $receiptFile->getRandomName();
             
-            // Move file to public/uploads/receipts directory
             if ($receiptFile->move($uploadPath, $newName)) {
                 $receiptPath = 'uploads/receipts/' . $newName;
                 log_message('error', 'File uploaded to public folder: ' . $receiptPath);
@@ -670,13 +605,14 @@ class PaymentsController extends Controller
         // Create payment record
         $paymentData = [
             'booking_id' => $bookingId,
-            'client_id' => $clientId, // Use the correct client_id from client table
+            'client_id' => $clientId,
             'payment_reference' => $this->paymentModel->generatePaymentReference(),
             'ref_number' => $refNumber,
             'amount' => $amount,
             'payment_method' => $method,
+            'payment_type' => $this->paymentModel->determinePaymentType($bookingId, $amount),
             'payment_date' => $paymentDate,
-            'receipt_image' => $receiptPath,
+            'receipt_image' => $receiptPath, // This will be saved for manual payments
             'notes' => $notes,
             'status' => 'pending',
             'created_at' => date('Y-m-d H:i:s'),
@@ -839,65 +775,6 @@ class PaymentsController extends Controller
         ]);
     }
 
-    public function submit()
-    {
-        helper(['form', 'url']);
-
-        // Input validate
-        $rules = [
-            'booking_id'     => 'required|is_natural_no_zero',
-            'payment_method' => 'required|in_list[gcash,bank_transfer,cash,paymaya]',
-            'amount'         => 'required|decimal|greater_than[0]',
-            'ref_number'     => 'required|max_length[64]',
-            'payment_date'   => 'required|valid_date',
-            'receipt_image'  => [
-                'uploaded[receipt_image]',
-                'mime_in[receipt_image,image/jpeg,image/png,image/gif,application/pdf]',
-                'max_size[receipt_image,5120]',
-            ]
-        ];
-
-        if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
-        }
-
-        $bookingId    = $this->request->getPost('booking_id');
-        $method       = $this->request->getPost('payment_method');
-        $amount       = $this->request->getPost('amount');
-        $refNumber    = $this->request->getPost('ref_number');
-        $paymentDate  = $this->request->getPost('payment_date');
-        $notes        = $this->request->getPost('notes');
-        $clientId     = session('client_id');
-
-        // Upload receipt
-        $receiptFile = $this->request->getFile('receipt_image');
-        $receiptPath = null;
-        
-        if ($receiptFile && $receiptFile->isValid() && !$receiptFile->hasMoved()) {
-            $newName = $receiptFile->getRandomName();
-            $receiptPath = $receiptFile->store('receipts/', $newName);
-        }
-
-        // Insert payment
-        $paymentData = [
-            'booking_id'      => $bookingId,
-            'client_id'       => $clientId,
-            'amount'          => $amount,
-            'payment_method'  => $method,
-            'ref_number'      => $refNumber,
-            'payment_date'    => $paymentDate,
-            'notes'           => $notes,
-            'receipt_image'   => $receiptPath,
-            'status'          => 'pending',
-            'created_at'      => date('Y-m-d H:i:s'),
-        ];
-
-        $this->paymentModel->insert($paymentData);
-
-        return redirect()->to('/booking_history')
-            ->with('success', 'Payment submitted successfully! It will be reviewed by an admin.');
-    }
-
     public function history()
     {
         $clientId = session('client_id');
@@ -923,7 +800,7 @@ class PaymentsController extends Controller
         }
         
         // The file is stored in writable/receipts/ by the store() method
-        $filePath = WRITEPATH . 'receipts/' . $filename;
+        $filePath = FCPATH . 'receipts/' . $filename;
         
         // Check if file exists and is within the allowed directory
         if (!file_exists($filePath) || !is_file($filePath)) {
@@ -950,75 +827,75 @@ class PaymentsController extends Controller
     }
 
     /**
- * Debug environment variables
- */
-public function debugKeys()
-{
-    echo "<h3>Environment Debug</h3>";
-    
-    echo "PAYMONGO_PUBLIC_KEY: " . (getenv('PAYMONGO_PUBLIC_KEY') ? 'SET' : 'NOT SET') . "<br>";
-    echo "PAYMONGO_SECRET_KEY: " . (getenv('PAYMONGO_SECRET_KEY') ? 'SET' : 'NOT SET') . "<br>";
-    
-    echo "<h3>Full .env check:</h3>";
-    $envPath = ROOTPATH . '.env';
-    if (file_exists($envPath)) {
-        echo ".env file exists<br>";
-        $contents = file_get_contents($envPath);
-        // Hide actual keys for security
-        $safeContents = preg_replace('/=(.*)/', '=***HIDDEN***', $contents);
-        echo "<pre>" . htmlspecialchars($safeContents) . "</pre>";
-    } else {
-        echo ".env file NOT FOUND at: " . $envPath . "<br>";
-    }
-    
-    echo "<h3>Test Key Methods:</h3>";
-    echo "getPayMongoPublicKey(): " . ($this->getPayMongoPublicKey() ? 'RETURNS KEY' : 'RETURNS NULL') . "<br>";
-    echo "getPayMongoSecretKey(): " . ($this->getPayMongoSecretKey() ? 'RETURNS KEY' : 'RETURNS NULL') . "<br>";
-}
-
-/**
- * Test PayMongo connection directly
- */
-public function testPayMongoDirect()
-{
-    helper(['text']);
-    
-    try {
-        $secretKey = $this->getPayMongoSecretKey();
+     * Debug environment variables
+     */
+    public function debugKeys()
+    {
+        echo "<h3>Environment Debug</h3>";
         
-        if (!$secretKey) {
-            echo "ERROR: Secret key not found<br>";
-            return;
+        echo "PAYMONGO_PUBLIC_KEY: " . (getenv('PAYMONGO_PUBLIC_KEY') ? 'SET' : 'NOT SET') . "<br>";
+        echo "PAYMONGO_SECRET_KEY: " . (getenv('PAYMONGO_SECRET_KEY') ? 'SET' : 'NOT SET') . "<br>";
+        
+        echo "<h3>Full .env check:</h3>";
+        $envPath = ROOTPATH . '.env';
+        if (file_exists($envPath)) {
+            echo ".env file exists<br>";
+            $contents = file_get_contents($envPath);
+            // Hide actual keys for security
+            $safeContents = preg_replace('/=(.*)/', '=***HIDDEN***', $contents);
+            echo "<pre>" . htmlspecialchars($safeContents) . "</pre>";
+        } else {
+            echo ".env file NOT FOUND at: " . $envPath . "<br>";
         }
         
-        echo "Secret Key: " . substr($secretKey, 0, 10) . "...<br>";
-        
-        $client = \Config\Services::curlrequest();
-        
-        // Test creating a small payment intent
-        $response = $client->post('https://api.paymongo.com/v1/payment_intents', [
-            'headers' => [
-                'Authorization' => 'Basic ' . base64_encode($secretKey . ':'),
-                'Content-Type' => 'application/json',
-            ],
-            'json' => [
-                'data' => [
-                    'attributes' => [
-                        'amount' => 1000, // ₱10.00
-                        'payment_method_allowed' => ['card'],
-                        'currency' => 'PHP',
-                        'description' => 'Test Payment'
-                    ]
-                ]
-            ],
-            'http_errors' => false
-        ]);
-        
-        echo "Status: " . $response->getStatusCode() . "<br>";
-        echo "Response: " . $response->getBody() . "<br>";
-        
-    } catch (\Exception $e) {
-        echo "Exception: " . $e->getMessage() . "<br>";
+        echo "<h3>Test Key Methods:</h3>";
+        echo "getPayMongoPublicKey(): " . ($this->getPayMongoPublicKey() ? 'RETURNS KEY' : 'RETURNS NULL') . "<br>";
+        echo "getPayMongoSecretKey(): " . ($this->getPayMongoSecretKey() ? 'RETURNS KEY' : 'RETURNS NULL') . "<br>";
     }
-}
+
+    /**
+     * Test PayMongo connection directly
+     */
+    public function testPayMongoDirect()
+    {
+        helper(['text']);
+        
+        try {
+            $secretKey = $this->getPayMongoSecretKey();
+            
+            if (!$secretKey) {
+                echo "ERROR: Secret key not found<br>";
+                return;
+            }
+            
+            echo "Secret Key: " . substr($secretKey, 0, 10) . "...<br>";
+            
+            $client = \Config\Services::curlrequest();
+            
+            // Test creating a small payment intent
+            $response = $client->post('https://api.paymongo.com/v1/payment_intents', [
+                'headers' => [
+                    'Authorization' => 'Basic ' . base64_encode($secretKey . ':'),
+                    'Content-Type' => 'application/json',
+                ],
+                'json' => [
+                    'data' => [
+                        'attributes' => [
+                            'amount' => 1000, // ₱10.00
+                            'payment_method_allowed' => ['card'],
+                            'currency' => 'PHP',
+                            'description' => 'Test Payment'
+                        ]
+                    ]
+                ],
+                'http_errors' => false
+            ]);
+            
+            echo "Status: " . $response->getStatusCode() . "<br>";
+            echo "Response: " . $response->getBody() . "<br>";
+            
+        } catch (\Exception $e) {
+            echo "Exception: " . $e->getMessage() . "<br>";
+        }
+    }
 }

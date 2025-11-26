@@ -212,15 +212,15 @@
           <a class="nav-link <?= (uri_string() == 'home' || uri_string() == '') ? 'active' : '' ?>" href="<?= site_url('home') ?>">HOME</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?= (uri_string() == 'packages') ? 'active' : '' ?>" href="<?= site_url('packages') ?>">PACKAGES</a>
+          <a class="nav-link <?= (uri_string() == 'packages') ? 'active' : '' ?>" href="<?= site_url('packages') ?>">PACKAGE VENUES</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?= (uri_string() == 'gallery') ? 'active' : '' ?>" href="<?= site_url('gallery') ?>">VIDEO/GALLERIES</a>
+          <a class="nav-link <?= (uri_string() == 'gallery') ? 'active' : '' ?>" href="<?= site_url('gallery') ?>">VENUE GALLERY</a>
         </li>
         <li class="nav-item">
         <a class="nav-link <?= (uri_string() == 'testimonials') ? 'active' : '' ?>" href="<?= site_url('testimonials') ?>">TESTIMONIALS</a>
       </li>
-      <li class="nav-item"><a class="nav-link <?= (uri_string() == 'bookings') ? 'active' : '' ?>" href="<?= site_url('bookings') ?>">CONTACT</a>
+      <li class="nav-item"><a class="nav-link <?= (uri_string() == 'bookings') ? 'active' : '' ?>" href="<?= site_url('bookings') ?>">BOOK EVENTS</a>
       </li>
       <li class="nav-item"><a class="nav-link <?= (uri_string() == 'booking_history') ? 'active' : '' ?>" href="<?= site_url('booking_history') ?>">MY BOOKINGS</a> 
       </li>

@@ -20,6 +20,7 @@ class PaymentModel extends Model
         'ref_number',       
         'amount', 
         'payment_method', 
+        'payment_type', // ADDED: down_payment or full_payment
         'payment_date', 
         'receipt_image',
         'status', 
@@ -36,7 +37,8 @@ class PaymentModel extends Model
         'booking_id' => 'required|is_natural_no_zero',
         'client_id' => 'required|is_natural_no_zero',
         'amount' => 'required|decimal|greater_than[0]',
-        'payment_method' => 'required',
+        'payment_method' => 'required|in_list[cash,bank_transfer,online,gcash,paymaya]',
+        'payment_type' => 'required|in_list[down_payment,full_payment,partial]',
         'payment_date' => 'required|valid_date'
     ];
 
@@ -90,16 +92,81 @@ class PaymentModel extends Model
     }
 
     /**
+     * Get down payment amount for a booking
+     */
+    public function getDownPaymentAmount($bookingId)
+    {
+        $result = $this->select('amount')
+                       ->where('booking_id', $bookingId)
+                       ->where('payment_type', 'down_payment')
+                       ->where('status', 'verified')
+                       ->first();
+        
+        return $result['amount'] ?? 0;
+    }
+
+    /**
+     * Check if down payment is made for booking
+     */
+    public function isDownPaymentMade($bookingId)
+    {
+        return $this->where('booking_id', $bookingId)
+                    ->where('payment_type', 'down_payment')
+                    ->where('status', 'verified')
+                    ->countAllResults() > 0;
+    }
+
+    /**
+     * Check if full payment is made for booking
+     */
+    public function isFullPaymentMade($bookingId)
+    {
+        $bookingModel = new BookingModel();
+        $booking = $bookingModel->find($bookingId);
+        
+        if (!$booking) return false;
+        
+        $totalPaid = $this->getTotalPaidAmount($bookingId);
+        return $totalPaid >= $booking['total_amount'];
+    }
+
+    /**
      * Verify a payment
      */
     public function verifyPayment($paymentId, $adminId, $notes = null)
     {
-        return $this->update($paymentId, [
+        $payment = $this->find($paymentId);
+        if (!$payment) return false;
+
+        $updated = $this->update($paymentId, [
             'status' => 'verified',
             'verified_by' => $adminId,
             'verified_at' => date('Y-m-d H:i:s'),
             'notes' => $notes
         ]);
+
+        // Update booking payment status if verified
+        if ($updated) {
+            $bookingModel = new BookingModel();
+            $bookingId = $payment['booking_id'];
+            
+            if ($payment['payment_type'] === 'down_payment') {
+                $bookingModel->update($bookingId, [
+                    'down_payment_paid' => 1,
+                    'down_payment_amount' => $payment['amount']
+                ]);
+            }
+            
+            // Check if full payment is complete
+            if ($this->isFullPaymentMade($bookingId)) {
+                $bookingModel->update($bookingId, [
+                    'full_payment_paid' => 1,
+                    'payment_status' => 'paid'
+                ]);
+            }
+        }
+
+        return $updated;
     }
 
     /**
@@ -125,7 +192,7 @@ class PaymentModel extends Model
             $data['payment_reference'] = $this->generatePaymentReference();
         }
         
-        // Ensure ref_number is set (for PayMongo compatibility)
+        // Ensure ref_number is set
         if (!isset($data['ref_number']) && isset($data['payment_reference'])) {
             $data['ref_number'] = $data['payment_reference'];
         }
@@ -134,7 +201,136 @@ class PaymentModel extends Model
         if (!isset($data['created_at'])) {
             $data['created_at'] = date('Y-m-d H:i:s');
         }
+
+        // Set default status
+        if (!isset($data['status'])) {
+            $data['status'] = 'pending';
+        }
         
         return $this->insert($data);
+    }
+
+    /**
+     * Create down payment
+     */
+    public function createDownPayment($bookingId, $clientId, $amount, $paymentMethod, $receiptImage = null)
+    {
+        $data = [
+            'booking_id' => $bookingId,
+            'client_id' => $clientId,
+            'amount' => $amount,
+            'payment_method' => $paymentMethod,
+            'payment_type' => 'down_payment',
+            'payment_date' => date('Y-m-d H:i:s'),
+            'receipt_image' => $receiptImage
+        ];
+
+        return $this->createPayment($data);
+    }
+
+    /**
+     * Create full payment
+     */
+    public function createFullPayment($bookingId, $clientId, $amount, $paymentMethod, $receiptImage = null)
+    {
+        $data = [
+            'booking_id' => $bookingId,
+            'client_id' => $clientId,
+            'amount' => $amount,
+            'payment_method' => $paymentMethod,
+            'payment_type' => 'full_payment',
+            'payment_date' => date('Y-m-d H:i:s'),
+            'receipt_image' => $receiptImage
+        ];
+
+        return $this->createPayment($data);
+    }
+    public function createPayMongoPayment($bookingId, $clientId, $amount, $paymentMethod, $paymongoData = [])
+    {
+        $data = [
+            'booking_id' => $bookingId,
+            'client_id' => $clientId,
+            'amount' => $amount,
+            'payment_method' => $paymentMethod,
+            'payment_type' => $this->determinePaymentType($bookingId, $amount),
+            'payment_date' => date('Y-m-d H:i:s'),
+            'payment_reference' => $this->generatePaymentReference(),
+            'ref_number' => $paymongoData['payment_intent_id'] ?? $paymongoData['source_id'] ?? 'PM_' . random_string('alnum', 12),
+            'status' => 'pending', // Will be verified after webhook
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+
+        // For PayMongo payments, we'll verify via webhook, so auto-verify for now
+        // or keep as pending until webhook confirmation
+        return $this->insert($data);
+    }
+
+    /**
+     * Determine if payment is down payment or full/partial
+     */
+    private function determinePaymentType($bookingId, $amount)
+    {
+        $bookingModel = new BookingModel();
+        $booking = $bookingModel->find($bookingId);
+        
+        if (!$booking) {
+            return 'partial';
+        }
+
+        $totalPaid = $this->getTotalPaidAmount($bookingId);
+        
+        // If no payments made yet and amount matches 20% down payment
+        if ($totalPaid == 0 && $amount >= ($booking['total_amount'] * 0.20)) {
+            return 'down_payment';
+        }
+        
+        // If this payment will complete the total amount
+        if (($totalPaid + $amount) >= $booking['total_amount']) {
+            return 'full_payment';
+        }
+        
+        return 'partial';
+    }
+
+    /**
+     * Verify PayMongo payment via webhook
+     */
+    public function verifyPayMongoPayment($paymentIntentId, $amount = null)
+    {
+        // Find payment by PayMongo reference
+        $payment = $this->where('ref_number', $paymentIntentId)->first();
+        
+        if (!$payment) {
+            return false;
+        }
+
+        // Update payment status to verified
+        $updated = $this->update($payment['id'], [
+            'status' => 'verified',
+            'verified_at' => date('Y-m-d H:i:s')
+        ]);
+
+        // Update booking payment status
+        if ($updated) {
+            $bookingModel = new BookingModel();
+            $bookingId = $payment['booking_id'];
+            
+            if ($payment['payment_type'] === 'down_payment') {
+                $bookingModel->update($bookingId, [
+                    'down_payment_paid' => 1,
+                    'down_payment_amount' => $payment['amount']
+                ]);
+            }
+            
+            // Check if full payment is complete
+            if ($this->isFullPaymentMade($bookingId)) {
+                $bookingModel->update($bookingId, [
+                    'full_payment_paid' => 1,
+                    'payment_status' => 'paid'
+                ]);
+            }
+        }
+
+        return $updated;
     }
 }

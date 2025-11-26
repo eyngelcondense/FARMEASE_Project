@@ -79,8 +79,8 @@ if (!isset($current_page)) {
 
             <li class="nav-item">
                 <a href="<?= site_url('admin/contracts')?>" 
-                   class="nav-link <?= $current_page === 'contract' ? 'active' : '' ?>">
-                    <i class="fas fa-clock"></i>
+                   class="nav-link <?= $current_page === 'contracts' ? 'active' : '' ?>">
+                    <i class="fas fa-file-contract"></i>
                     <span>Contracts</span>
                 </a>
             </li>

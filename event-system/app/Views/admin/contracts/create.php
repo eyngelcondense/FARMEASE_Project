@@ -1,7 +1,3 @@
-<?php
-// app/Views/admin/contracts/create.php
-?>
-
 <?= $this->extend('admin/layout') ?>
 <?= $this->section('content') ?>
 
@@ -11,13 +7,6 @@
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h1>Create New Contract</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="<?= base_url('admin') ?>">Home</a></li>
-                        <li class="breadcrumb-item"><a href="<?= base_url('admin/contracts') ?>">Contracts</a></li>
-                        <li class="breadcrumb-item active">Create Contract</li>
-                    </ol>
                 </div>
             </div>
         </div>
@@ -32,7 +21,7 @@
                             <h3 class="card-title">Contract Details</h3>
                         </div>
 
-                        <form action="<?= base_url('admin/contracts/store') ?>" method="post">
+                        <form action="<?= base_url('admin/contracts/store') ?>" method="post" id="contractForm">
                             <?= csrf_field() ?>
                             
                             <div class="card-body">
@@ -52,11 +41,40 @@
                                     </div>
                                 <?php endif; ?>
 
+                                <!-- Contract Template Section at Top -->
+                                <div class="card card-secondary mb-4">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Quick Templates</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="mb-3">Select a template to pre-fill the contract content:</p>
+                                        <div class="btn-group flex-wrap">
+                                            <button type="button" class="btn btn-outline-primary template-btn mb-2" data-template="wedding">
+                                                <i class="fas fa-ring"></i> Wedding Event
+                                            </button>
+                                            <button type="button" class="btn btn-outline-primary template-btn mb-2" data-template="corporate">
+                                                <i class="fas fa-briefcase"></i> Corporate Event
+                                            </button>
+                                            <button type="button" class="btn btn-outline-primary template-btn mb-2" data-template="birthday">
+                                                <i class="fas fa-birthday-cake"></i> Birthday Party
+                                            </button>
+                                            <button type="button" class="btn btn-outline-primary template-btn mb-2" data-template="generic">
+                                                <i class="fas fa-file-contract"></i> Generic Event
+                                            </button>
+                                        </div>
+                                        <div class="mt-2">
+                                            <small class="text-muted">
+                                                <i class="fas fa-info-circle"></i> Templates will populate the content below.
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="booking_id">Select Booking *</label>
-                                            <select class="form-control select2" id="booking_id" name="booking_id" required>
+                                            <select class="form-control" id="booking_id" name="booking_id" required>
                                                 <option value="">Select a booking</option>
                                                 <?php foreach ($bookings as $booking): ?>
                                                     <option value="<?= $booking['id'] ?>" 
@@ -129,7 +147,7 @@
 
                                 <div class="form-group">
                                     <label for="content">Contract Content *</label>
-                                    <textarea class="form-control" id="content" name="content" rows="15" 
+                                    <textarea class="form-control contract-textarea" id="content" name="content" rows="15" 
                                               placeholder="Enter the main contract content here..." required><?= old('content') ?></textarea>
                                     <small class="form-text text-muted">
                                         You can use the following placeholders: {client_name}, {event_date}, {venue_name}, {package_name}, {total_amount}
@@ -138,45 +156,47 @@
 
                                 <div class="form-group">
                                     <label for="terms_conditions">Terms & Conditions *</label>
-                                    <textarea class="form-control" id="terms_conditions" name="terms_conditions" rows="8" 
+                                    <textarea class="form-control contract-textarea" id="terms_conditions" name="terms_conditions" rows="8" 
                                               placeholder="Enter terms and conditions..." required><?= old('terms_conditions') ?></textarea>
                                 </div>
 
-                                <!-- Contract Template -->
-                                <div class="card card-secondary">
+                                <!-- Formatting Help -->
+                                <div class="card card-info">
                                     <div class="card-header">
-                                        <h3 class="card-title">Contract Template</h3>
-                                        <div class="card-tools">
-                                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                                <i class="fas fa-minus"></i>
-                                            </button>
-                                        </div>
+                                        <h3 class="card-title">Formatting Tips</h3>
                                     </div>
                                     <div class="card-body">
-                                        <p>Quick templates for common contract types:</p>
-                                        <div class="btn-group">
-                                            <button type="button" class="btn btn-default template-btn" data-template="wedding">
-                                                Wedding Event
-                                            </button>
-                                            <button type="button" class="btn btn-default template-btn" data-template="corporate">
-                                                Corporate Event
-                                            </button>
-                                            <button type="button" class="btn btn-default template-btn" data-template="birthday">
-                                                Birthday Party
-                                            </button>
-                                            <button type="button" class="btn btn-default template-btn" data-template="generic">
-                                                Generic Event
-                                            </button>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <strong>Basic Formatting:</strong>
+                                                <ul class="mb-0">
+                                                    <li>Use empty lines to separate paragraphs</li>
+                                                    <li>Use <code>-</code> for bullet points</li>
+                                                    <li>Use <code>1.</code>, <code>2.</code> for numbered lists</li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <strong>Available Placeholders:</strong>
+                                                <ul class="mb-0">
+                                                    <li><code>{client_name}</code> - Client's full name</li>
+                                                    <li><code>{event_date}</code> - Event date</li>
+                                                    <li><code>{venue_name}</code> - Venue name</li>
+                                                    <li><code>{package_name}</code> - Package name</li>
+                                                    <li><code>{total_amount}</code> - Total amount</li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="card-footer">
-                                <button type="submit" class="btn btn-primary">
+                                <button type="submit" class="btn btn-primary" id="submitBtn">
                                     <i class="fas fa-save"></i> Create Contract
                                 </button>
-                                <a href="<?= base_url('admin/contracts') ?>" class="btn btn-default">Cancel</a>
+                                <button type="button" class="btn btn-default" id="cancelBtn">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -187,47 +207,14 @@
 </div>
 
 <?= $this->section('scripts') ?>
-<script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+<!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 $(document).ready(function() {
-    // Initialize CKEditor
-    CKEDITOR.replace('content', {
-        height: 400
-    });
-    
-    CKEDITOR.replace('terms_conditions', {
-        height: 200
-    });
-
-    // Initialize Select2
-    $('.select2').select2();
-
-    // Booking selection change
-    $('#booking_id').on('change', function() {
-        const selectedOption = $(this).find('option:selected');
-        
-        if (selectedOption.val()) {
-            $('#previewClient').text(selectedOption.data('client'));
-            $('#previewEventDate').text(selectedOption.data('event-date'));
-            $('#previewEventType').text(selectedOption.data('event-type'));
-            $('#previewVenue').text(selectedOption.data('venue'));
-            $('#previewPackage').text(selectedOption.data('package'));
-            $('#previewAmount').text('₱' + selectedOption.data('amount'));
-            $('#bookingDetails').show();
-        } else {
-            $('#bookingDetails').hide();
-        }
-    });
-
-    // Template buttons
-    $('.template-btn').on('click', function() {
-        const template = $(this).data('template');
-        let content = '';
-        let terms = '';
-
-        switch(template) {
-            case 'wedding':
-                content = `This Agreement is made and entered into on {event_date} between San Isidro Labrador Resort (hereinafter referred to as "Service Provider") and {client_name} (hereinafter referred to as "Client").
+    // Define templates
+    const templates = {
+        'wedding': {
+            'content': `This Agreement is made and entered into on {event_date} between San Isidro Labrador Resort (hereinafter referred to as "Service Provider") and {client_name} (hereinafter referred to as "Client").
 
 ARTICLE 1: SERVICES PROVIDED
 The Service Provider agrees to provide wedding venue and package services at {venue_name} including but not limited to:
@@ -245,17 +232,15 @@ ARTICLE 3: CANCELLATION POLICY
 - Cancellation 90+ days before: 80% refund
 - Cancellation 60-89 days before: 50% refund
 - Cancellation 30-59 days before: 25% refund
-- Cancellation less than 30 days: No refund`;
-                
-                terms = `1. Client is responsible for any damages to venue property
+- Cancellation less than 30 days: No refund`,
+            'terms': `1. Client is responsible for any damages to venue property
 2. Service Provider is not liable for force majeure events
 3. Event must conclude by agreed end time
 4. Additional overtime charges apply beyond contracted hours
-5. Client must provide final guest count 7 days before event`;
-                break;
-
-            case 'corporate':
-                content = `CORPORATE EVENT AGREEMENT
+5. Client must provide final guest count 7 days before event`
+        },
+        'corporate': {
+            'content': `CORPORATE EVENT AGREEMENT
 
 This Corporate Event Agreement (the "Agreement") is made effective as of {event_date} by and between San Isidro Labrador Resort ("Venue Provider") and {client_name} ("Client").
 
@@ -273,17 +258,15 @@ Payment Terms: Net 15 days from invoice date
 EVENT SCHEDULE
 - Setup: 2 hours before event start
 - Event: As per booked schedule
-- Teardown: 1 hour after event conclusion`;
-                
-                terms = `1. Client shall provide certificate of insurance
+- Teardown: 1 hour after event conclusion`,
+            'terms': `1. Client shall provide certificate of insurance
 2. Venue Provider reserves right to inspect all materials
 3. No smoking in venue premises
 4. Client responsible for attendee conduct
-5. Additional security may be required for large events`;
-                break;
-
-            case 'birthday':
-                content = `BIRTHDAY PARTY CONTRACT
+5. Additional security may be required for large events`
+        },
+        'birthday': {
+            'content': `BIRTHDAY PARTY CONTRACT
 
 Dear {client_name},
 
@@ -298,17 +281,15 @@ SERVICES INCLUDED:
 - Venue rental for specified hours
 - Basic sound system
 - Standard tables and chairs setup
-- Basic party decorations`;
-                
-                terms = `1. Outside food and beverages subject to corkage fee
+- Basic party decorations`,
+            'terms': `1. Outside food and beverages subject to corkage fee
 2. Event must comply with venue noise regulations
 3. Client responsible for guest behavior
 4. Security deposit may be required
-5. Setup and teardown times must be adhered to`;
-                break;
-
-            case 'generic':
-                content = `EVENT SERVICE AGREEMENT
+5. Setup and teardown times must be adhered to`
+        },
+        'generic': {
+            'content': `EVENT SERVICE AGREEMENT
 
 This Event Service Agreement (the "Agreement") is entered into on {event_date} between San Isidro Labrador Resort ("Service Provider") and {client_name} ("Client").
 
@@ -327,39 +308,185 @@ Service Provider Responsibilities:
 Client Responsibilities:
 - Provide accurate guest count
 - Adhere to venue rules and regulations
-- Make timely payments as scheduled`;
-                
-                terms = `1. Force Majeure: Neither party liable for events beyond reasonable control
+- Make timely payments as scheduled`,
+            'terms': `1. Force Majeure: Neither party liable for events beyond reasonable control
 2. Indemnification: Client agrees to indemnify Service Provider for damages caused by Client or guests
 3. Governing Law: This Agreement shall be governed by the laws of the Philippines
-4. Entire Agreement: This document constitutes the entire agreement between parties`;
-                break;
+4. Entire Agreement: This document constitutes the entire agreement between parties`
         }
+    };
 
-        // Set CKEditor content
-        if (CKEDITOR.instances.content) {
-            CKEDITOR.instances.content.setData(content);
-        }
-        
-        if (CKEDITOR.instances.terms_conditions) {
-            CKEDITOR.instances.terms_conditions.setData(terms);
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
         }
     });
 
-    // Form validation
-    $('form').on('submit', function() {
+    // Booking selection change
+    $('#booking_id').on('change', function() {
+        const selectedOption = $(this).find('option:selected');
+        
+        if (selectedOption.val()) {
+            $('#previewClient').text(selectedOption.data('client'));
+            $('#previewEventDate').text(selectedOption.data('event-date'));
+            $('#previewEventType').text(selectedOption.data('event-type'));
+            $('#previewVenue').text(selectedOption.data('venue'));
+            $('#previewPackage').text(selectedOption.data('package'));
+            $('#previewAmount').text('₱' + selectedOption.data('amount'));
+            $('#bookingDetails').show();
+            
+            Toast.fire({
+                icon: 'info',
+                title: 'Booking selected'
+            });
+        } else {
+            $('#bookingDetails').hide();
+        }
+    });
+
+    // Template buttons with SweetAlert
+    $('.template-btn').on('click', function() {
+        const templateType = $(this).data('template');
+        const template = templates[templateType];
+        
+        if (template) {
+            Swal.fire({
+                title: 'Apply Template?',
+                text: `This will load the ${templateType} template and replace any existing content.`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, apply template!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Auto-fill title based on template
+                    const titleMap = {
+                        'wedding': 'Wedding Event Service Agreement',
+                        'corporate': 'Corporate Event Agreement',
+                        'birthday': 'Birthday Party Contract',
+                        'generic': 'Event Service Agreement'
+                    };
+                    
+                    $('#title').val(titleMap[templateType] || 'Event Contract');
+                    
+                    // Set content directly to textareas
+                    $('#content').val(template.content);
+                    $('#terms_conditions').val(template.terms);
+                    
+                    Toast.fire({
+                        icon: 'success',
+                        title: `${templateType.charAt(0).toUpperCase() + templateType.slice(1)} template applied!`
+                    });
+                }
+            });
+        }
+    });
+
+    // Cancel button with confirmation
+    $('#cancelBtn').on('click', function() {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'Any unsaved changes will be lost!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, cancel!',
+            cancelButtonText: 'Continue editing'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '<?= base_url('admin/contracts') ?>';
+            }
+        });
+    });
+
+    // Form submission with validation and confirmation
+    $('#contractForm').on('submit', function(e) {
+        e.preventDefault();
+        
         const bookingId = $('#booking_id').val();
         const title = $('#title').val();
+        const content = $('#content').val();
+        const terms = $('#terms_conditions').val();
         
-        if (!bookingId || !title) {
-            alert('Please fill in all required fields.');
+        // Validation
+        if (!bookingId || !title || !content || !terms) {
+            Swal.fire({
+                title: 'Missing Information!',
+                text: 'Please fill in all required fields before submitting.',
+                icon: 'error',
+                confirmButtonColor: '#3085d6'
+            });
             return false;
         }
         
-        return true;
+        // Show confirmation dialog
+        Swal.fire({
+            title: 'Create Contract?',
+            html: `
+                <div class="text-left">
+                    <p><strong>Title:</strong> ${title}</p>
+                    <p><strong>Booking:</strong> ${$('#booking_id option:selected').text()}</p>
+                    <p class="text-muted">This will create a new contract and notify the client.</p>
+                </div>
+            `,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, create contract!',
+            cancelButtonText: 'Review again',
+            preConfirm: () => {
+                // Submit the form
+                $('#contractForm').off('submit').submit();
+            }
+        });
+    });
+
+    // Show helpful tips when page loads
+    setTimeout(() => {
+        Toast.fire({
+            icon: 'info',
+            title: 'Select a template to get started!'
+        });
+    }, 1000);
+
+    // Improve textarea appearance
+    $('.contract-textarea').css({
+        'font-family': 'monospace',
+        'font-size': '14px',
+        'line-height': '1.4'
     });
 });
 </script>
+
+<style>
+.contract-textarea {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    white-space: pre-wrap;
+}
+
+.formatting-help {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 5px;
+    font-size: 12px;
+}
+</style>
+
+
 <?= $this->endSection() ?>
 
 <?= $this->endSection() ?>

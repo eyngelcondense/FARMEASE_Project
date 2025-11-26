@@ -1,5 +1,4 @@
 <?php
-// app/Controllers/Client/ContractsController.php
 
 namespace App\Controllers;
 
@@ -16,161 +15,172 @@ class ContractsController extends BaseController
     {
         $this->contractModel = new ContractModel();
         $this->bookingModel = new BookingModel();
+        helper(['form', 'url']);
     }
 
     public function index()
     {
-        $clientId = $this->getClientId();
+        $session = session();
         
-        $contracts = $this->contractModel->getContractsByClient($clientId);
-    
-        return view('client/contracts/index', [
-            'contracts' => $contracts,
-            'user' => $this->getUserData(),
-            'client' => $this->getClientData(),
-            'current_page' => 'contract'
-        ]);
-    }
-    public function view($id)
-    {
-        $clientId = $this->getClientId();
+        // Get user data from session
+        $userData = $session->get('user');
+        $userId = $userData['id'] ?? null;
         
-        // Use find() first to check if contract exists and belongs to client
-        $contract = $this->contractModel->where('id', $id)
-                                    ->where('client_id', $clientId)
-                                    ->first();
+        log_message('debug', 'User session data: ' . print_r($userData, true));
+        log_message('debug', 'User ID from session: ' . ($userId ?? 'NULL'));
 
-        if (!$contract) {
-            return redirect()->back()->with('error', 'Contract not found.');
+        if (!$userId) {
+            return redirect()->to('/login')->with('error', 'Please login to make a booking.')->with('redirect', current_url());
         }
 
-        // Get full contract details
-        $contractDetails = $this->contractModel->getContractsWithDetails([
-            'contracts.id' => $id
-        ]);
+        // Get client ID using user_id
+        $clientModel = new \App\Models\ClientModel();
+        $client = $clientModel->where('user_id', $userId)->first();
+        
+        if (!$client) {
+            log_message('error', 'No client found for user_id: ' . $userId);
+            return redirect()->to('/login')->with('error', 'Client profile not found. Please contact support.');
+        }
 
-        if (empty($contractDetails)) {
-            return redirect()->back()->with('error', 'Contract details not found.');
+        $clientId = $client['id']; // This is the actual client_id for bookings
+        
+        
+        $contracts = $this->contractModel->getContractsByClient($clientId);
+        
+        // Count contracts by status
+        $signedCount = 0;
+        $pendingCount = 0;
+        
+        foreach ($contracts as $contract) {
+            if ($contract['status'] === 'signed') {
+                $signedCount++;
+            } elseif (in_array($contract['status'], ['sent', 'draft'])) {
+                $pendingCount++;
+            }
+        }
+
+        return view('client/contracts/index', [
+            'contracts' => $contracts,
+            'signedCount' => $signedCount,
+            'pendingCount' => $pendingCount,
+            'title' => 'My Contracts - San Isidro Labrador Resort',
+            'current_page' => 'contracts',
+            'user' => $userData,
+            'client' => $client,
+        ]);
+    }
+
+    public function view($id)
+    {
+        $clientId = session()->get('client_id') ?? 1;
+        
+        $contract = $this->contractModel->getContractForClient($id, $clientId);
+        
+        if (!$contract) {
+            return redirect()->back()->with('error', 'Contract not found or access denied.');
         }
 
         return view('client/contracts/view', [
-            'contract' => $contractDetails[0], // Use the first result
-            'user' => $this->getUserData(),
-            'client' => $this->getClientData()
-        ]);
-    }
-
-    // Add these helper methods to get user and client data
-    private function getClientId()
-    {
-        // Adjust based on your authentication system
-        return session()->get('client_id') ?? auth()->id();
-    }
-
-    private function getUserData()
-    {
-        // Return user data for header - adjust based on your system
-        return [
-            'id' => auth()->id(),
-            'username' => auth()->user()->username ?? 'Client',
-            'email' => auth()->user()->email ?? ''
-        ];
-    }
-
-    private function getClientData()
-    {
-        // Return client data for header - adjust based on your system
-        $clientModel = new \App\Models\ClientModel();
-        $clientId = $this->getClientId();
-        
-        return $clientModel->find($clientId) ?? [
-            'fullname' => 'Client',
-            'email' => '',
-            'phone' => ''
-        ];
-    }
-
-    public function sign($id)
-    {
-        $contract = $this->contractModel->getContractsWithDetails([
-            'contracts.id' => $id, 
-            'contracts.client_id' => $this->clientId
-        ])[0] ?? null;
-
-        if (!$contract) {
-            return $this->response->setJSON(['success' => false, 'message' => 'Contract not found.']);
-        }
-
-        if ($contract['status'] !== 'sent') {
-            return $this->response->setJSON(['success' => false, 'message' => 'Contract is not available for signing.']);
-        }
-
-        $signatureData = $this->request->getPost('signature_data');
-        
-        if (!$signatureData) {
-            return $this->response->setJSON(['success' => false, 'message' => 'Signature data is required.']);
-        }
-
-        // Generate PDF with signature
-        $dompdf = new \Dompdf\Dompdf();
-        $html = view('client/contracts/signed_document', [
             'contract' => $contract,
-            'signature' => $signatureData
+            'title' => 'View Contract - ' . $contract['contract_number']
         ]);
-        
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
-
-        // Save signed PDF
-        $filename = "signed-contract-{$contract['contract_number']}-" . time() . ".pdf";
-        $filePath = 'uploads/contracts/signed/' . $filename;
-        
-        file_put_contents(ROOTPATH . 'public/' . $filePath, $dompdf->output());
-
-        // Update contract
-        if ($this->contractModel->saveSignature($id, $signatureData, $filePath)) {
-            return $this->response->setJSON(['success' => true, 'message' => 'Contract signed successfully.']);
-        } else {
-            return $this->response->setJSON(['success' => false, 'message' => 'Failed to sign contract.']);
-        }
     }
 
     public function download($id)
     {
-        $contract = $this->contractModel->getContractsWithDetails([
-            'contracts.id' => $id, 
-            'contracts.client_id' => $this->clientId
-        ])[0] ?? null;
-
+        $clientId = session()->get('client_id') ?? 1;
+        
+        $contract = $this->contractModel->getContractForClient($id, $clientId);
+        
         if (!$contract) {
-            return redirect()->back()->with('error', 'Contract not found.');
+            return redirect()->back()->with('error', 'Contract not found or access denied.');
         }
 
-        $dompdf = new \Dompdf\Dompdf();
-        $html = view('client/contracts/print', ['contract' => $contract]);
-        
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
+        try {
+            $dompdf = new \Dompdf\Dompdf();
+            
+            $finalContent = $this->contractModel->getFinalContent($id);
+            
+            if (!$finalContent) {
+                return redirect()->back()->with('error', 'Contract content not available.');
+            }
+            
+            $html = view('client/contracts/print', [
+                'contract' => $contract,
+                'content' => $finalContent['content'],
+                'terms' => $finalContent['terms_conditions']
+            ]);
+            
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
 
-        $filename = "contract-{$contract['contract_number']}.pdf";
-
-        return $dompdf->stream($filename, ['Attachment' => true]);
+            $filename = "contract-{$contract['contract_number']}.pdf";
+            return $dompdf->stream($filename, ['Attachment' => true]);
+            
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error generating PDF: ' . $e->getMessage());
+        }
     }
 
-    public function agree($id)
+    public function reject($id)
     {
-        $contract = $this->contractModel->find($id);
+        if ($this->request->isAJAX()) {
+            $clientId = session()->get('client_id') ?? 1;
+            
+            $contract = $this->contractModel->getContractForClient($id, $clientId);
+            
+            if (!$contract) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Contract not found or access denied.'
+                ]);
+            }
+
+            if ($contract['status'] !== 'sent') {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Only sent contracts can be rejected.'
+                ]);
+            }
+
+            $reason = $this->request->getPost('rejection_reason');
+            
+            if ($this->contractModel->rejectContract($id, $reason)) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Contract rejected successfully.'
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Failed to reject contract.'
+                ]);
+            }
+        }
+    }
+
+    public function sign($id)
+    {
+        $clientId = session()->get('client_id') ?? 1;
         
-        if (!$contract || $contract['client_id'] != $this->clientId) {
-            return $this->response->setJSON(['success' => false, 'message' => 'Contract not found.']);
+        $contract = $this->contractModel->getContractForClient($id, $clientId);
+        
+        if (!$contract) {
+            return redirect()->back()->with('error', 'Contract not found or access denied.');
         }
 
-        if ($this->contractModel->updateStatus($id, 'sent')) {
-            return $this->response->setJSON(['success' => true, 'message' => 'Contract agreement recorded.']);
-        } else {
-            return $this->response->setJSON(['success' => false, 'message' => 'Failed to record agreement.']);
+        if ($contract['status'] !== 'sent') {
+            return redirect()->back()->with('error', 'This contract cannot be signed.');
         }
+
+        if ($contract['down_payment_received'] != 1) {
+            return redirect()->back()->with('error', 'Down payment must be received before signing the contract.');
+        }
+
+        return view('client/contracts/sign', [
+            'contract' => $contract,
+            'title' => 'Sign Contract - ' . $contract['contract_number']
+        ]);
     }
 }
