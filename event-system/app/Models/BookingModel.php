@@ -14,22 +14,28 @@ class BookingModel extends Model
     protected $protectFields    = true;
     protected $allowedFields    = [
         'client_id',
-        'booking_reference',  // NEW
+        'booking_reference',
         'event_type',
         'event_date',
         'start_time',
-        'end_time',           // CHANGED from duration_hours
-        'total_hours',        // CHANGED from duration_hours
-        'total_guests',       // CHANGED from pax
-        'package_id',         // NEW
-        'venue_id',           // NEW
-        'base_amount',        // NEW
-        'addons_amount',      // NEW
-        'overtime_amount',    // NEW
-        'total_amount',       // NEW
-        'special_requests',   // NEW
+        'end_time',
+        'total_hours',
+        'total_guests',
+        'package_id',
+        'venue_id',
+        'base_amount',
+        'addons_amount',
+        'overtime_amount',
+        'total_amount',
+        'special_requests',
         'status',
-        'payment_status',     // NEW
+        'payment_status',
+        'down_payment_paid',      // ADDED
+        'down_payment_amount',    // ADDED
+        'full_payment_paid',      // ADDED
+        'contract_viewed',        // ADDED
+        'contract_rejected',      // ADDED
+        'rejection_reason',       // ADDED
         'created_at',
         'updated_at'
     ];
@@ -45,13 +51,13 @@ class BookingModel extends Model
         'event_type' => 'required|min_length[2]|max_length[100]',
         'event_date' => 'required|valid_date',
         'start_time' => 'required',
-        'end_time' => 'required',                    // NEW
+        'end_time' => 'required',
         'total_hours' => 'required|integer|greater_than[0]',
         'total_guests' => 'required|integer|greater_than[0]',
-        'package_id' => 'required|integer',          // NEW
-        'venue_id' => 'required|integer',            // NEW
-        'status' => 'permit_empty|in_list[pending,confirmed,approved,rejected,cancelled,completed]', // EXPANDED
-        'payment_status' => 'permit_empty|in_list[pending,partial,paid,refunded]' // NEW
+        'package_id' => 'required|integer',
+        'venue_id' => 'required|integer',
+        'status' => 'permit_empty|in_list[pending,approved,confirmed,rejected,cancelled,completed]',
+        'payment_status' => 'permit_empty|in_list[pending,partial,paid,refunded]'
     ];
 
     protected $validationMessages = [];
@@ -70,7 +76,7 @@ class BookingModel extends Model
     }
 
     /**
-     * Get bookings by client (NEW)
+     * Get bookings by client
      */
     public function getBookingsByClient($clientId)
     {
@@ -83,12 +89,12 @@ class BookingModel extends Model
     }
 
     /**
-     * Check if date is available (UPDATED)
+     * Check if date is available
      */
     public function isDateAvailable($date, $venueId = null)
     {
         $builder = $this->where('event_date', $date)
-                       ->whereIn('status', ['approved', 'pending', 'confirmed']);
+                       ->whereIn('status', ['approved', 'confirmed']);
         
         if ($venueId) {
             $builder->where('venue_id', $venueId);
@@ -98,13 +104,13 @@ class BookingModel extends Model
     }
 
     /**
-     * Check venue availability with time conflict detection (NEW)
+     * Check venue availability with time conflict detection
      */
     public function isVenueAvailable($venueId, $eventDate, $startTime, $endTime, $excludeBookingId = null)
     {
         $builder = $this->where('venue_id', $venueId)
              ->where('event_date', $eventDate)
-             ->whereIn('status', ['approved', 'pending', 'confirmed'])
+             ->whereIn('status', ['approved', 'confirmed'])
              ->groupStart()
                  ->groupStart()
                      ->where('start_time <=', $startTime)
@@ -128,12 +134,12 @@ class BookingModel extends Model
     }
 
     /**
-     * Get booked dates (UPDATED)
+     * Get booked dates
      */
     public function getBookedDates($venueId = null)
     {
         $builder = $this->select('event_date, venue_id')
-                   ->whereIn('status', ['approved', 'pending', 'confirmed'])
+                   ->whereIn('status', ['approved', 'confirmed'])
                    ->groupBy('event_date, venue_id');
         
         if ($venueId) {
@@ -143,68 +149,56 @@ class BookingModel extends Model
         return $builder->findAll();
     }
 
+    /**
+     * Get bookings with client details
+     */
     public function getBookingsWithClient($status = null)
     {
-        $db = \Config\Database::connect();
-        
-        $sql = "SELECT 
-                    b.*, 
-                    c.fullname, 
-                    c.email, 
-                    c.phone, 
-                    p.name as package_name, 
-                    v.name as venue_name
-                FROM bookings b
-                LEFT JOIN clients c ON b.client_id = c.id
-                LEFT JOIN packages p ON b.package_id = p.id
-                LEFT JOIN venues v ON b.venue_id = v.id";
+        $builder = $this->select('b.*, c.fullname, c.email, c.phone, p.name as package_name, v.name as venue_name')
+                        ->from('bookings b', true)
+                        ->join('clients c', 'b.client_id = c.id', 'left')
+                        ->join('packages p', 'b.package_id = p.id', 'left')
+                        ->join('venues v', 'b.venue_id = v.id', 'left');
         
         if ($status) {
-            $sql .= " WHERE b.status = ?";
-            return $db->query($sql, [$status])->getResultArray();
+            $builder->where('b.status', $status);
         }
         
-        $sql .= " ORDER BY b.created_at DESC";
-        return $db->query($sql)->getResultArray();
+        return $builder->orderBy('b.created_at', 'DESC')
+                       ->get()
+                       ->getResultArray();
     }
 
     /**
-     * Get booking with full details - FIXED VERSION
+     * Get booking with full details
      */
     public function getBookingWithDetails($bookingId)
     {
-        // Use the most basic query builder approach
-        $db = \Config\Database::connect();
+        $result = $this->select('b.*, c.fullname as client_name, c.email as client_email, c.phone as client_phone, 
+                                p.name as package_name, v.name as venue_name')
+                    ->from('bookings b', true)
+                    ->join('clients c', 'b.client_id = c.id', 'left')
+                    ->join('packages p', 'b.package_id = p.id', 'left')
+                    ->join('venues v', 'b.venue_id = v.id', 'left')
+                    ->where('b.id', $bookingId)
+                    ->get();
         
-        $sql = "SELECT 
-                    b.*, 
-                    c.fullname as client_name, 
-                    c.email as client_email, 
-                    c.phone as client_phone,
-                    p.name as package_name, 
-                    v.name as venue_name
-                FROM bookings b
-                LEFT JOIN clients c ON b.client_id = c.id
-                LEFT JOIN packages p ON b.package_id = p.id
-                LEFT JOIN venues v ON b.venue_id = v.id
-                WHERE b.id = ?";
-        
-        return $db->query($sql, [$bookingId])->getRowArray();
+        return $result->getRowArray();
     }
 
     /**
-     * Calculate total hours from start and end time (NEW)
+     * Calculate total hours from start and end time
      */
     public function calculateTotalHours($startTime, $endTime)
     {
         $start = strtotime($startTime);
         $end = strtotime($endTime);
         
-        return round(($end - $start) / 3600, 2); // Convert seconds to hours
+        return round(($end - $start) / 3600, 2);
     }
 
     /**
-     * Get bookings by status (NEW)
+     * Get bookings by status
      */
     public function getBookingsByStatus($status)
     {
@@ -217,7 +211,9 @@ class BookingModel extends Model
                     ->findAll();
     }
 
-    // Get approved bookings for date and venue availability
+    /**
+     * Get approved bookings for date and venue availability
+     */
     public function getApprovedBookings($date = null, $venueId = null)
     {
         $builder = $this->where('status', 'approved');
@@ -233,15 +229,9 @@ class BookingModel extends Model
         return $builder->findAll();
     }
 
-    // Get all approved bookings for a date range
-    public function getApprovedBookingsInRange($startDate, $endDate)
-    {
-        return $this->where('status', 'approved')
-                    ->where("event_date BETWEEN '$startDate' AND '$endDate'")
-                    ->findAll();
-    }
-
-    // Check if time slot is available for a venue
+    /**
+     * Check if time slot is available for a venue
+     */
     public function isTimeSlotAvailable($venueId, $date, $startTime, $endTime, $excludeBookingId = null)
     {
         $builder = $this->where('status', 'approved')
@@ -269,7 +259,9 @@ class BookingModel extends Model
         return $builder->countAllResults() === 0;
     }
 
-    // Get bookings with package and venue details
+    /**
+     * Get bookings with package and venue details
+     */
     public function getBookingsWithDetails($conditions = [])
     {
         $builder = $this->select('bookings.*, packages.name as package_name, venues.name as venue_name')
@@ -283,37 +275,146 @@ class BookingModel extends Model
         return $builder->orderBy('bookings.created_at', 'DESC')->findAll();
     }
 
-    // Add to your existing BookingModel
-public function getClientBookings($clientId)
-{
-    return $this->select('bookings.*, packages.name as package_name, venues.name as venue_name')
-                ->join('packages', 'packages.id = bookings.package_id', 'left')
-                ->join('venues', 'venues.id = bookings.venue_id', 'left')
-                ->where('bookings.client_id', $clientId)
-                ->orderBy('bookings.created_at', 'DESC')
-                ->findAll();
-}
 
-public function getUpcomingBookings($clientId)
-{
-    return $this->select('bookings.*, packages.name as package_name, venues.name as venue_name')
-                ->join('packages', 'packages.id = bookings.package_id', 'left')
-                ->join('venues', 'venues.id = bookings.venue_id', 'left')
-                ->where('bookings.client_id', $clientId)
-                ->where('bookings.event_date >=', date('Y-m-d'))
-                ->where('bookings.status', 'approved')
-                ->orderBy('bookings.event_date', 'ASC')
-                ->findAll();
-}
+    /**
+     * Get client bookings
+     */
+    public function getClientBookings($clientId)
+    {
+        return $this->select('bookings.*, packages.name as package_name, venues.name as venue_name')
+                    ->join('packages', 'packages.id = bookings.package_id', 'left')
+                    ->join('venues', 'venues.id = bookings.venue_id', 'left')
+                    ->where('bookings.client_id', $clientId)
+                    ->orderBy('bookings.created_at', 'DESC')
+                    ->findAll();
+    }
 
-public function getPendingBookings($clientId)
-{
-    return $this->select('bookings.*, packages.name as package_name, venues.name as venue_name')
-                ->join('packages', 'packages.id = bookings.package_id', 'left')
-                ->join('venues', 'venues.id = bookings.venue_id', 'left')
-                ->where('bookings.client_id', $clientId)
-                ->where('bookings.status', 'pending')
-                ->orderBy('bookings.created_at', 'DESC')
-                ->findAll();
-}
+    /**
+     * Get upcoming bookings
+     */
+    public function getUpcomingBookings($clientId)
+    {
+        return $this->select('bookings.*, packages.name as package_name, venues.name as venue_name')
+                    ->join('packages', 'packages.id = bookings.package_id', 'left')
+                    ->join('venues', 'venues.id = bookings.venue_id', 'left')
+                    ->where('bookings.client_id', $clientId)
+                    ->where('bookings.event_date >=', date('Y-m-d'))
+                    ->where('bookings.status', 'approved')
+                    ->orderBy('bookings.event_date', 'ASC')
+                    ->findAll();
+    }
+
+    /**
+     * Get pending bookings
+     */
+    public function getPendingBookings($clientId)
+    {
+        return $this->select('bookings.*, packages.name as package_name, venues.name as venue_name')
+                    ->join('packages', 'packages.id = bookings.package_id', 'left')
+                    ->join('venues', 'venues.id = bookings.venue_id', 'left')
+                    ->where('bookings.client_id', $clientId)
+                    ->where('bookings.status', 'pending')
+                    ->orderBy('bookings.created_at', 'DESC')
+                    ->findAll();
+    }
+
+    /**
+     * Mark down payment as paid
+     */
+    public function markDownPaymentPaid($bookingId, $amount)
+    {
+        return $this->update($bookingId, [
+            'down_payment_paid' => 1,
+            'down_payment_amount' => $amount,
+            'payment_status' => 'partial'
+        ]);
+    }
+
+    /**
+     * Mark full payment as paid
+     */
+    public function markFullPaymentPaid($bookingId)
+    {
+        return $this->update($bookingId, [
+            'full_payment_paid' => 1,
+            'payment_status' => 'paid'
+        ]);
+    }
+
+    /**
+     * Mark contract as viewed
+     */
+    public function markContractViewed($bookingId)
+    {
+        return $this->update($bookingId, [
+            'contract_viewed' => 1
+        ]);
+    }
+
+    /**
+     * Mark contract as rejected
+     */
+    public function markContractRejected($bookingId, $reason = '')
+    {
+        return $this->update($bookingId, [
+            'contract_rejected' => 1,
+            'rejection_reason' => $reason,
+            'status' => 'pending'
+        ]);
+    }
+
+    /**
+     * Check if booking requires down payment
+     */
+    public function requiresDownPayment($bookingId)
+    {
+        $booking = $this->select('down_payment_paid, status')->find($bookingId);
+        return $booking && $booking['status'] === 'approved' && $booking['down_payment_paid'] == 0;
+    }
+
+    /**
+     * Calculate down payment amount (20%)
+     */
+    public function calculateDownPayment($bookingId)
+    {
+        $booking = $this->find($bookingId);
+        return $booking ? $booking['total_amount'] * 0.20 : 0;
+    }
+
+    /**
+     * Get bookings that need contract creation
+     */
+    public function getBookingsNeedingContract()
+    {
+        return $this->select('b.*, c.fullname as client_name')
+                    ->from('bookings b', true)
+                    ->join('clients c', 'b.client_id = c.id')
+                    ->where('b.status', 'approved')
+                    ->where('b.down_payment_paid', 1)
+                    ->where('b.contract_rejected', 0)
+                    ->whereNotIn('b.id', function($builder) {
+                        return $builder->select('booking_id')
+                                     ->from('contracts')
+                                     ->whereIn('status', ['draft', 'sent', 'signed']);
+                    })
+                    ->get()
+                    ->getResultArray();
+    }
+
+    /**
+     * Get bookings with rejected contracts
+     */
+    public function getBookingsWithRejectedContracts()
+    {
+        return $this->select('b.*, c.fullname as client_name, ct.rejection_reason')
+                    ->from('bookings b', true)
+                    ->join('clients c', 'b.client_id = c.id')
+                    ->join('contracts ct', 'b.id = ct.booking_id')
+                    ->where('b.contract_rejected', 1)
+                    ->where('ct.status', 'rejected')
+                    ->get()
+                    ->getResultArray();
+    }
+
+    
 }

@@ -11,7 +11,8 @@ use CodeIgniter\Shield\Controllers\MagicLinkController;
 //landing page route 
 $routes->get('/', 'ClientController::landing', ['filter' => 'redirectIfAuthenticated']);
 $routes->get('landing', 'ClientController::landing', ['filter' => 'redirectIfAuthenticated']);
-$routes->get('request-data', 'ClientController::requestDataView');
+$routes->get('request-data', 'DataRequestController::index');
+$routes->post('data-request/submit', 'DataRequestController::submitRequest');
 
 //auth routes
 $routes->group('', ['namespace' => 'App\Controllers\Auth'], static function ($routes) {
@@ -85,6 +86,7 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:client'
     $routes->post('client/contracts/sign/(:num)', 'ContractsController::sign/$1');
     $routes->get('client/contracts/download/(:num)', 'ContractsController::download/$1');
     $routes->post('client/contracts/agree/(:num)', 'ContractsController::agree/$1');
+    $routes->get('client/contracts/debugContractAccess/(:num)', 'ContractsController::debugContractAccess/$1');
 });
 
 //admin routes
@@ -183,4 +185,5 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->post('admin/contracts/delete/(:num)', 'AdminContractsController::delete/$1');
     $routes->get('admin/contracts/download/(:num)', 'AdminContractsController::download/$1');
     $routes->post('admin/contracts/upload-signed/(:num)', 'AdminContractsController::uploadSigned/$1');
+    $routes->post('admin/contracts/send_debug/(:num)', 'AdminContractsController::send_debug/$1');
 });

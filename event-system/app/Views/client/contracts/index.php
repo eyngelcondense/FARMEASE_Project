@@ -418,7 +418,7 @@ $title = "My Contracts | San Isidro Labrador Resort and Leisure Farm";
                             </div>
                         </div>
                         
-                        <?php if ($contract['status'] == 'sent' && !empty($contract['expires_at'])): ?>
+                        <?php if ($contract['status'] == 'sent' && !empty($contract['expires_at']) && $contract['expires_at'] != '0000-00-00 00:00:00'): ?>
                             <div class="contract-expiry">
                                 <p class="expiry-text">
                                     <i class="fas fa-clock"></i> 

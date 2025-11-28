@@ -47,6 +47,12 @@ RUN chown -R www-data:www-data /var/www/html \
     && chown -R www-data:www-data /var/www/html/writable \
     && chmod -R 775 /var/www/html/writable
 
+RUN apt-get update && \
+apt-get install -y zip unzip && \
+docker-php-ext-install zip
+
+RUN composer require dompdf/dompdf
+
 
 # Copy Apache config to the correct location
 COPY 000-default.conf /etc/apache2/sites-available/000-default.conf

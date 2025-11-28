@@ -77,11 +77,11 @@ class AdminGalleryController extends BaseController
                 $newName = $image->getRandomName();
                 $uploadPath = 'uploads/venues/gallery/';
 
-                if (!is_dir(ROOTPATH . 'public/' . $uploadPath)) {
-                    mkdir(ROOTPATH . 'public/' . $uploadPath, 0755, true);
+                if (!is_dir(FCPATH . 'public/' . $uploadPath)) {
+                    mkdir(FCPATH . 'public/' . $uploadPath, 0755, true);
                 }
 
-                if ($image->move(ROOTPATH . 'public/' . $uploadPath, $newName)) {
+                if ($image->move(FCPATH . 'public/' . $uploadPath, $newName)) {
                     $imageData = [
                         'venue_id' => $venueId,
                         'image_path' => $uploadPath . $newName,
@@ -92,7 +92,7 @@ class AdminGalleryController extends BaseController
                         $uploadedCount++;
                     } else {
                         $errors[] = "Failed to save {$image->getName()}";
-                        unlink(ROOTPATH . 'public/' . $uploadPath . $newName);
+                        unlink(FCPATH . 'public/' . $uploadPath . $newName);
                     }
                 } else {
                     $errors[] = "Failed to upload {$image->getName()}";
@@ -155,8 +155,8 @@ class AdminGalleryController extends BaseController
         }
 
         // Delete file
-        if (file_exists(ROOTPATH . 'public/' . $image['image_path'])) {
-            unlink(ROOTPATH . 'public/' . $image['image_path']);
+        if (file_exists(FCPATH . 'public/' . $image['image_path'])) {
+            unlink(FCPATH . 'public/' . $image['image_path']);
         }
 
         // Delete from database
@@ -199,31 +199,41 @@ class AdminGalleryController extends BaseController
     {
         $venueImageModel = new VenueImageModel();
 
-        $rows = $venueImageModel->getVenueImagesWithDetails();
+        try {
+            $rows = $venueImageModel->getVenueImagesWithDetails();
+            
+            $venueData = [];
 
-        $venueData = [];
+            foreach ($rows as $row) {
+                $venueName = $row['venue_name'];
 
-        foreach ($rows as $row) {
-            $venueName = $row['venue_name'];
+                if (!isset($venueData[$venueName])) {
+                    $venueData[$venueName] = [
+                        'name' => $venueName,
+                        'images' => []
+                    ];                
+                }
 
-            if (!isset($venueData[$venueName])) {
-                $venueData[$venueName] = [
-                    'name' => $venueName,
-                    'images' => []
-                ];                
+                $venueData[$venueName]['images'][] = [
+                    'id' => $row['id'],
+                    'venue_id' => $row['venue_id'],
+                    'path' => base_url($row['image_path'])
+                ];
             }
 
-            $venueData[$venueName]['images'][] = [
-                'id' => $row['id'],
-                'venue_id' => $row['venue_id'],
-                'path' => base_url($row['image_path'])
-            ];
+            return $this->response->setJSON([
+                'success' => true,
+                'data' => array_values($venueData)
+            ]);
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Error fetching venue images: ' . $e->getMessage());
+            
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Failed to fetch venue images'
+            ])->setStatusCode(500);
         }
-
-        return $this->response->setJSON([
-            'success' => true,
-            'data' => array_values($venueData) // reset numeric index
-        ]);
     }
 
 

@@ -156,11 +156,24 @@ class PackageController extends BaseController
             if (!empty($venues)) {
                 $packageVenues = [];
                 foreach ($venues as $venue) {
+                    // Fix image URL handling
+                    $imageUrl = '';
+                    if (!empty($venue['image_url'])) {
+                        // Check if it's already a full URL or just a path
+                        if (strpos($venue['image_url'], 'http') === 0) {
+                            $imageUrl = $venue['image_url'];
+                        } else {
+                            $imageUrl = base_url('images/' . $venue['image_url']);
+                        }
+                    } else {
+                        $imageUrl = base_url('images/placeholder.jpg');
+                    }
+                    
                     $packageVenues[] = [
-                        'id' => $venue['id'], // Make sure this is included
+                        'id' => $venue['id'],
                         'name' => $venue['name'],
                         'description' => $venue['description'],
-                        'image_url' => base_url($venue['image_url']),
+                        'image_url' => $imageUrl,
                         'is_primary' => $venue['is_primary'] ?? 0
                     ];
                 }
@@ -178,5 +191,5 @@ class PackageController extends BaseController
             'success' => true,
             'data' => $packageData
         ]);
-    }
+    }   
 }

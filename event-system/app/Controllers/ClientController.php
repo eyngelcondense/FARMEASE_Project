@@ -96,7 +96,7 @@ class ClientController extends BaseController
         $profilePic = $this->request->getFile('profile_pic');
         if ($profilePic && $profilePic->isValid() && !$profilePic->hasMoved()) {
             if ($client && !empty($client['profile_pic'])) {
-                $oldImagePath = WRITEPATH . 'uploads/profile_pics/' . $client['profile_pic'];
+                $oldImagePath = FCPATH . 'uploads/profile_pics/' . $client['profile_pic'];
                 if (file_exists($oldImagePath)) {
                     unlink($oldImagePath);
                 }

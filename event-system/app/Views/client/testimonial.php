@@ -301,29 +301,13 @@ $title = "Testimonials | San Isidro Labrador Resort and Leisure Farm";
                         </div>
                     </div>
                 <?php endforeach; ?>
-            <?php else: ?>
-                <div class="col-lg-4 col-md-6">
-                    <div class="testimonial-card">
-                        <img src="/images/angel.jpg" alt="Angel Cortino" class="testimonial-avatar">
-                        <div class="testimonial-content">
-                            <div class="testimonial-text">
-                                "Superbb. Bongga apakaangas kinilig yung mga bisita sa place. Recommendable sha ya, see you next event yah."
-                            </div>
-                            <div class="testimonial-author">
-                                <div class="testimonial-name">Angel Cortino</div>
-                                <div class="testimonial-event">Wedding</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             <?php endif; ?>
         </div>
     </div>
 </section>
 
 <section class="book-section">
-    <a href="<?= site_url('contact') ?>" class="btn btn-book">
+    <a href="<?= site_url('bookings') ?>" class="btn btn-book">
         Book Your Event Today
     </a>
 </section>
