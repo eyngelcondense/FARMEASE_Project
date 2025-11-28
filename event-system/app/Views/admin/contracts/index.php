@@ -5,27 +5,163 @@ $current_page = isset($current_page) ? $current_page : 'contract';
 <?= $this->extend('admin/layout') ?>
 <?= $this->section('content') ?>
 
+<style>
+    /* Color Variables */
+    :root {
+        --primary: #5c3a21;
+        --primary-light: #7a4b2a;
+        --primary-dark: #4a2f1a;
+        --secondary: #8b7355;
+        --success: #3a5c39;
+        --danger: #8c2e0b;
+        --warning: #b58a4a;
+        --info: #4a6b8a;
+        --light: #f0e6dc;
+        --dark: #2c1a0d;
+        --beige: #f5f0eb;
+        --light-beige: #fff7f0;
+    }
+
+    /* Page Header */
+    .content-header h1 {
+        color: var(--primary);
+        font-weight: 700;
+    }
+
+    /* Card Styling */
+    .card {
+        border: 1px solid var(--light);
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .card-header {
+        background-color: var(--beige);
+        border-bottom: 1px solid var(--light);
+        padding: 15px 20px;
+    }
+
+    .card-title {
+        color: var(--primary);
+        font-weight: 600;
+        margin: 0;
+    }
+
+    /* Buttons */
+    .btn-primary {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+        border-color: var(--primary-dark);
+    }
+
+    .btn-info {
+        background-color: var(--info);
+        border-color: var(--info);
+    }
+
+    .btn-success {
+        background-color: var(--success);
+        border-color: var(--success);
+    }
+
+    .btn-warning {
+        background-color: var(--warning);
+        border-color: var(--warning);
+        color: #fff;
+    }
+
+    .btn-danger {
+        background-color: var(--danger);
+        border-color: var(--danger);
+    }
+
+    .btn-secondary {
+        background-color: var(--secondary);
+        border-color: var(--secondary);
+    }
+
+    /* Table Styling */
+    .table {
+        width: 100%;
+        margin-bottom: 1rem;
+        color: var(--dark);
+    }
+
+    .table thead th {
+        background-color: var(--light);
+        color: var(--primary);
+        font-weight: 600;
+        border-bottom: 2px solid var(--secondary);
+    }
+
+    .table tbody tr:hover {
+        background-color: rgba(139, 115, 85, 0.05);
+    }
+
+    /* Badges */
+    .badge {
+        font-weight: 500;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+    }
+
+    .badge-secondary { background-color: var(--secondary); }
+    .badge-info { background-color: var(--info); }
+    .badge-success { background-color: var(--success); }
+    .badge-warning { background-color: var(--warning); }
+    .badge-danger { background-color: var(--danger); }
+
+    /* Modals */
+    .modal-header {
+        background-color: var(--beige);
+        color: var(--primary);
+        border-bottom: 1px solid var(--light);
+    }
+
+    .modal-footer {
+        background-color: #f8f9fa;
+        border-top: 1px solid var(--light);
+    }
+
+    /* Form Controls */
+    .form-control:focus, .custom-select:focus {
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 0.2rem rgba(92, 58, 33, 0.25);
+    }
+
+    .custom-file-label::after {
+        background-color: var(--primary);
+        color: #fff;
+        border-color: var(--primary);
+    }
+
+    /* Page Header */
+    .page-header-card h1 {
+        color: #5c3a21;
+        font-weight: 700;
+    }
+</style>
+
 <div class="content-wrapper">
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Contract Management</h1>
-                </div>
-            </div>
-        </div>
-    </section>
+    <div class="page-header-card">
+        <h1>Contract Management</h1>
+    </div>
 
     <section class="content">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">All Contracts</h3>
+                        <div class="card-header d-flex justify-content-between align-items-center py-2">
+                            <h3 class="card-title m-0">All Contracts</h3>
                             <div class="card-tools">
                                 <a href="<?= base_url('admin/contracts/create') ?>" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-plus"></i> Create New Contract
+                                    <i class="fas fa-plus mr-1"></i> Create New Contract
                                 </a>
                             </div>
                         </div>

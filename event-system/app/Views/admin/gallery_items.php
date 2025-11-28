@@ -21,7 +21,7 @@
                         <p class="card-text small text-muted">
                             <?= date('M j, Y', strtotime($image['created_at'])) ?>
                         </p>
-                        <span class="badge <?= $image['is_active'] ? 'bg-success' : 'bg-secondary' ?>">
+                        <span class="badge" style="background-color: <?= $image['is_active'] ? '#3a5c39' : '#6c757d' ?>; color: white; font-weight: 500; padding: 0.35em 0.65em;">
                             <?= $image['is_active'] ? 'Active' : 'Inactive' ?>
                         </span>
                     </div>
@@ -29,14 +29,24 @@
                     <div class="card-footer">
                         <div class="btn-group w-100">
                             <button type="button" 
-                                    class="btn btn-sm <?= $image['is_active'] ? 'btn-warning' : 'btn-success' ?>"
+                                    class="btn btn-sm"
+                                    style="background-color: <?= $image['is_active'] ? '#b58a4a' : '#3a5c39' ?>; 
+                                           border-color: <?= $image['is_active'] ? '#a87c3a' : '#2d4a2c' ?>;
+                                           color: white;"
+                                    onmouseover="this.style.opacity='0.9'; this.style.transform='translateY(-1px)'"
+                                    onmouseout="this.style.opacity='1'; this.style.transform='translateY(0)'"
                                     onclick="toggleImageStatus(<?= $image['id'] ?>)">
                                 <?= $image['is_active'] ? 'Hide' : 'Show' ?>
                             </button>
                             <button type="button" 
-                                    class="btn btn-sm btn-danger"
-                                    onclick="deleteImage(<?= $image['id'] ?>)">
-                                Delete
+                                    class="btn btn-sm"
+                                    style="background-color: #8c2e0b; 
+                                           border-color: #7a2809;
+                                           color: white;"
+                                    onmouseover="this.style.opacity='0.9'; this.style.transform='translateY(-1px)'"
+                                    onmouseout="this.style.opacity='1'; this.style.transform='translateY(0)'"
+                                    onclick="if(confirm('Are you sure you want to delete this image?')) { deleteImage(<?= $image['id'] ?>) }">
+                                <i class="fas fa-trash-alt me-1"></i> Delete
                             </button>
                         </div>
                     </div>

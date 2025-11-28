@@ -31,18 +31,63 @@
         margin-bottom: 15px;
     }
 
-    .badge.bg-success { background-color: #28a745 !important; }
-    .badge.bg-danger { background-color: #dc3545 !important; }
-    .badge.bg-warning { background-color: #ffc107 !important; color: #212529 !important; }
-    .badge.bg-info { background-color: #17a2b8 !important; }
+    .badge.bg-success { background-color: #3a5c39 !important; color: white !important; }
+    .badge.bg-danger { background-color: #8c2e0b !important; color: white !important; }
+    .badge.bg-warning { background-color: #b58a4a !important; color: white !important; }
+    .badge.bg-info { background-color: #4a6b8a !important; color: white !important; }
 
-    .badge-admin { background-color: #dc3545; color: white; }
-    .badge-client { background-color: #28a745; color: white; }
+    .badge-admin { background-color: #5c3a21; color: white; }
+    .badge-client { background-color: #3a5c39; color: white; }
 
     .btn-action {
         padding: 4px 8px;
         font-size: 12px;
         margin: 2px;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-outline-primary {
+        color: #5c3a21;
+        border-color: #5c3a21;
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: #5c3a21;
+        border-color: #5c3a21;
+        color: white;
+    }
+    
+    .btn-outline-warning {
+        color: #b58a4a;
+        border-color: #b58a4a;
+    }
+    
+    .btn-outline-warning:hover {
+        background-color: #b58a4a;
+        border-color: #b58a4a;
+        color: white;
+    }
+    
+    .btn-outline-success {
+        color: #3a5c39;
+        border-color: #3a5c39;
+    }
+    
+    .btn-outline-success:hover {
+        background-color: #3a5c39;
+        border-color: #3a5c39;
+        color: white;
+    }
+    
+    .btn-outline-danger {
+        color: #8c2e0b;
+        border-color: #8c2e0b;
+    }
+    
+    .btn-outline-danger:hover {
+        background-color: #8c2e0b;
+        border-color: #8c2e0b;
+        color: white;
     }
 
     .status-toggle {
