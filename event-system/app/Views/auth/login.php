@@ -123,7 +123,7 @@
       background-color: #7c6a43;
       color: #fff;
       border-radius: 10px;
-      width: 100%;
+      width: 110%;
       padding: 10px;
       margin-top: 20px;
       border: none;
@@ -139,7 +139,7 @@
       color: #7c6a43;
       background: none;
       border-radius: 10px;
-      width: 100%;
+      width: 110%;
       padding: 10px;
       margin-top: 10px;
     }
