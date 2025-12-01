@@ -41,6 +41,34 @@
         padding: 4px 8px;
         font-size: 12px;
         margin: 2px;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-outline-primary {
+        color: #5c3a21;
+        border-color: #5c3a21;
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: #5c3a21;
+        border-color: #5c3a21;
+        color: white;
+    }
+    
+    .btn-outline-success {
+        color: #3a5c39;
+        border-color: #3a5c39;
+    }
+    
+    .btn-outline-success:hover {
+        background-color: #3a5c39;
+        border-color: #3a5c39;
+        color: white;
+    }
+    
+    .bg-info {
+        background-color: #4a6b8a !important;
+        color: white !important;
     }
 </style>
 

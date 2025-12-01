@@ -1,6 +1,167 @@
 <?= $this->extend('admin/layout') ?>
 <?= $this->section('content') ?>
 
+<style>
+    /* Color Variables */
+    :root {
+        --primary: #5c3a21;
+        --primary-light: #7a4b2a;
+        --primary-dark: #4a2f1a;
+        --secondary: #8b7355;
+        --success: #3a5c39;
+        --danger: #8c2e0b;
+        --warning: #b58a4a;
+        --info: #4a6b8a;
+        --light: #f0e6dc;
+        --dark: #2c1a0d;
+        --beige: #f5f0eb;
+        --light-beige: #fff7f0;
+    }
+
+    /* Page Header */
+    .content-header h1 {
+        color: var(--primary);
+        font-weight: 700;
+    }
+
+    /* Card Styling */
+    .card {
+        border: 1px solid var(--light);
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+
+    .card-header {
+        background-color: var(--beige);
+        border-bottom: 1px solid var(--light);
+        padding: 15px 20px;
+    }
+
+    .card-title {
+        color: var(--primary);
+        font-weight: 600;
+        margin: 0;
+    }
+
+    /* Buttons */
+    .btn-primary {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+        border-color: var(--primary-dark);
+    }
+
+    .btn-outline-primary {
+        color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .btn-outline-primary:hover {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .btn-info {
+        background-color: var(--info);
+        border-color: var(--info);
+    }
+
+    .btn-success {
+        background-color: var(--success);
+        border-color: var(--success);
+    }
+
+    .btn-warning {
+        background-color: var(--warning);
+        border-color: var(--warning);
+        color: #fff;
+    }
+
+    .btn-danger {
+        background-color: var(--danger);
+        border-color: var(--danger);
+    }
+
+    .btn-secondary {
+        background-color: var(--secondary);
+        border-color: var(--secondary);
+    }
+
+    /* Form Controls */
+    .form-control:focus, 
+    .custom-select:focus,
+    .form-control:focus,
+    .custom-select:focus {
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 0.2rem rgba(92, 58, 33, 0.25);
+    }
+
+    .custom-file-label::after {
+        background-color: var(--primary);
+        color: #fff;
+        border-color: var(--primary);
+    }
+
+    /* Template Buttons */
+    .template-btn {
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
+
+    .template-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* Alert Styling */
+    .alert {
+        border: none;
+        border-left: 4px solid transparent;
+    }
+
+    .alert-danger {
+        background-color: #f8e2e2;
+        border-left-color: var(--danger);
+        color: var(--danger);
+    }
+
+    /* Code Styling */
+    code {
+        background-color: #f5f5f5;
+        padding: 2px 4px;
+        border-radius: 3px;
+        color: var(--danger);
+    }
+
+    /* Contract Textarea */
+    .contract-textarea {
+        font-family: 'Courier New', monospace;
+        line-height: 1.6;
+        min-height: 150px;
+    }
+
+    /* Card Footer */
+    .card-footer {
+        background-color: var(--beige);
+        border-top: 1px solid var(--light);
+        padding: 15px 20px;
+    }
+
+    /* Formatting Help Section */
+    .card-info {
+        border-color: var(--info);
+    }
+
+    .card-info > .card-header {
+        background-color: rgba(74, 107, 138, 0.1);
+        border-bottom-color: var(--info);
+    }
+</style>
+
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid">
@@ -17,8 +178,10 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="card card-primary">
-                        <div class="card-header">
-                            <h3 class="card-title">Contract Details</h3>
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h3 class="card-title m-0">Contract Details</h3>
+                            
+                            </div>
                         </div>
 
                         <form action="<?= base_url('admin/contracts/store') ?>" method="post" id="contractForm">
@@ -44,7 +207,7 @@
                                 <!-- Contract Template Section at Top -->
                                 <div class="card card-secondary mb-4">
                                     <div class="card-header">
-                                        <h3 class="card-title">Quick Templates</h3>
+                                        <h3 class="card-title"><i class="fas fa-magic mr-2"></i>Quick Templates</h3>
                                     </div>
                                     <div class="card-body">
                                         <p class="mb-3">Select a template to pre-fill the contract content:</p>
@@ -161,9 +324,9 @@
                                 </div>
 
                                 <!-- Formatting Help -->
-                                <div class="card card-info">
+                                <div class="card card-info mt-4">
                                     <div class="card-header">
-                                        <h3 class="card-title">Formatting Tips</h3>
+                                        <h3 class="card-title"><i class="fas fa-question-circle mr-2"></i>Formatting Tips</h3>
                                     </div>
                                     <div class="card-body">
                                         <div class="row">
@@ -190,13 +353,16 @@
                                 </div>
                             </div>
 
-                            <div class="card-footer">
-                                <button type="submit" class="btn btn-primary" id="submitBtn">
-                                    <i class="fas fa-save"></i> Create Contract
-                                </button>
-                                <button type="button" class="btn btn-default" id="cancelBtn">
+                            <div class="card-footer d-flex justify-content-between">
+                                <div>
+                                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                                        <i class="fas fa-save"></i> Create Contract
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger" id="cancelBtn">
                                     <i class="fas fa-times"></i> Cancel
                                 </button>
+                                </div>
+                                
                             </div>
                         </form>
                     </div>
@@ -361,10 +527,32 @@ Client Responsibilities:
                 text: `This will load the ${templateType} template and replace any existing content.`,
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
+                confirmButtonColor: 'var(--primary)',
+                cancelButtonColor: 'var(--secondary)',
                 confirmButtonText: 'Yes, apply template!',
-                cancelButtonText: 'Cancel'
+                cancelButtonText: 'Cancel',
+                customClass: {
+                    confirmButton: 'swal2-confirm',
+                    cancelButton: 'swal2-cancel',
+                    popup: 'swal2-popup swal2-modal swal2-show',
+                    title: 'swal2-title',
+                    htmlContainer: 'swal2-html-container',
+                    icon: 'swal2-icon swal2-question',
+                    actions: 'swal2-actions',
+                    confirmButton: 'swal2-confirm',
+                    cancelButton: 'swal2-cancel'
+                },
+                buttonsStyling: true,
+                showClass: {
+                    popup: 'swal2-show',
+                    backdrop: 'swal2-backdrop-show',
+                    icon: 'swal2-icon-show'
+                },
+                hideClass: {
+                    popup: 'swal2-hide',
+                    backdrop: 'swal2-backdrop-hide',
+                    icon: 'swal2-icon-hide'
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
                     // Auto-fill title based on template
@@ -397,10 +585,32 @@ Client Responsibilities:
             text: 'Any unsaved changes will be lost!',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
+            confirmButtonColor: 'var(--primary)',
+            cancelButtonColor: 'var(--secondary)',
             confirmButtonText: 'Yes, cancel!',
-            cancelButtonText: 'Continue editing'
+            cancelButtonText: 'Continue editing',
+            customClass: {
+                confirmButton: 'swal2-confirm',
+                cancelButton: 'swal2-cancel',
+                popup: 'swal2-popup swal2-modal swal2-show',
+                title: 'swal2-title',
+                htmlContainer: 'swal2-html-container',
+                icon: 'swal2-icon swal2-warning',
+                actions: 'swal2-actions',
+                confirmButton: 'swal2-confirm',
+                cancelButton: 'swal2-cancel'
+            },
+            buttonsStyling: true,
+            showClass: {
+                popup: 'swal2-show',
+                backdrop: 'swal2-backdrop-show',
+                icon: 'swal2-icon-show'
+            },
+            hideClass: {
+                popup: 'swal2-hide',
+                backdrop: 'swal2-backdrop-hide',
+                icon: 'swal2-icon-hide'
+            }
         }).then((result) => {
             if (result.isConfirmed) {
                 window.location.href = '<?= base_url('admin/contracts') ?>';
@@ -423,7 +633,16 @@ Client Responsibilities:
                 title: 'Missing Information!',
                 text: 'Please fill in all required fields before submitting.',
                 icon: 'error',
-                confirmButtonColor: '#3085d6'
+                confirmButtonColor: 'var(--primary)',
+                customClass: {
+                    confirmButton: 'swal2-confirm',
+                    popup: 'swal2-popup swal2-modal swal2-show',
+                    title: 'swal2-title',
+                    htmlContainer: 'swal2-html-container',
+                    icon: 'swal2-icon swal2-error',
+                    actions: 'swal2-actions'
+                },
+                buttonsStyling: true
             });
             return false;
         }
@@ -440,10 +659,30 @@ Client Responsibilities:
             `,
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
+            confirmButtonColor: 'var(--primary)',
+            cancelButtonColor: 'var(--secondary)',
             confirmButtonText: 'Yes, create contract!',
             cancelButtonText: 'Review again',
+            customClass: {
+                confirmButton: 'swal2-confirm',
+                cancelButton: 'swal2-cancel',
+                popup: 'swal2-popup swal2-modal swal2-show',
+                title: 'swal2-title',
+                htmlContainer: 'swal2-html-container',
+                icon: 'swal2-icon swal2-question',
+                actions: 'swal2-actions'
+            },
+            buttonsStyling: true,
+            showClass: {
+                popup: 'swal2-show',
+                backdrop: 'swal2-backdrop-show',
+                icon: 'swal2-icon-show'
+            },
+            hideClass: {
+                popup: 'swal2-hide',
+                backdrop: 'swal2-backdrop-hide',
+                icon: 'swal2-icon-hide'
+            },
             preConfirm: () => {
                 // Submit the form
                 $('#contractForm').off('submit').submit();

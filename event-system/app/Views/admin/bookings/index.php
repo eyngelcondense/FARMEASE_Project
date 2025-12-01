@@ -35,23 +35,43 @@ $title = "Bookings - San Isidro Labrador Resort";
     font-weight: 700;
 }
 
-/* Status Colors */
-.text-primary { color: #7a4b2a !important; }
-.text-warning { color: #c49b72 !important; }
-.text-success { color: #a67c52 !important; }
-.text-danger  { color: #b55b33 !important; }
-
-/* Buttons */
-.btn-brown, .btn-brown:hover, .btn-brown:focus, .btn-brown:active {
-    background-color: #7a4b2a;
-    color: #fff;
-    border-color: #7a4b2a;
-    transition: background-color 0.2s, transform 0.2s;
+/* Color Variables */
+:root {
+    --primary: #5c3a21;
+    --primary-light: #7a4b2a;
+    --primary-dark: #4a2f1a;
+    --secondary: #8b7355;
+    --success: #3a5c39;
+    --danger: #8c2e0b;
+    --warning: #b58a4a;
+    --info: #4a6b8a;
+    --light: #f0e6dc;
+    --dark: #2c1a0d;
+    --beige: #f5f0eb;
+    --light-beige: #fff7f0;
 }
 
-.btn-brown:hover, .btn-brown:focus {
-    background-color: #935d3a;
+/* Status Colors */
+.text-primary { color: var(--primary) !important; }
+.text-warning { color: var(--warning) !important; }
+.text-success { color: var(--success) !important; }
+.text-danger { color: var(--danger) !important; }
+.text-info { color: var(--info) !important; }
+.text-secondary { color: var(--secondary) !important; }
+
+/* Buttons */
+.btn-brown, .btn-brown:focus, .btn-brown:active {
+    background-color: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+    transition: all 0.2s;
+}
+
+.btn-brown:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
     transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(92, 58, 33, 0.2);
     color: #fff;
 }
 
@@ -85,12 +105,20 @@ $title = "Bookings - San Isidro Labrador Resort";
 }
 
 /* Badges */
-.badge.bg-warning { background-color: #c49b72 !important; color: #fff !important; }
-.badge.bg-success { background-color: #a67c52 !important; color: #fff !important; }
-.badge.bg-danger  { background-color: #b55b33 !important; color: #fff !important; }
-.badge.bg-info    { background-color: #d4a373 !important; color: #fff !important; }
-.badge.bg-primary { background-color: #7a4b2a !important; color: #fff !important; }
-.badge.bg-secondary { background-color: #9b7b5c !important; color: #fff !important; }
+.badge {
+    font-weight: 500;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    text-transform: capitalize;
+}
+
+.badge.bg-warning { background-color: var(--warning) !important; color: var(--dark) !important; }
+.badge.bg-success { background-color: var(--success) !important; color: #fff !important; }
+.badge.bg-danger  { background-color: var(--danger) !important; color: #fff !important; }
+.badge.bg-info    { background-color: var(--info) !important; color: #fff !important; }
+.badge.bg-primary { background-color: var(--primary) !important; color: #fff !important; }
+.badge.bg-secondary { background-color: var(--secondary) !important; color: #fff !important; }
 
 /* Filter Section */
 .filter-section {
@@ -138,58 +166,71 @@ $title = "Bookings - San Isidro Labrador Resort";
 }
 
 /* Toast Notifications */
-.alert-info { background-color: #f0e6dc; color: #5c3a21; border: none; }
-.alert-success { background-color: #a67c52; color: #fff; }
-.alert-warning { background-color: #c49b72; color: #fff; }
-.alert-danger { background-color: #b55b33; color: #fff; }
+.alert-info { background-color: #e7f1ff; color: var(--info); border: none; }
+.alert-success { background-color: #e8f5e9; color: var(--success); border: none; }
+.alert-warning { background-color: #fff8e1; color: var(--warning); border: none; }
+.alert-danger { background-color: #ffebee; color: var(--danger); border: none; }
 
 /* Table action buttons */
 #bookingsTable .btn-approve {
-    background-color: #935d3a; /* medium brown */
+    background-color: var(--success);
     color: #fff;
-    border: 1px solid #935d3a;
-    border-radius: 6px;
-    font-size: 0.85rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.8rem;
     padding: 4px 10px;
-    transition: background-color 0.2s, transform 0.2s;
+    font-weight: 500;
+    transition: all 0.2s;
+    margin: 2px;
 }
 
 #bookingsTable .btn-approve:hover {
-    background-color: #b07a55; /* lighter brown on hover */
+    background-color: #2d4a2c;
     transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 #bookingsTable .btn-reject {
-    background-color: #5c3a21; /* dark brown */
+    background-color: var(--danger);
     color: #fff;
-    border: 1px solid #5c3a21;
-    border-radius: 6px;
-    font-size: 0.85rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.8rem;
     padding: 4px 10px;
-    transition: background-color 0.2s, transform 0.2s;
+    font-weight: 500;
+    transition: all 0.2s;
+    margin: 2px;
 }
 
 #bookingsTable .btn-reject:hover {
-    background-color: #462b17; /* darker brown on hover */
+    background-color: #7a2809;
     transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 #bookingsTable .btn-view {
-    background-color: transparent;
-    color: #7a4b2a; /* medium brown outline */
-    border: 1px solid #7a4b2a;
-    border-radius: 6px;
-    font-size: 0.85rem;
+    background-color: var(--info);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.8rem;
     padding: 4px 10px;
+    font-weight: 500;
     transition: all 0.2s;
+    margin: 2px;
 }
 
 #bookingsTable .btn-view:hover {
-    background-color: #7a4b2a;
-    color: #fff;
+    background-color: #3f5c75;
     transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+.action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
 
 </style>
     <div class="page-header-card">

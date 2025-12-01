@@ -12,39 +12,72 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css">
   <style>
+    :root {
+      --primary-color: #8B4513;        /* Saddle Brown */
+      --primary-light: #A0522D;       /* Sienna */
+      --primary-dark: #5D4037;        /* Brown */
+      --secondary-color: #D2B48C;     /* Tan */
+      --text-primary: #3E2723;        /* Dark Brown */
+      --text-secondary: #795548;      /* Brown */
+      --border-color: #D7CCC8;        /* Light Brown */
+      --light-bg: #EFEBE9;            /* Light Brown Background */
+      --white: #FFFFFF;               /* White */
+      --success: #5D4037;             /* Dark Brown */
+      --warning: #BCAAA4;             /* Light Brown */
+      --danger: #8D6E63;              /* Medium Brown */
+    }
+    
+    /* Page Header */
+    .page-header-card h1 {
+        color: #5c3a21;
+        font-weight: 700;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: var(--text-primary);
+      background-color: #F5F5F0;  /* Light beige background */
+    }
+    
     .calendar-container {
-        background: white;
-        border-radius: 12px;
-        padding: 24px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        margin-bottom: 24px;
+      background: var(--white);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      margin-bottom: 24px;
+      border: 1px solid var(--border-color);
     }
 
     .calendar-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 24px;
-        padding: 0 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding: 0 16px;
     }
 
     .calendar-nav-btn {
-        background: #f8f9fa;
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        padding: 8px 16px;
-        cursor: pointer;
-        transition: all 0.3s ease;
+      background: var(--light-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: var(--primary-dark);
+      font-weight: 500;
     }
 
     .calendar-nav-btn:hover {
-        background: #e9ecef;
+      background: var(--primary-color);
+      color: var(--white);
+      border-color: var(--primary-dark);
     }
 
     .calendar-month-year {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: #2c3e50;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin: 0;
     }
 
     .calendar-grid {
@@ -74,8 +107,9 @@
     }
 
     .calendar-day:hover {
-        background: #e9ecef;
+        background: rgba(139, 69, 19, 0.1);
         transform: translateY(-2px);
+        border-color: var(--primary-light);
     }
 
     .calendar-day.current-month {
@@ -88,8 +122,9 @@
     }
 
     .calendar-day.today {
-        background: #e3f2fd;
-        border-color: #2196f3;
+        background: rgba(139, 69, 19, 0.1);
+        border: 2px solid var(--primary-color);
+        font-weight: 600;
     }
 
     .calendar-day-number {
@@ -99,7 +134,7 @@
     }
 
     .event-badge {
-        background: #007bff;
+        background: var(--primary-color);
         color: white;
         padding: 4px 8px;
         border-radius: 4px;
@@ -107,6 +142,9 @@
         margin-bottom: 4px;
         cursor: pointer;
         transition: all 0.3s ease;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .event-badge:hover {
@@ -115,16 +153,18 @@
     }
 
     .event-badge.pending {
-        background: #ffc107;
-        color: #212529;
+        background: var(--warning);
+        color: var(--text-primary);
     }
 
     .event-badge.confirmed {
-        background: #17a2b8;
+        background: var(--primary-light);
+        color: white;
     }
 
     .event-badge.approved {
-        background: #28a745;
+        background: var(--primary-dark);
+        color: white;
     }
 
     /* Graph Grid Styles */
@@ -200,7 +240,8 @@
     }
 
     .event-header:hover {
-        background: #e9ecef;
+        background: rgba(139, 69, 19, 0.1);
+        color: var(--primary-color);
     }
 
     .event-header small {
@@ -218,15 +259,15 @@
     }
 
     .event-slot.booked {
-        background: rgba(255, 193, 7, 0.1);
+        background: rgba(210, 180, 140, 0.2);
     }
 
     .event-slot.booked.confirmed {
-        background: rgba(23, 162, 184, 0.1);
+        background: rgba(160, 82, 45, 0.2);
     }
 
     .event-slot.booked.approved {
-        background: rgba(40, 167, 69, 0.1);
+        background: rgba(93, 64, 55, 0.2);
     }
 
     /* Compact Event Block */
@@ -234,29 +275,33 @@
         position: absolute;
         left: 1px;
         right: 1px;
-        background: #007bff;
+        background: var(--primary-color);
         border-radius: 3px;
-        padding: 2px 4px;
+        padding: 3px 6px;
         color: white;
         font-size: 0.65rem;
         z-index: 5;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
         overflow: hidden;
-        line-height: 1.2;
+        line-height: 1.3;
+        font-weight: 500;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
     .event-block.pending {
-        background: #ffc107;
-        color: #212529;
+        background: var(--warning);
+        color: var(--text-primary);
     }
 
     .event-block.confirmed {
-        background: #17a2b8;
+        background: var(--primary-light);
+        color: white;
     }
 
     .event-block.approved {
-        background: #28a745;
+        background: var(--primary-dark);
+        color: white;
     }
 
     .event-block:hover {
@@ -288,10 +333,14 @@
     .booking-actions {
         position: absolute;
         top: 50%;
-        right: 4px;
+        right: 6px;
         transform: translateY(-50%);
         display: none;
-        gap: 2px;
+        gap: 4px;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 2px 4px;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
     .event-slot:hover .booking-actions {
@@ -299,22 +348,39 @@
     }
 
     .btn-approve, .btn-reject {
-        padding: 1px 4px;
+        padding: 3px 8px;
         font-size: 0.6rem;
         border: none;
         border-radius: 3px;
         cursor: pointer;
-        line-height: 1;
+        line-height: 1.2;
+        transition: all 0.2s ease;
+        font-weight: 500;
+        min-width: 20px;
+        text-align: center;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
 
     .btn-approve {
-        background: #28a745;
+        background: #5D4037;  /* Dark Brown */
         color: white;
     }
 
+    .btn-approve:hover {
+        background: #3E2723;  /* Darker Brown */
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+
     .btn-reject {
-        background: #dc3545;
+        background: #DC3545;  /* Red */
         color: white;
+    }
+
+    .btn-reject:hover {
+        background: #C82333;  /* Darker Red */
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
     }
 
     .status-badge {
@@ -322,13 +388,6 @@
         padding: 1px 4px;
         border-radius: 3px;
         margin-left: 2px;
-    }
-
-    .empty-state {
-        grid-column: 1 / -1;
-        text-align: center;
-        padding: 20px;
-        color: #6c757d;
     }
 
     .time-slot-cell:last-child,
@@ -363,7 +422,7 @@
   <!-- Main Content Area -->
   <div class="main-layout">
     <!-- Page Header -->
-    <div class="page-header">
+    <div class="page-header-card">
       <h1>Calendar of Events</h1>
       <p class="page-subtitle">View all upcoming events and bookings for your packages</p>
     </div>
@@ -436,19 +495,31 @@
   <div class="modal fade" id="bookingModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
-        <div class="modal-header">
+        <div class="modal-header" style="background-color: #5D4037; color: white;">
           <h5 class="modal-title">Booking Details</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
-        <div class="modal-body" id="bookingModalBody">
+        <div class="modal-body" id="bookingModalBody" style="background-color: #F5F5F0;">
           Loading...
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <div class="modal-footer" style="background-color: #EFEBE9;">
+          <button type="button" class="btn btn-brown" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
   </div>
+  
+  <style>
+    .btn-brown {
+      background-color: #8B4513;
+      color: white;
+      border: none;
+    }
+    .btn-brown:hover {
+      background-color: #5D4037;
+      color: white;
+    }
+  </style>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   

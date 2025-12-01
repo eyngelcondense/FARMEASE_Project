@@ -2,20 +2,82 @@
 <?= $this->extend('admin/layout') ?>
 
 <?= $this->section('title') ?>
-    <?= $title ?? 'Venue Gallery - San Isidro Labrador Resort' ?>
+    <?= $title ?? 'Venue Gallery - FarmEase' ?>
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
+<style>
+    /* Card Styling - Brown Theme */
+    .card {
+        background-color: #fff7f0;
+        border: 1px solid #e6d9cc;
+    }
+    /* Page Header */
+    .page-header-card h1 {
+        color: #5c3a21;
+        font-weight: 700;
+    }
+
+    .card-header {
+        background-color: #f0e6dc;
+        border-color: #d9b79c;
+    }
+
+    .card-body {
+        background-color: #fff7f0;
+    }
+
+    .upload-area {
+        border: 2px dashed #d9b79c !important;
+        background-color: #fff7f0 !important;
+        transition: all 0.3s ease;
+    }
+
+    .upload-area:hover {
+        border-color: var(--primary) !important;
+        background-color: #f9f5f0 !important;
+    }
+
+    .upload-icon i {
+        color: var(--primary) !important;
+    }
+
+    .upload-text {
+        color: var(--primary);
+        font-weight: 500;
+    }
+
+    .btn-primary {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+        border-color: var(--primary-dark);
+    }
+
+    .gallery-item .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .gallery-item .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+</style>
+
 <div class="container-fluid">
     <!-- Page Header -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Venue Gallery</h1>
+    <div class="page-header-card">
+        <h1 >Venue Gallery</h1>
+        <p class="text-muted">Manage venue images and media</p>
     </div>
 
     <!-- Upload Section -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Upload Venue Images</h6>
+            <h6 class="m-0 font-weight-bold text-brown">Upload Venue Images</h6>
         </div>
         <div class="card-body">
             <div class="row">
@@ -32,10 +94,10 @@
 
             <div class="upload-area border-dashed rounded p-4 text-center mb-3" 
                  id="uploadArea" 
-                 style="border: 2px dashed #dee2e6; background: #f8f9fa; cursor: pointer;"
+                 style="cursor: pointer;"
                  onclick="document.getElementById('fileInput').click()">
                 <div class="upload-icon mb-2">
-                    <i class="fas fa-cloud-upload-alt fa-2x text-muted"></i>
+                    <i class="fas fa-cloud-upload-alt fa-2x"></i>
                 </div>
                 <p class="upload-text mb-1">Click or drag images to upload</p>
                 <p class="upload-subtext text-muted small mb-0">Supports JPG, PNG, WEBP, GIF (Max: 5MB per image)</p>
@@ -47,8 +109,8 @@
                 <div id="fileList" class="d-flex flex-wrap gap-2 mb-3"></div>
             </div>
 
-            <button class="btn btn-primary" onclick="uploadImages()" id="uploadBtn" disabled>
-                <i class="fas fa-upload me-1"></i> Upload Images
+            <button class="btn btn-brown" onclick="uploadImages()" id="uploadBtn" disabled>
+                <i class="fas fa-upload me-2"></i>Upload Images
             </button>
         </div>
     </div>
@@ -77,7 +139,7 @@
     <!-- Gallery Grid -->
     <div class="card shadow">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Venue Images</h6>
+            <h6 class="m-0 font-weight-bold text-brown">Venue Images</h6>
         </div>
         <div class="card-body">
             <div id="galleryGrid">
@@ -104,21 +166,23 @@ document.addEventListener('DOMContentLoaded', function() {
     ['dragover', 'dragenter'].forEach(event => {
         uploadArea.addEventListener(event, (e) => {
             e.preventDefault();
-            uploadArea.style.borderColor = '#007bff';
-            uploadArea.style.background = '#e7f3ff';
+            uploadArea.style.borderColor = 'var(--primary)';
+            uploadArea.style.background = 'rgba(92, 58, 33, 0.1)';
         });
     });
 
     ['dragleave', 'dragend'].forEach(event => {
         uploadArea.addEventListener(event, (e) => {
             e.preventDefault();
-            uploadArea.style.borderColor = '#dee2e6';
-            uploadArea.style.background = '#f8f9fa';
+            uploadArea.style.borderColor = '#d9b79c';
+            uploadArea.style.background = '#fff7f0';
         });
     });
 
     uploadArea.addEventListener('drop', (e) => {
         e.preventDefault();
+        uploadArea.style.borderColor = '#d9b79c';
+        uploadArea.style.background = '#fff7f0';
         uploadArea.style.borderColor = '#dee2e6';
         uploadArea.style.background = '#f8f9fa';
         const files = e.dataTransfer.files;

@@ -4,48 +4,20 @@
 
 <?= $this->section('content') ?>
 <style>
-    /* Filter Section */
-    .filter-section {
-        background-color: #f5f0eb;
-        padding: 15px 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-    }
-
-    /* Table Card */
-    .table-card {
-        background-color: #fff7f0;
-        border-radius: 12px;
-        padding: 15px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    }
-
-    .table th {
-        background-color: #f0e6dc;
-        color: #5c3a21;
-    }
-
-    /* Badges */
-    .badge.bg-success { background-color: #28a745 !important; color: #fff !important; }
-    .badge.bg-warning { background-color: #ffc107 !important; color: #212529 !important; }
-    .badge.bg-danger { background-color: #dc3545 !important; color: #fff !important; }
-    .badge.bg-secondary { background-color: #6c757d !important; color: #fff !important; }
-    .badge.bg-info { background-color: #17a2b8 !important; color: #fff !important; }
-
-    /* Search Box */
-    .search-box-payments input {
-        border: 2px solid #7a4b2a;
-        border-radius: 8px;
-    }
-
-    /* Form Controls */
-    .form-select {
-        border-color: #d9b79c;
-    }
-
-    .form-select:focus {
-        border-color: #7a4b2a;
-        box-shadow: 0 0 0 0.2rem rgba(122, 75, 42, 0.25);
+    /* Base Styles */
+    :root {
+        --primary: #5c3a21;
+        --primary-light: #7a4b2a;
+        --primary-dark: #4a2f1a;
+        --secondary: #8b7355;
+        --success: #3a5c39;
+        --danger: #8c2e0b;
+        --warning: #b58a4a;
+        --info: #4a6b8a;
+        --light: #f0e6dc;
+        --dark: #2c1a0d;
+        --beige: #f5f0eb;
+        --light-beige: #fff7f0;
     }
 
     /* Page Header */
@@ -54,19 +26,291 @@
         font-weight: 700;
     }
 
-    /* Action buttons */
-    .btn-action {
-        padding: 4px 8px;
-        font-size: 12px;
-        margin: 2px;
+    /* Layout */
+    body {
+        background-color: #f8f9fa;
     }
 
-    /* Payment method badges */
-    .badge-gcash { background-color: #6f42c1; color: white; }
-    .badge-card { background-color: #007bff; color: white; }
-    .badge-bank { background-color: #28a745; color: white; }
-    .badge-cash { background-color: #6c757d; color: white; }
-    .badge-grabpay { background-color: #00b14f; color: white; }
+    /* Filter Section */
+    .filter-section {
+        background-color: var(--beige);
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    }
+
+    /* Table Card */
+    .table-card {
+        background-color: var(--light-beige);
+        border-radius: 12px;
+        padding: 15px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .table th {
+        background-color: var(--light);
+        color: var(--primary);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+
+    /* Buttons */
+    .btn {
+        font-weight: 500;
+        padding: 0.4rem 1rem;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+    .btn-primary:hover, .btn-primary:focus {
+        background-color: var(--primary-dark);
+        border-color: var(--primary-dark);
+        box-shadow: 0 0 0 0.2rem rgba(92, 58, 33, 0.25);
+    }
+
+    .btn-outline-primary {
+        color: var(--primary);
+        border-color: var(--primary);
+    }
+    .btn-outline-primary:hover {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .btn-success {
+        background-color: var(--success);
+        border-color: var(--success);
+    }
+
+    .btn-danger {
+        background-color: var(--danger);
+        border-color: var(--danger);
+    }
+
+    /* Badges */
+    .badge {
+        padding: 0.4em 0.8em;
+        font-weight: 500;
+        border-radius: 4px;
+        font-size: 0.75rem;
+    }
+
+    .badge.bg-primary { background-color: var(--primary) !important; }
+    .badge.bg-secondary { background-color: var(--secondary) !important; }
+    .badge.bg-success { background-color: var(--success) !important; }
+    .badge.bg-danger { background-color: var(--danger) !important; }
+    .badge.bg-warning { 
+        background-color: var(--warning) !important; 
+        color: var(--dark) !important;
+    }
+    .badge.bg-info { background-color: var(--info) !important; }
+    .badge.bg-light { 
+        background-color: var(--light) !important;
+        color: var(--primary) !important;
+    }
+
+    /* Form Controls */
+    .form-control, .form-select {
+        border: 1px solid #d9b79c;
+        border-radius: 6px;
+        padding: 0.5rem 0.75rem;
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 0.2rem rgba(92, 58, 33, 0.15);
+    }
+
+    /* Search Box */
+    .search-box-payments input {
+        border: 2px solid var(--primary-light);
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+    }
+
+    /* Page Header */
+    .page-header {
+        padding: 1.5rem 0;
+    }
+
+    .page-header h1 {
+        color: var(--primary);
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Cards */
+    .card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .card-header {
+        background-color: var(--light);
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        font-weight: 600;
+    }
+
+    /* Pagination */
+    .pagination .page-link {
+        color: var(--primary);
+        border-color: #d9b79c;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    /* Alerts */
+    .alert {
+        border: none;
+        border-radius: 8px;
+    }
+
+    .alert-success {
+        background-color: rgba(58, 92, 57, 0.1);
+        color: var(--success);
+        border-left: 4px solid var(--success);
+    }
+
+    .alert-danger {
+        background-color: rgba(140, 46, 11, 0.1);
+        color: var(--danger);
+        border-left: 4px solid var(--danger);
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .table-responsive {
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .filter-section {
+            flex-direction: column;
+            gap: 10px;
+        }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    /* Close Button (×) */
+.close, .btn-close {
+    color: var(--primary);
+    opacity: 0.8;
+    transition: all 0.2s ease;
+    font-size: 1.5rem;
+    line-height: 1;
+    padding: 0.5rem;
+    margin: -0.5rem -0.5rem -0.5rem auto;
+}
+
+.close:hover, .btn-close:hover {
+    color: var(--danger);
+    opacity: 1;
+    text-decoration: none;
+}
+
+/* Check Marks */
+.checkmark, .form-check-input:checked {
+    color: var(--success);
+    border-color: var(--success);
+}
+
+/* Custom Checkbox */
+.form-check-input:checked {
+    background-color: var(--success);
+    border-color: var(--success);
+}
+
+.form-check-input:focus {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 0.2rem rgba(92, 58, 33, 0.15);
+}
+
+/* Checkmark in tables */
+.table .form-check-input {
+    margin-top: 0;
+    margin-left: 0;
+}
+
+/* Checkbox in forms */
+.form-check-input {
+    width: 1.2em;
+    height: 1.2em;
+    margin-top: 0.2em;
+    vertical-align: top;
+    background-color: #fff;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    border: 1px solid var(--secondary);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+/* Custom checkmark style */
+.form-check-input:checked[type="checkbox"] {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/%3e%3c/svg%3e");
+}
+
+/* Radio buttons */
+.form-check-input[type="radio"] {
+    border-radius: 50%;
+}
+
+.form-check-input:checked[type="radio"] {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23fff'/%3e%3c/svg%3e");
+}
+
+/* Hover states */
+.form-check-input:not(:disabled):not(:checked):hover {
+    border-color: var(--primary);
+}
+
+/* Disabled state */
+.form-check-input:disabled {
+    background-color: var(--light);
+    border-color: var(--secondary);
+    opacity: 0.6;
+}
+
+/* For switches */
+.form-switch .form-check-input {
+    width: 2em;
+    margin-left: -2.5em;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%280, 0, 0, 0.25%29'/%3e%3c/svg%3e");
+    background-position: left center;
+    border-radius: 2em;
+    transition: background-position 0.15s ease-in-out;
+}
+
+.form-switch .form-check-input:checked {
+    background-position: right center;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
+}
 </style>
 
 <div class="page-header-card">
