@@ -145,7 +145,7 @@
 
     /* Button Login */
     .btn-login {
-      background-color: #b2a187;
+      background-color: #060400ff;
       color: white;
       border: none;
       padding: 12px 28px;
@@ -254,7 +254,7 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: rgba(0, 0, 0, 0.6);
+      background-color: #b2a187;
     }
     .cta-content {
       position: relative;
@@ -272,6 +272,35 @@
       height: 250px;
       border-radius: 8px;
       margin-top: 10px;
+    }
+
+    /* Package Inclusions Section */
+    .inclusions-section {
+      background-color: #f8f6f3;
+      padding: 60px 0 80px;
+    }
+
+    .inclusions-title {
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 40px;
+      color: #3b2a18;
+    }
+
+    .package-image-wrapper {
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .package-image-wrapper:hover {
+      transform: scale(1.05);
+    }
+
+    .package-img {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
 
@@ -310,7 +339,16 @@
       <h3 style="font-family: 'Times New Roman', Times, serif;">Embrace the enchanting ambiance of San Isidro with its harmonious and calming breeze.</h3>
       <p style="font-family: 'Times New Roman', Times, serif;">San Isidro Labrador Resort and Leisure Farm</p>
     </div>
-  </section>    
+  </section>  
+  
+  <!-- Call to Action -->
+  <section class="cta">
+    <div class="cta-content">
+      <h2>Ready to Discover More?</h2>
+      <p>Login now to access our full website — view our event packages, amenities, and booking options.</p>
+      <a href="/login" class="btn-login">Login to Explore</a>
+    </div>
+  </section>
 
   <!-- Highlights -->
   <section class="highlights text-center">
@@ -338,21 +376,89 @@
             <p>Reconnect with the land and enjoy the simplicity of rural life.</p>
           </div>
         </div>
+
+        <!-- Package Inclusions Section -->
+  <section class="inclusions-section">
+    <div class="container">
+      <h2 class="inclusions-title">Package Inclusions</h2>
+      
+      <div class="row g-4 justify-content-center">
+        
+        <!-- Café Package -->
+        <div class="col-lg-2 col-md-4 col-6">
+          <div class="package-image-wrapper">
+            <img src="<?= base_url('images/cafe.jpeg') ?>" alt="Café Package" class="package-img" onclick="openModal('<?= base_url('images/cafe.jpeg') ?>', 'Café 2nd Floor Venue')">
+          </div>
+        </div>
+
+        <!-- Playground Package -->
+        <div class="col-lg-2 col-md-4 col-6">
+          <div class="package-image-wrapper">
+            <img src="<?= base_url('images/playground.jpeg') ?>" alt="Playground Package" class="package-img" onclick="openModal('<?= base_url('images/playground.jpeg') ?>', 'Playground')">
+          </div>
+        </div>
+
+        <!-- Venue Package -->
+        <div class="col-lg-2 col-md-4 col-6">
+          <div class="package-image-wrapper">
+            <img src="<?= base_url('images/venue.jpeg') ?>" alt="Venue Package" class="package-img" onclick="openModal('<?= base_url('images/venue.jpeg') ?>', 'Venue')">
+          </div>
+        </div>
+
+        <!-- Prep Package -->
+        <div class="col-lg-2 col-md-4 col-6">
+          <div class="package-image-wrapper">
+            <img src="<?= base_url('images/prep.jpeg') ?>" alt="Prep & Photoshoot Package" class="package-img" onclick="openModal('<?= base_url('images/prep.jpeg') ?>', 'Prep & Photoshoot')">
+          </div>
+        </div>
+
+        <!-- Meeting Package -->
+        <div class="col-lg-2 col-md-4 col-6">
+          <div class="package-image-wrapper">
+            <img src="<?= base_url('images/meeting.jpeg') ?>" alt="Meeting Package" class="package-img" onclick="openModal('<?= base_url('images/meeting.jpeg') ?>', 'Meeting Room')">
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
 
-  <!-- Gallery -->
-  <section class="gallery">
-    <div class="container">
-      <h2 class="text-center mb-4">A Glimpse of Paradise</h2>
-      <div class="row g-3">
-        <div class="col-md-4"><img src="images/pic 2.jpg" class="img-fluid"></div>
-        <div class="col-md-4"><img src="images/pic 7.jpg" class="img-fluid"></div>
-        <div class="col-md-4"><img src="images/pic 9.jpg" class="img-fluid"></div>
       </div>
     </div>
   </section>
+
+  
+
+  <!-- Gallery -->
+  <section class="gallery">
+  <div class="container">
+    <h2 class="text-center mb-4">A Glimpse of Paradise</h2>
+
+    <!-- Row 1: 3 Images -->
+    <div class="row g-3 justify-content-center">
+      <div class="col-md-4">
+        <img src="images/pic 2.jpg" class="img-fluid">
+      </div>
+      <div class="col-md-4">
+        <img src="images/pic 7.jpg" class="img-fluid">
+      </div>
+      <div class="col-md-4">
+        <img src="images/pic 9.jpg" class="img-fluid">
+      </div>
+    </div>
+
+    <!-- Row 2: 2 Images Centered -->
+    <div class="row g-3 justify-content-center mt-2">
+      <div class="col-md-4">
+        <img src="images/pic 1.jpg" class="img-fluid">
+      </div>
+      <div class="col-md-4">
+        <img src="images/pic 3.jpg" class="img-fluid">
+      </div>
+    </div>
+  </div>
+</section>
+
 
   <!-- Testimonials -->
   <section class="testimonials">
@@ -371,12 +477,32 @@
             <strong>- Earlsin C.</strong>
           </div>
         </div>
+        <div class="col-md-4">
+        <div class="testimonial-box">
+          <p>“Very relaxing place. Our family enjoyed every moment.”</p>
+          <strong>- Paulo M.</strong>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="testimonial-box">
+          <p>“Clean, peaceful, and beautiful. We will surely come back.”</p>
+          <strong>- Angel C.</strong>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="testimonial-box">
+          <p>“Great service and amazing views. Highly recommended!”</p>
+          <strong>- Jean I.</strong>
+        </div>
+      </div>
       </div>
     </div>
   </section>
 
   <!-- Contact -->
-  <section class="contact-section" style="background-color: #fff; padding: 60px 0;">
+  <section class="contact-section" style="background-color: #ffffffff; padding: 60px 0;">
     <div class="container text-center" style="font-family: 'Times New Roman', Times, serif;">
       <h2><strong>Get in Touch With Us</strong></h2>
       <img src="images/divider.png" alt="Divider" class="d-block mx-auto" style="width:100px;"> 
@@ -400,15 +526,6 @@
           </a>
         </p>
       </div>
-    </div>
-  </section>
-
-  <!-- Call to Action -->
-  <section class="cta">
-    <div class="cta-content">
-      <h2>Ready to Discover More?</h2>
-      <p>Login now to access our full website — view our event packages, amenities, and booking options.</p>
-      <a href="/login" class="btn-login">Login to Explore</a>
     </div>
   </section>
 
@@ -442,7 +559,35 @@
   <script async
     src="https://maps.googleapis.com/maps/api/js?key=<?= esc($apiKey) ?>&callback=initMap">
   </script>
-
   <script src="bootstrap5/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+  function openModal(imageSrc, title) {
+    document.getElementById('modalImage').src = imageSrc;
+    document.getElementById('modalTitle').innerText = title;
+    document.getElementById('imageModal').style.display = "block";
+  }
+
+  function closeModal() {
+    document.getElementById('imageModal').style.display = "none";
+  }
+</script>
+
+
+  <!-- IMAGE VIEW MODAL -->
+<div id="imageModal" class="modal" style="display:none; position:fixed; z-index:2000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.8);">
+  
+  <span onclick="closeModal()" 
+        style="position:absolute; top:20px; right:35px; color:white; font-size:40px; cursor:pointer;">
+    &times;
+  </span>
+
+  <div style="text-align:center; margin-top:60px;">
+    <img id="modalImage" style="max-width:90%; max-height:80vh; border-radius:10px;">
+    <h3 id="modalTitle" style="color:white; margin-top:20px;"></h3>
+  </div>
+
+</div>
+
 </body>
 </html>

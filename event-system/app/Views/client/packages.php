@@ -406,68 +406,65 @@
     </div>
   </section>
 
-  <!-- Logo Section -->
-  <section class="logo-section">
-    <div class="container">
-      <img src="<?= base_url('images/divider.png') ?>" alt="Decorative Divider">
-    </div>
-  </section>
 
   <!-- Package Inclusions Section -->
-  <section class="inclusions-section">
-    <div class="container">
-      <h2 class="inclusions-title">Package Inclusions</h2>
-      
-      <div class="row g-4 justify-content-center">
-        
-        <!-- Café Package -->
-        <div class="col-lg-2 col-md-4 col-6">
-          <div class="package-image-wrapper">
-            <img src="<?= base_url('images/cafe.jpeg') ?>" alt="Café Package" class="package-img" onclick="openModal('<?= base_url('images/cafe.jpeg') ?>', 'Café 2nd Floor Venue')">
-          </div>
-        </div>
+<section class="inclusions-section">
+  <div class="container">
+    <h2 class="inclusions-title">Package Inclusions</h2>
 
-        <!-- Playground Package -->
-        <div class="col-lg-2 col-md-4 col-6">
-          <div class="package-image-wrapper">
-            <img src="<?= base_url('images/playground.jpeg') ?>" alt="Playground Package" class="package-img" onclick="openModal('<?= base_url('images/playground.jpeg') ?>', 'Playground')">
-          </div>
-        </div>
+    <!-- ROW 1: 3 IMAGES -->
+    <div class="row g-4 justify-content-center mb-3">
 
-        <!-- Venue Package -->
-        <div class="col-lg-2 col-md-4 col-6">
-          <div class="package-image-wrapper">
-            <img src="<?= base_url('images/venue.jpeg') ?>" alt="Venue Package" class="package-img" onclick="openModal('<?= base_url('images/venue.jpeg') ?>', 'Venue')">
-          </div>
+      <!-- Café Package -->
+      <div class="col-lg-3 col-md-4 col-6">
+        <div class="package-image-wrapper">
+          <img src="<?= base_url('images/cafe.jpeg') ?>" class="package-img"
+               onclick="openModal('<?= base_url('images/cafe.jpeg') ?>', 'Café 2nd Floor Venue')">
         </div>
-
-        <!-- Prep Package -->
-        <div class="col-lg-2 col-md-4 col-6">
-          <div class="package-image-wrapper">
-            <img src="<?= base_url('images/prep.jpeg') ?>" alt="Prep & Photoshoot Package" class="package-img" onclick="openModal('<?= base_url('images/prep.jpeg') ?>', 'Prep & Photoshoot')">
-          </div>
-        </div>
-
-        <!-- Meeting Package -->
-        <div class="col-lg-2 col-md-4 col-6">
-          <div class="package-image-wrapper">
-            <img src="<?= base_url('images/meeting.jpeg') ?>" alt="Meeting Package" class="package-img" onclick="openModal('<?= base_url('images/meeting.jpeg') ?>', 'Meeting Room')">
-          </div>
-        </div>
-
       </div>
-    </div>
-  </section>
 
-  <!-- Decorative Bars Section -->
-  <section class="decorative-bars">
-    <div class="bar bar-light"></div>
-    <div class="bar bar-dark"></div>
-    <div class="bar bar-light"></div>
-    <div class="bar bar-dark"></div>
-    <div class="bar bar-light"></div>
-    <div class="bar bar-dark"></div>
-  </section>
+      <!-- Playground Package -->
+      <div class="col-lg-3 col-md-4 col-6">
+        <div class="package-image-wrapper">
+          <img src="<?= base_url('images/playground.jpeg') ?>" class="package-img"
+               onclick="openModal('<?= base_url('images/playground.jpeg') ?>', 'Playground')">
+        </div>
+      </div>
+
+      <!-- Venue Package -->
+      <div class="col-lg-3 col-md-4 col-6">
+        <div class="package-image-wrapper">
+          <img src="<?= base_url('images/venue.jpeg') ?>" class="package-img"
+               onclick="openModal('<?= base_url('images/venue.jpeg') ?>', 'Venue')">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ROW 2: 2 IMAGES CENTERED -->
+    <div class="row g-4 justify-content-center">
+
+      <!-- Prep Package -->
+      <div class="col-lg-3 col-md-4 col-6">
+        <div class="package-image-wrapper">
+          <img src="<?= base_url('images/prep.jpeg') ?>" class="package-img"
+               onclick="openModal('<?= base_url('images/prep.jpeg') ?>', 'Prep & Photoshoot')">
+        </div>
+      </div>
+
+      <!-- Meeting Package -->
+      <div class="col-lg-3 col-md-4 col-6">
+        <div class="package-image-wrapper">
+          <img src="<?= base_url('images/meeting.jpeg') ?>" class="package-img"
+               onclick="openModal('<?= base_url('images/meeting.jpeg') ?>', 'Meeting Room')">
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
 
   <!-- Modal for Image Popup -->
   <div id="imageModal" class="modal-overlay" onclick="closeModal()">
