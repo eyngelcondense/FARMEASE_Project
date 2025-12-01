@@ -142,9 +142,10 @@
 
     /* Booking Section */
     .booking-section {
-      background-color: #8f8a83;
+      background-color: #7a6a58;
       color: #000;
-      font-family: 'Times New Roman', Times, serif;
+      padding: 60px 0;
+      
     }
 
     .booking-section .btn {
@@ -275,8 +276,8 @@
 
   <!-- View Packages Section -->
   <section class="packageview-section">
-    <h2>We Plan Your Special Day</h2>
-    <p>The perfect place to have your events with the people that matter</p>
+    <h1>We Plan Your Special Day</h1>
+    <h3>The perfect place to have your events with the people that matter<h3>
     <a href="<?= site_url('packages') ?>" 
       class="btn btn-dark <?= (service('uri')->getSegment(1) == 'packages') ? 'active' : '' ?>">
       View Packages
