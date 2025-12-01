@@ -123,29 +123,6 @@ $title = "Testimonials | San Isidro Labrador Resort and Leisure Farm";
         font-style: italic;
     }
 
-    .book-section {
-        background-color: #f8f6f3;
-        padding: 60px 0 80px;
-        text-align: center;
-    }
-
-    .btn-book {
-        background-color: #3b2a18;
-        color: white;
-        border: none;
-        padding: 15px 50px;
-        font-size: 1.1rem;
-        font-weight: 600;
-        border-radius: 5px;
-        transition: all 0.3s ease;
-    }
-
-    .btn-book:hover {
-        background-color: #2a1f12;
-        color: white;
-        transform: scale(1.05);
-    }
-
     .feedback-section {
         background-color: #f8f6f3;
         padding: 40px 0 80px;
@@ -306,75 +283,74 @@ $title = "Testimonials | San Isidro Labrador Resort and Leisure Farm";
     </div>
 </section>
 
-<section class="book-section">
-    <a href="<?= site_url('bookings') ?>" class="btn btn-book">
-        Book Your Event Today
-    </a>
-</section>
 
 <!-- Feedback Section -->
-<section class="feedback-section">
+<section class="feedback-section py-4">
     <div class="container">
-        <h2 class="feedback-title">Share Your Experience</h2>
-        
-        <?php if (session()->has('message')): ?>
-            <div class="alert alert-success alert-dismissible fade show">
-                <i class="bi bi-check-circle-fill"></i>
-                <?= session('message') ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
+        <div class="card shadow-sm p-4">
+            <h2 class="feedback-title mb-1"><i class="bi bi-chat-dots-fill"></i> Share Your Experience</h2>
+             <p class="text-muted mb-3">We value your feedback! Let us know what you think about our resort.</p>
 
-        <?php if (session()->has('error')): ?>
-            <div class="alert alert-danger alert-dismissible fade show">
-                <i class="bi bi-exclamation-circle-fill"></i>
-                <?= session('error') ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
-
-        <?php if (session()->has('errors')): ?>
-            <div class="alert alert-danger alert-dismissible fade show">
-                <i class="bi bi-exclamation-circle-fill"></i>
-                <strong>Please fix the following errors:</strong>
-                <ul class="mb-0 mt-2">
-                    <?php foreach (session('errors') as $error): ?>
-                        <li><?= $error ?></li>
-                    <?php endforeach; ?>
-                </ul>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
-
-        <form action="<?= site_url('feedback/submit') ?>" method="post" id="feedbackForm">
-            <?= csrf_field() ?>
             
-            <div class="feedback-form">
-                <div class="rating-stars">
-                    <label class="form-label">Your Rating</label>
-                    <div class="star-rating">
-                        <?php for ($i = 1; $i <= 5; $i++): ?>
-                            <input type="radio" id="star<?= $i ?>" name="rating" value="<?= $i ?>" required>
-                            <label for="star<?= $i ?>">★</label>
-                        <?php endfor; ?>
-
-                    </div>
+            <?php if (session()->has('message')): ?>
+                <div class="alert alert-success alert-dismissible fade show">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <?= session('message') ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
+            <?php endif; ?>
 
-                <!-- Feedback Text -->
-                <textarea 
-                    class="form-control feedback-textarea" 
-                    placeholder="Share your experience with us... What did you like about our resort? How was the service? Any suggestions for improvement?" 
-                    rows="6"
-                    name="feedback"
-                    required
-                ><?= old('feedback') ?></textarea>
+            <?php if (session()->has('error')): ?>
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <i class="bi bi-exclamation-circle-fill"></i>
+                    <?= session('error') ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <?php endif; ?>
+
+            <?php if (session()->has('errors')): ?>
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <i class="bi bi-exclamation-circle-fill"></i>
+                    <strong>Please fix the following errors:</strong>
+                    <ul class="mb-0 mt-2">
+                        <?php foreach (session('errors') as $error): ?>
+                            <li><?= $error ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <?php endif; ?>
+
+            <form action="<?= site_url('feedback/submit') ?>" method="post" id="feedbackForm">
+                <?= csrf_field() ?>
                 
-                <button type="submit" class="btn btn-submit">Submit Feedback</button>
-            </div>
-        </form>
+                <div class="feedback-form">
+                    <div class="rating-stars mb-3">
+                        <label class="form-label"></label>
+                        <div class="star-rating">
+                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                                <input type="radio" id="star<?= $i ?>" name="rating" value="<?= $i ?>" required>
+                                <label for="star<?= $i ?>">★</label>
+                            <?php endfor; ?>
+                        </div>
+                    </div>
+
+                    <!-- Feedback Text -->
+                    <textarea 
+                        class="form-control feedback-textarea mb-3" 
+                        placeholder="Share your experience with us... What did you like about our resort? How was the service? Any suggestions for improvement?" 
+                        rows="6"
+                        name="feedback"
+                        required
+                    ><?= old('feedback') ?></textarea>
+                    
+                    <button type="submit" class="btn btn-submit btn-primary">Submit Feedback</button>
+                </div>
+            </form>
+        </div>
     </div>
 </section>
+
 
 
 
