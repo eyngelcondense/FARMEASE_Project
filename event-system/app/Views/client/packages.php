@@ -184,9 +184,11 @@
     .inclusions-section {
       background-color: #f8f6f3;
       padding: 60px 0 80px;
+      text-align: center;
     }
 
     .inclusions-title {
+      text-align: center;
       font-family: 'Times New Roman', Times, serif;
       font-size: 2.5rem;
       font-weight: 700;
@@ -376,41 +378,10 @@
     <p>San Isidro Labrador Resort and Leisure Farm is gearing up to be the premiere location for your once-in-a-lifetime event</p>
   </section>
 
-  <!-- Package Sections will be dynamically loaded here -->
-  <div id="packageSections"></div>
-
-  <!-- Bottom Divider -->
-  <div class="bottom-divider">
-    <img src="<?= base_url('images/divider.png') ?>" alt="Decorative Divider">
-  </div>
-
-  <!-- Description Section -->
-  <section class="description-section py-5">
-    <div class="container">
-      <div class="row">
-        <div class="col-12">
-          <p>
-            At <strong>San Isidro Labrador Resort and Leisure Farm</strong>, we believe that the most beautiful celebrations begin with a setting that inspires. Surrounded by nature's calm and kissed by golden sunsets, our resort provides the ideal canvas for your most unforgettable moments.
-          </p>
-          <p>
-            Each of our <strong>packages</strong> is crafted to bring together elegance, comfort, and personalized service. From breathtaking outdoor ceremonies and charming indoor receptions to relaxing leisure stays, we offer a complete experience designed to match your vision and personality.
-          </p>
-          <p>
-            Whether you dream of a fairy-tale wedding, a joyful reunion, or a serene corporate retreat, our team ensures that every detail is handled with care — so you can focus on what truly matters: celebrating, connecting, and creating memories that last a lifetime.
-          </p>
-          <p>
-            Discover how <strong>San Isidro Labrador Resort and Leisure Farm</strong> can turn your special moments into timeless stories. Because here, every celebration is more than a day — it's an experience to remember.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- Package Inclusions Section -->
+    <!-- Package Inclusions Section -->
 <section class="inclusions-section">
   <div class="container">
-    <h2 class="inclusions-title">Package Inclusions</h2>
+    <h2 class="inclusions-title" >Package Inclusions</h2>
 
     <!-- ROW 1: 3 IMAGES -->
     <div class="row g-4 justify-content-center mb-3">
@@ -464,6 +435,39 @@
 
   </div>
 </section>
+
+  <!-- Package Sections will be dynamically loaded here -->
+  <div id="packageSections"></div>
+
+  <!-- Bottom Divider -->
+  <div class="bottom-divider">
+    <img src="<?= base_url('images/divider.png') ?>" alt="Decorative Divider">
+  </div>
+
+  <!-- Description Section -->
+  <section class="description-section py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <p>
+            At <strong>San Isidro Labrador Resort and Leisure Farm</strong>, we believe that the most beautiful celebrations begin with a setting that inspires. Surrounded by nature's calm and kissed by golden sunsets, our resort provides the ideal canvas for your most unforgettable moments.
+          </p>
+          <p>
+            Each of our <strong>packages</strong> is crafted to bring together elegance, comfort, and personalized service. From breathtaking outdoor ceremonies and charming indoor receptions to relaxing leisure stays, we offer a complete experience designed to match your vision and personality.
+          </p>
+          <p>
+            Whether you dream of a fairy-tale wedding, a joyful reunion, or a serene corporate retreat, our team ensures that every detail is handled with care — so you can focus on what truly matters: celebrating, connecting, and creating memories that last a lifetime.
+          </p>
+          <p>
+            Discover how <strong>San Isidro Labrador Resort and Leisure Farm</strong> can turn your special moments into timeless stories. Because here, every celebration is more than a day — it's an experience to remember.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
 
 
   <!-- Modal for Image Popup -->
