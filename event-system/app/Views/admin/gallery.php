@@ -80,17 +80,19 @@
             <h6 class="m-0 font-weight-bold text-brown">Upload Venue Images</h6>
         </div>
         <div class="card-body">
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Select Venue</label>
-                    <select class="form-control" id="venueSelect" required>
-                        <option value="">Choose a venue...</option>
-                        <?php foreach ($venues as $venue): ?>
-                            <option value="<?= $venue['id'] ?>"><?= esc($venue['name']) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-            </div>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label" for="venueSelect">Select Venue</label>
+            <select class="form-select" id="venueSelect" required>
+                <option value="" selected disabled>Choose a venue</option>
+                <?php foreach ($venues as $venue): ?>
+                    <option value="<?= $venue['id'] ?>"><?= esc($venue['name']) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+    </div>
+</div>
+
 
             <div class="upload-area border-dashed rounded p-4 text-center mb-3" 
                  id="uploadArea" 
