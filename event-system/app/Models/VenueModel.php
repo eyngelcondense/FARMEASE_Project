@@ -16,8 +16,6 @@ class VenueModel extends Model
         'name', 'description', 'image_url', 'status', 'created_at', 'updated_at'
     ];
 
-    protected bool $allowEmptyInserts = false;
-
     // Dates
     protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
@@ -25,27 +23,26 @@ class VenueModel extends Model
     protected $updatedField  = 'updated_at';
 
     // Validation
-    protected $validationRules      = [
-        'name'     => 'required|max_length[255]',
-        'status'   => 'required|in_list[active,inactive]'
+    protected $validationRules = [
+        'name'   => 'required|max_length[255]',
+        'status' => 'required|in_list[active,inactive]'
     ];
-    protected $validationMessages   = [];
-    protected $skipValidation       = false;
-    protected $cleanValidationRules = true;
 
     /**
-     * Get active venues
+     * Get all active venues
      */
-    public function getActiveVenues()
+    public function getAllActiveVenues()
     {
         return $this->where('status', 'active')->findAll();
     }
 
     /**
      * Get venues available for a specific date
+     * (You can add your booking availability logic here)
      */
     public function getAvailableVenues($date)
     {
+        // Example: filter by active status; extend later for booked dates
         return $this->where('status', 'active')->findAll();
     }
 }

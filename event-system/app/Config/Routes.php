@@ -186,4 +186,5 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->get('admin/contracts/download/(:num)', 'AdminContractsController::download/$1');
     $routes->post('admin/contracts/upload-signed/(:num)', 'AdminContractsController::uploadSigned/$1');
     $routes->post('admin/contracts/send_debug/(:num)', 'AdminContractsController::send_debug/$1');
+    
 });
