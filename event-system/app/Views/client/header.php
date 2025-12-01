@@ -217,14 +217,14 @@
         <li class="nav-item">
           <a class="nav-link <?= (uri_string() == 'gallery') ? 'active' : '' ?>" href="<?= site_url('gallery') ?>">VENUE GALLERY</a>
         </li>
-        <li class="nav-item">
-        <a class="nav-link <?= (uri_string() == 'testimonials') ? 'active' : '' ?>" href="<?= site_url('testimonials') ?>">TESTIMONIALS</a>
-      </li>
       <li class="nav-item"><a class="nav-link <?= (uri_string() == 'bookings') ? 'active' : '' ?>" href="<?= site_url('bookings') ?>">BOOK EVENTS</a>
       </li>
       <li class="nav-item"><a class="nav-link <?= (uri_string() == 'booking_history') ? 'active' : '' ?>" href="<?= site_url('booking_history') ?>">MY BOOKINGS</a> 
       </li>
       <li class="nav-item"><a class="nav-link <?= (uri_string() == 'client/contracts') ? 'active' : '' ?>" href="<?= site_url('client/contracts') ?>">MY CONTRACTS</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <?= (uri_string() == 'testimonials') ? 'active' : '' ?>" href="<?= site_url('testimonials') ?>">TESTIMONIALS</a>
       </li>
       </ul>
     </div>
