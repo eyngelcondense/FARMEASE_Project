@@ -144,6 +144,25 @@ td {
         <span class="badge bg-warning text-dark"><?= count($pending_feedback) ?> Pending</span>
     </h4>
 
+    <div class="row mb-3">
+    <div class="col-md-6">
+        <label class="form-label">Search</label>
+        <input type="text" class="form-control" id="searchInput" placeholder="Search feedback...">
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Filter by Rating</label>
+        <select class="form-select" id="ratingFilter">
+            <option value="all" selected>All Ratings</option>
+            <option value="5">5(★★★★★)</option>
+            <option value="4">4(★★★★)</option>
+            <option value="3">3(★★★)</option>
+            <option value="2">2(★★)</option>
+            <option value="1">1(★)</option>
+        </select>
+    </div>
+</div>
+
+
     <div class="table-responsive mt-3">
         <table id="pendingTable" class="table table-bordered">
             <thead class="table-light">
@@ -160,7 +179,7 @@ td {
                 <?php foreach ($pending_feedback as $fb): ?>
                 <tr>
                     <td><?= esc($fb['client_name'] ?? 'Unknown') ?></td>
-                    <td><?= $fb['rating'] ?> ★</td>
+                    <td><?= $fb['rating'] ?> </td>
                     <td><?= esc(character_limiter($fb['comments'], 120)) ?></td>
                     <td><?= esc($fb['client_email']) ?></td>
                     <td><?= date('F j, Y', strtotime($fb['created_at'])) ?></td>
@@ -198,7 +217,7 @@ td {
                 <?php foreach ($approved_feedback as $fb): ?>
                 <tr>
                     <td><?= esc($fb['client_name']) ?></td>
-                    <td><?= $fb['rating'] ?> ★</td>
+                    <td><?= $fb['rating'] ?> </td>
                     <td><?= esc(character_limiter($fb['comments'], 120)) ?></td>
                     <td><?= esc($fb['client_email']) ?></td>
                     <td><?= date('F j, Y', strtotime($fb['created_at'])) ?></td>
@@ -210,6 +229,7 @@ td {
             </tbody>
         </table>
     </div>
+
 
 
 
@@ -235,7 +255,7 @@ td {
                 <?php foreach ($rejected_feedback as $fb): ?>
                 <tr>
                     <td><?= esc($fb['client_name']) ?></td>
-                    <td><?= $fb['rating'] ?> ★</td>
+                    <td><?= $fb['rating'] ?> </td>
                     <td><?= esc(character_limiter($fb['comments'], 120)) ?></td>
                     <td><?= esc($fb['client_email']) ?></td>
                     <td><?= date('F j, Y', strtotime($fb['created_at'])) ?></td>
@@ -314,3 +334,43 @@ td {
 </script>
 
 <?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+$(document).ready(function() {
+    const pendingTable = $('#pendingTable').DataTable();
+    const approvedTable = $('#approvedTable').DataTable();
+    const rejectedTable = $('#rejectedTable').DataTable();
+
+    // Search filter
+    $('#searchInput').on('keyup', function() {
+        const val = $(this).val();
+        pendingTable.search(val).draw();
+        approvedTable.search(val).draw();
+        rejectedTable.search(val).draw();
+    });
+
+    // Rating filter
+    $('#ratingFilter').on('change', function() {
+        const rating = $(this).val();
+
+        function filterByRating(table) {
+            table.rows().every(function() {
+                const rowData = this.data();
+                const rowRating = $(rowData[1]).text() || rowData[1]; // column 1 = Rating
+                if (rating === 'all' || rowRating == rating) {
+                    $(this.node()).show();
+                } else {
+                    $(this.node()).hide();
+                }
+            });
+        }
+
+        filterByRating(pendingTable);
+        filterByRating(approvedTable);
+        filterByRating(rejectedTable);
+    });
+});
+</script>
+<?= $this->endSection() ?>
+
