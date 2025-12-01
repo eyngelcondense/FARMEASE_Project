@@ -142,7 +142,8 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->post('venues/store', 'VenueController::store');
     $routes->get('venues/edit/(:num)', 'VenueController::edit/$1');
     $routes->post('venues/update/(:num)', 'VenueController::update/$1');
-    $routes->get('venues/delete/(:num)', 'VenueController::delete/$1');
+    $routes->post('venues/deactivate/(:num)', 'VenueController::deactivate/$1');
+    $routes->post('venues/activate/(:num)', 'VenueController::activate/$1');
     $routes->post('venues/upload-image', 'VenueController::uploadImage');
 
     $routes->get('packages-view', 'PackageController::index');

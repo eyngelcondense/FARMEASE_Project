@@ -87,7 +87,9 @@
         </a>
     </div>
 
-    <!-- Venues Grid -->
+    <h2> Active Venues </h2>
+
+    <!-- Active Venues Grid -->
     <div class="row">
         <?php foreach ($venues as $venue): ?>
         <div class="col-xl-4 col-md-6 mb-4">
@@ -123,10 +125,75 @@
                                     <i class="fas fa-edit"></i> Edit
                                 </a>
                                 <a href="#" 
-                                   class="btn btn-sm btn-outline-danger delete-venue" 
+                                   class="btn btn-sm btn-outline-danger deactivate-venue" 
                                    data-id="<?= $venue['id'] ?>" 
                                    data-name="<?= $venue['name'] ?>">
-                                    <i class="fas fa-trash"></i> Delete
+                                    <i class="fas fa-power-off"></i> Deactivate
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php endforeach; ?>
+
+        <?php if (empty($venues)): ?>
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-building fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">No Venues Found</h4>
+                <p class="text-muted">Get started by adding your first venue.</p>
+                <a href="<?= site_url('venues/create') ?>" class="btn btn-brown">
+                    <i class="fas fa-plus"></i> Add First Venue
+                </a>
+            </div>
+        </div>
+        <?php endif; ?>
+    </div>
+
+    <h2> Inactive Venues </h2>
+
+    <!-- Inactive Venues Grid -->
+    <div class="row">
+        <?php foreach ($inactive_venues as $venue): ?>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                <?= $venue['name'] ?>
+                                <span class="badge badge-<?= $venue['status'] == 'active' ? 'success' : 'secondary' ?>">
+                                    <?= ucfirst($venue['status']) ?>
+                                </span>
+                            </div>
+                            <div class="mb-2">
+                                <?php if ($venue['image_url']): ?>
+                                    <img src="<?= base_url('images/' . $venue['image_url']) ?>" 
+                                         alt="<?= $venue['name'] ?>" 
+                                         class="img-fluid rounded mb-2" 
+                                         style="max-height: 150px; width: 100%; object-fit: cover;">
+                                <?php else: ?>
+                                    <div class="bg-light rounded d-flex align-items-center justify-content-center mb-2" 
+                                         style="height: 150px;">
+                                        <i class="fas fa-image fa-2x text-muted"></i>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="text-sm mb-3 text-gray-600">
+                                <?= strlen($venue['description']) > 100 ? substr($venue['description'], 0, 100) . '...' : $venue['description'] ?>
+                            </div>
+                            <div class="btn-group">
+                                <a href="<?= site_url('venues/edit/' . $venue['id']) ?>" 
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <a href="#" 
+                                   class="btn btn-sm btn-outline-success activate-venue" 
+                                   data-id="<?= $venue['id'] ?>" 
+                                   data-name="<?= $venue['name'] ?>">
+                                    <i class="fas fa-power-off"></i> Reactivate
                                 </a>
                             </div>
                         </div>
@@ -188,29 +255,31 @@
 <?php endif; ?>
 
 // Delete confirmation with SweetAlert
-document.querySelectorAll('.delete-venue').forEach(button => {
+document.querySelectorAll('.deactivate-venue').forEach(button => {
+    button.addEventListener('click', function(e) {
+        e.preventDefault();
+        const venueId = this.getAttribute('data-id');
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `<?= site_url('venues/deactivate/') ?>${venueId}`;
+        form.style.display = 'none';
+        document.body.appendChild(form);
+        form.submit();
+    }); 
+});
+
+// Activate confirmation with SweetAlert
+document.querySelectorAll('.activate-venue').forEach(button => {
     button.addEventListener('click', function(e) {
         e.preventDefault();
         
         const venueId = this.getAttribute('data-id');
-        const venueName = this.getAttribute('data-name');
-        
-        Swal.fire({
-            title: 'Are you sure?',
-            text: `You are about to delete "${venueName}". This action cannot be undone!`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#b55b33',
-            cancelButtonColor: '#7a4b2a',
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'Cancel',
-            background: '#fff7f0',
-            color: '#5c3a21'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = `<?= site_url('venues/delete/') ?>${venueId}`;
-            }
-        });
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `<?= site_url('venues/activate/') ?>${venueId}`;
+        form.style.display = 'none';
+        document.body.appendChild(form);
+        form.submit();
     });
 });
 </script>

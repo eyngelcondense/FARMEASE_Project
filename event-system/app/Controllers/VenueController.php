@@ -19,8 +19,9 @@ class VenueController extends BaseController
         helper('text');
         $data = [
             'title' => 'Manage Venues',
-            'venues' => $this->venueModel->findAll(),
-            'current_page' => 'venues'
+            'venues' => $this->venueModel->getAllActiveVenues(),
+            'current_page' => 'venues',
+            'inactive_venues' => $this->venueModel->getInactiveVenues()
         ];
         
         return view('admin/venues/index', $data);
@@ -145,10 +146,10 @@ class VenueController extends BaseController
         return view('admin/venues/edit', $data);
     }
 
-    public function delete($id)
+    public function deactivate($id)
     {
         // Check request method
-        if (!$this->request->is('delete') && !$this->request->is('post')) {
+        if (!$this->request->is('post')) {
             return redirect()->back()->with('error', 'Invalid request method!');
         }
 
@@ -158,19 +159,17 @@ class VenueController extends BaseController
         }
 
         try {
-            // Delete image file if exists
-            if ($venue['image_url'] && file_exists(FCPATH . 'public/images/' . $venue['image_url'])) {
-                if (!unlink(FCPATH . 'public/images/' . $venue['image_url'])) {
-                    log_message('error', 'Failed to delete image file: ' . $venue['image_url']);
-                }
+            // Update status to 'inactive'
+            $updateData = [
+                'status' => 'inactive',
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
+
+            if (!$this->venueModel->update($id, $updateData)) {
+                throw new \Exception('Failed to deactivate venue');
             }
 
-            // Delete venue record
-            if (!$this->venueModel->delete($id)) {
-                throw new \Exception('Failed to delete venue from database');
-            }
-
-            return redirect()->to('/venues')->with('success', 'Venue deleted successfully!');
+            return redirect()->to('/venues')->with('success', 'Venue deactivated successfully!');
             
         } catch (\Exception $e) {
             log_message('error', 'Venue deletion error: ' . $e->getMessage());
@@ -194,4 +193,12 @@ class VenueController extends BaseController
         
         return view('admin/venues/show', $data);
     }
+
+    public function activate($id)
+    {
+        $this->venueModel->update($id, ['status' => 'active']);
+        return redirect()->to('/venues')->with('success', 'Venue activated successfully!');
+    }
+
+
 }
