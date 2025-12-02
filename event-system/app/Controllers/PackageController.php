@@ -30,7 +30,7 @@ class PackageController extends BaseController
     {
         $data = [
             'title' => 'Create Package',
-            'venues' => $this->venueModel->getActiveVenues(),
+            'venues' => $this->venueModel->getAllActiveVenues(),
             'validation' => \Config\Services::validation()
         ];
 
