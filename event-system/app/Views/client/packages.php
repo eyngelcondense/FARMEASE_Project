@@ -489,26 +489,26 @@
     let allPackages = [];
 
     // Fetch packages and venues from API
-    async function loadPackagesData() {
-      try {
-        console.log('Loading packages data...');
-        const response = await fetch('<?= site_url('api/packages/getPackagesWithVenues') ?>');
-        const data = await response.json();
+    // async function loadPackagesData() {
+    //   try {
+    //     console.log('Loading packages data...');
+    //     const response = await fetch('<?= site_url('api/packages/getPackagesWithVenues') ?>');
+    //     const data = await response.json();
         
-        console.log('API Response:', data);
+    //     console.log('API Response:', data);
         
-        if (data.success) {
-          allPackages = data.data;
-          console.log('Packages loaded:', allPackages);
-          renderPackageSections();
-        } else {
-          showError('Failed to load packages data: ' + (data.message || 'Unknown error'));
-        }
-      } catch (error) {
-        console.error('Error loading packages:', error);
-        showError('Failed to load packages. Please try again later. Error: ' + error.message);
-      }
-    }
+    //     if (data.success) {
+    //       allPackages = data.data;
+    //       console.log('Packages loaded:', allPackages);
+    //       renderPackageSections();
+    //     } else {
+    //       showError('Failed to load packages data: ' + (data.message || 'Unknown error'));
+    //     }
+    //   } catch (error) {
+    //     console.error('Error loading packages:', error);
+    //     showError('Failed to load packages. Please try again later. Error: ' + error.message);
+    //   }
+    // }
 
     // Render package sections
     function renderPackageSections() {
