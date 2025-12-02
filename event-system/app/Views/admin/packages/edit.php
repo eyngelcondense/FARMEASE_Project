@@ -146,10 +146,10 @@
                                 </div>
 
                                 <div class="form-group mt-4">
-                                    <button type="submit" class="btn btn-primary btn-lg">
+                                    <button type="submit" class="btn btn-brown btn-lg">
                                         <i class="fas fa-save"></i> Update Package
                                     </button>
-                                    <a href="<?= site_url('packages-view')?>" class="btn btn-secondary">Cancel</a>
+                                    <a href="<?= site_url('packages-view')?>" class="btn btn-brown">Cancel</a>
                                 </div>
                             </form>
                         </div>
@@ -161,6 +161,22 @@
 </div>
 
 <script>
+
+document.querySelectorAll('.btn-edit-theme').forEach(button => {
+    button.addEventListener('click', function(e) {
+        e.preventDefault();
+        const packageId = this.getAttribute('data-id');
+        window.location.href = `<?= site_url('packages/edit/') ?>${packageId}`;
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `<?= site_url('packages/edit/') ?>${packageId}`;
+        form.style.display = 'none';
+        document.body.appendChild(form);
+        form.submit();
+        window.location.href = `<?= site_url('packages/edit/') ?>${packageId}`;
+    });
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     const selectAllCheckbox = document.getElementById('selectAllVenues');
     const venueCheckboxes = document.querySelectorAll('.venue-checkbox');
@@ -221,6 +237,26 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize
     updateSelectAllState();
     updatePrimaryVenueOptions();
+
+
+});
+
+document.querySelectorAll('.activate-venue').forEach(button => {
+    button.addEventListener('click', function(e) {
+        e.preventDefault();
+        const packageId = this.getAttribute('data-id');
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `<?= site_url('packages/activate/') ?>${packageId}`;
+    });
+});
+
+document.querySelectorAll('.deactivate-venue').forEach(button => {
+    button.addEventListener('click', function(e) {
+        e.preventDefault();
+        const packageId = this.getAttribute('data-id');
+        const form = document.createElement('form');
+    });
 });
 </script>
 <?= $this->endSection(); ?>

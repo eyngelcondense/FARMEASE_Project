@@ -92,7 +92,8 @@ class PackageController extends BaseController
             'package' => $package,
             'packageVenues' => $packageVenues,
             'venues' => $this->venueModel->getAllActiveVenues(),
-            'validation' => \Config\Services::validation()
+            'validation' => \Config\Services::validation(),
+            'current_page' => 'pack'
         ];
 
         return view('admin/packages/edit', $data);
@@ -100,6 +101,9 @@ class PackageController extends BaseController
 
     public function update($id)
     {
+        log_message('info', 'Update method called for package ID: ' . $id);
+        log_message('info', 'POST data: ' . print_r($this->request->getPost(), true));
+        
         $validationRules = [
             'name' => 'required|max_length[255]',
             'description' => 'permit_empty',
@@ -110,8 +114,9 @@ class PackageController extends BaseController
             'venues' => 'required',
             'primary_venue' => 'required'
         ];
-
+    
         if (!$this->validate($validationRules)) {
+            log_message('error', 'Validation failed: ' . print_r($this->validator->getErrors(), true));
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
@@ -130,7 +135,7 @@ class PackageController extends BaseController
         $success = $this->packageModel->updatePackageWithVenues($id, $packageData, $venueIds, $primaryVenueId);
 
         if ($success) {
-            return redirect()->to('/admin/packages')->with('success', 'Package updated successfully!');
+            return redirect()->to(site_url('packages-view'))->with('success', 'Package updated successfully!');
         } else {
             return redirect()->back()->withInput()->with('error', 'Failed to update package.');
         }

@@ -214,9 +214,9 @@
         <li class="nav-item">
           <a class="nav-link <?= (uri_string() == 'packages') ? 'active' : '' ?>" href="<?= site_url('packages') ?>">PACKAGE VENUES</a>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a class="nav-link <?= (uri_string() == 'gallery') ? 'active' : '' ?>" href="<?= site_url('gallery') ?>">VENUE GALLERY</a>
-        </li>
+        </li> -->
       <li class="nav-item"><a class="nav-link <?= (uri_string() == 'bookings') ? 'active' : '' ?>" href="<?= site_url('bookings') ?>">BOOK EVENTS</a>
       </li>
       <li class="nav-item"><a class="nav-link <?= (uri_string() == 'booking_history') ? 'active' : '' ?>" href="<?= site_url('booking_history') ?>">MY BOOKINGS</a> 
