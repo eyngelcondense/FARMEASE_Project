@@ -228,7 +228,7 @@
 
   <!-- Filter Buttons -->
   <section class="filter-section">
-    <button class="filter-btn active" onclick="filterGallery('all')">All</button>
+    <button class="filter-btn active" onclick="filterVenue('all', this)">All</button>
   </section>
 
   <!-- Venue Sections will be dynamically loaded here -->
@@ -325,12 +325,11 @@
           <div class="venue-grid">
             ${venue.images.map((img, i) => `
               <div class="venue-grid-item" data-name="${venue.name}" onclick="openModal(${venueIndex}, ${i})">
-                <img src="${img.path}" alt="${venue.name}">
+                <img src="${base_url(img.path)}" alt="${venue.name}">
               </div>
             `).join('')}
           </div>
         `;
-
         container.appendChild(section);
       });
     }

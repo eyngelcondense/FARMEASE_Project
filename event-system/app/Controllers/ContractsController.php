@@ -72,9 +72,23 @@ class ContractsController extends BaseController
 
     public function view($id)
     {
-        $clientId = session()->get('client_id') ?? 1;
+        $session = session();
+        $userData = $session->get('user');
+        $userId = $userData['id'] ?? null;
+
+        if (!$userId) {
+            return redirect()->to('/login')->with('error', 'Please login to view contracts.');
+        }
+
+        // Get client ID using user_id
+        $clientModel = new \App\Models\ClientModel();
+        $client = $clientModel->where('user_id', $userId)->first();
         
-        $contract = $this->contractModel->getContractForClient($id, $clientId);
+        if (!$client) {
+            return redirect()->to('/login')->with('error', 'Client profile not found. Please contact support.');
+        }
+        
+        $contract = $this->contractModel->getContractForClient($id, $client['id']);
         
         if (!$contract) {
             return redirect()->back()->with('error', 'Contract not found or access denied.');
@@ -82,15 +96,31 @@ class ContractsController extends BaseController
 
         return view('client/contracts/view', [
             'contract' => $contract,
-            'title' => 'View Contract - ' . $contract['contract_number']
+            'title' => 'View Contract - ' . $contract['contract_number'],
+            'user' => $userData,
+            'client' => $client
         ]);
     }
 
     public function download($id)
     {
-        $clientId = session()->get('client_id') ?? 1;
+        $session = session();
+        $userData = $session->get('user');
+        $userId = $userData['id'] ?? null;
+
+        if (!$userId) {
+            return redirect()->to('/login')->with('error', 'Please login to download contracts.');
+        }
+
+        // Get client ID using user_id
+        $clientModel = new \App\Models\ClientModel();
+        $client = $clientModel->where('user_id', $userId)->first();
         
-        $contract = $this->contractModel->getContractForClient($id, $clientId);
+        if (!$client) {
+            return redirect()->to('/login')->with('error', 'Client profile not found. Please contact support.');
+        }
+        
+        $contract = $this->contractModel->getContractForClient($id, $client['id']);
         
         if (!$contract) {
             return redirect()->back()->with('error', 'Contract not found or access denied.');
@@ -162,9 +192,23 @@ class ContractsController extends BaseController
 
     public function sign($id)
     {
-        $clientId = session()->get('client_id') ?? 1;
+        $session = session();
+        $userData = $session->get('user');
+        $userId = $userData['id'] ?? null;
+
+        if (!$userId) {
+            return redirect()->to('/login')->with('error', 'Please login to sign contracts.');
+        }
+
+        // Get client ID using user_id
+        $clientModel = new \App\Models\ClientModel();
+        $client = $clientModel->where('user_id', $userId)->first();
         
-        $contract = $this->contractModel->getContractForClient($id, $clientId);
+        if (!$client) {
+            return redirect()->to('/login')->with('error', 'Client profile not found. Please contact support.');
+        }
+        
+        $contract = $this->contractModel->getContractForClient($id, $client['id']);
         
         if (!$contract) {
             return redirect()->back()->with('error', 'Contract not found or access denied.');
@@ -180,7 +224,9 @@ class ContractsController extends BaseController
 
         return view('client/contracts/sign', [
             'contract' => $contract,
-            'title' => 'Sign Contract - ' . $contract['contract_number']
+            'title' => 'Sign Contract - ' . $contract['contract_number'],
+            'user' => $userData,
+            'client' => $client
         ]);
     }
 }
