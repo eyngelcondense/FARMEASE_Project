@@ -22,7 +22,6 @@ class PaymentModel extends Model
         'payment_method', 
         'payment_type', // ADDED: down_payment or full_payment
         'payment_date', 
-        'receipt_image',
         'status', 
         'verified_by', 
         'verified_at', 

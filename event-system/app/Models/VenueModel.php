@@ -45,4 +45,9 @@ class VenueModel extends Model
         // Example: filter by active status; extend later for booked dates
         return $this->where('status', 'active')->findAll();
     }
+
+    public function getInactiveVenues()
+    {
+        return $this->where('status', 'inactive')->findAll();
+    }
 }

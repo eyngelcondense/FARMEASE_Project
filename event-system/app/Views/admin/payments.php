@@ -507,8 +507,7 @@
 $(document).ready(function() {
     // Initialize DataTable
     var table = $('#paymentsTable').DataTable({
-        "order": [[5, "desc"]], // sort by date descending
-        "responsive": true,
+        "order": [[5, "desc"]],
         "language": {
             "emptyTable": "No payments found",
             "search": "Search:",

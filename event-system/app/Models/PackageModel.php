@@ -62,32 +62,41 @@ class PackageModel extends Model
 
     public function updatePackageWithVenues($packageId, $packageData, $venueIds, $primaryVenueId = null)
     {
-        $this->db->transStart();
+        $db = \Config\Database::connect();
+        $db->transStart();
 
-        // Update package
-        $this->update($packageId, $packageData);
+        try {
+            // Update package
+            $this->update($packageId, $packageData);
 
-        // Remove existing venue relationships
-        $packageVenueModel = new PackageVenueModel();
-        $packageVenueModel->where('package_id', $packageId)->delete();
+            // Remove existing venue relationships
+            $db->table('package_venues')->where('package_id', $packageId)->delete();
 
-        // Add new venue relationships
-        if (!empty($venueIds)) {
-            foreach ($venueIds as $venueId) {
-                $isPrimary = ($venueId == $primaryVenueId) ? 1 : 0;
+            // Add new venue relationships
+            if (!empty($venueIds)) {
+                $packageVenues = [];
+                foreach ($venueIds as $venueId) {
+                    $packageVenues[] = [
+                        'package_id' => $packageId,
+                        'venue_id' => $venueId,
+                        'is_primary' => ($venueId == $primaryVenueId) ? 1 : 0,
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'updated_at' => date('Y-m-d H:i:s')
+                    ];
+                }
                 
-                $packageVenueModel->insert([
-                    'package_id' => $packageId,
-                    'venue_id' => $venueId,
-                    'is_primary' => $isPrimary,
-                    'created_at' => date('Y-m-d H:i:s'),
-                    'updated_at' => date('Y-m-d H:i:s')
-                ]);
+                if (!empty($packageVenues)) {
+                    $db->table('package_venues')->insertBatch($packageVenues);
+                }
             }
-        }
 
-        $this->db->transComplete();
-        return $this->db->transStatus();
+            $db->transComplete();
+            return $db->transStatus();
+        } catch (\Exception $e) {
+            $db->transRollback();
+            log_message('error', 'Failed to update package: ' . $e->getMessage());
+            return false;
+        }
     }
 
     public function getPackageVenues($packageId)

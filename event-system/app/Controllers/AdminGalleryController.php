@@ -76,12 +76,14 @@ class AdminGalleryController extends BaseController
                 // Upload file
                 $newName = $image->getRandomName();
                 $uploadPath = 'uploads/venues/gallery/';
+                $fullUploadPath = FCPATH . $uploadPath;
 
-                if (!is_dir(FCPATH . 'public/' . $uploadPath)) {
-                    mkdir(FCPATH . 'public/' . $uploadPath, 0755, true);
+                // Create directory if it doesn't exist
+                if (!is_dir($fullUploadPath)) {
+                    mkdir($fullUploadPath, 0755, true);
                 }
 
-                if ($image->move(FCPATH . 'public/' . $uploadPath, $newName)) {
+                if ($image->move($fullUploadPath, $newName)) {
                     $imageData = [
                         'venue_id' => $venueId,
                         'image_path' => $uploadPath . $newName,
@@ -92,7 +94,7 @@ class AdminGalleryController extends BaseController
                         $uploadedCount++;
                     } else {
                         $errors[] = "Failed to save {$image->getName()}";
-                        unlink(FCPATH . 'public/' . $uploadPath . $newName);
+                        unlink($fullUploadPath . $newName);
                     }
                 } else {
                     $errors[] = "Failed to upload {$image->getName()}";

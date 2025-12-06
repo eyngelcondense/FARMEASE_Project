@@ -91,7 +91,7 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon">
-                        <i class="fas fa-dollar-sign"></i>
+                        <i class="fas fa-peso-sign"></i>
                     </div>
                     <div class="stat-info">
                         <h3>Revenue</h3>
