@@ -355,28 +355,306 @@
         font-size: 12px;
         margin: 2px;
     }
-    .carousel-controls {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        margin-top: 20px;
+    /* ==================== IMPROVED CAROUSEL STYLES ==================== */
+
+.package-carousel-improved {
+    background: linear-gradient(135deg, #f8f6f3 0%, #ffffff 100%);
+    border-radius: 15px;
+    padding: 30px 15px;
+    margin: 30px 0;
+    border: 1px solid #e8e3da;
+    box-shadow: 0 8px 25px rgba(124, 106, 67, 0.1);
+}
+
+.carousel-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.carousel-header h3 {
+    color: #3b2a18;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.carousel-header p {
+    color: #666;
+    font-size: 13px;
+}
+
+.scroll-hint {
+    text-align: center;
+    color: #999;
+    font-size: 12px;
+    margin-bottom: 15px;
+}
+
+.carousel-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.carousel-track {
+    display: flex;
+    gap: 20px;
+    scroll-behavior: smooth;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    padding: 10px 0;
+}
+
+.carousel-track::-webkit-scrollbar {
+    height: 8px;
+}
+
+.carousel-track::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 10px;
+}
+
+.carousel-track::-webkit-scrollbar-thumb {
+    background: #7c6a43;
+    border-radius: 10px;
+}
+
+.carousel-track::-webkit-scrollbar-thumb:hover {
+    background: #5a4a3a;
+}
+
+.package-card-carousel {
+    flex: 0 0 calc(33.333% - 14px);
+    min-width: 280px;
+    scroll-snap-align: center;
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    border: 2px solid #e8e3da;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.package-card-carousel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+}
+
+.package-card-carousel:hover::before {
+    left: 100%;
+}
+
+.package-card-carousel:hover {
+    border-color: #7c6a43;
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(124, 106, 67, 0.25);
+}
+
+.package-card-carousel.selected {
+    border: 3px solid #7c6a43;
+    background: linear-gradient(135deg, #f8f6f3 0%, #ffffff 100%);
+    box-shadow: 0 15px 40px rgba(124, 106, 67, 0.3);
+}
+
+.package-card-carousel.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: #7c6a43;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.package-badge {
+    display: inline-block;
+    background: #7c6a43;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.package-name-carousel {
+    font-size: 20px;
+    font-weight: bold;
+    color: #3b2a18;
+    margin-bottom: 12px;
+    padding-right: 20px;
+}
+
+.package-price-carousel {
+    font-size: 28px;
+    font-weight: bold;
+    color: #7c6a43;
+    margin-bottom: 15px;
+}
+
+.package-details-carousel {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 15px;
+    padding-left: 15px;
+    line-height: 1.8;
+}
+
+.package-details-carousel li {
+    margin-bottom: 8px;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.package-details-carousel li::before {
+    content: '✓';
+    color: #7c6a43;
+    font-weight: bold;
+    min-width: 16px;
+}
+
+.package-venues-carousel {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e8e3da;
+}
+
+.package-venues-carousel strong {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #3b2a18;
+}
+
+.venue-tag-carousel {
+    display: inline-block;
+    background: linear-gradient(135deg, #7c6a43 0%, #5a4a3a 100%);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 11px;
+    margin: 3px 3px 3px 0;
+    font-weight: 500;
+}
+
+.select-btn-carousel {
+    margin-top: 15px;
+    width: 100%;
+    padding: 10px;
+    background: #7c6a43;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 13px;
+}
+
+.select-btn-carousel:hover {
+    background: #5a4a3a;
+    transform: translateY(-2px);
+}
+
+.package-card-carousel.selected .select-btn-carousel {
+    background: #3b2a18;
+}
+
+.carousel-indicators-improved {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ddd;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.indicator.active {
+    background: #7c6a43;
+    width: 24px;
+    border-radius: 4px;
+}
+
+.carousel-controls-improved {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.carousel-btn-improved {
+    background: #7c6a43;
+    color: white;
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 4px 12px rgba(124, 106, 67, 0.2);
+}
+
+.carousel-btn-improved:hover {
+    background: #5a4a3a;
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(124, 106, 67, 0.3);
+}
+
+.carousel-btn-improved:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: scale(1);
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .package-card-carousel {
+        flex: 0 0 calc(50% - 10px);
+        min-width: 250px;
     }
-    .carousel-btn {
-        background: #7c6a43;
-        color: white;
-        border: none;
-        padding: 10px 15px;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: all 0.3s;
+}
+
+@media (max-width: 576px) {
+    .package-card-carousel {
+        flex: 0 0 calc(100% - 10px);
+        min-width: 100%;
     }
-    .carousel-btn:hover {
-        background: #3b2a18;
+
+    .package-carousel-improved {
+        padding: 20px 10px;
     }
-    .carousel-btn:disabled {
-        background: #ccc;
-        cursor: not-allowed;
-    }
+}
     .time-slots-container {
     max-height: 200px;
     overflow-y: auto;
@@ -547,49 +825,67 @@
             </div>
 
             <!-- PACKAGE CAROUSEL -->
-            <div class="package-carousel">
-                <h3 class="text-center mb-4" style="color: #3b2a18; font-weight: bold;">Available Packages</h3>
-                <div class="row" id="package-carousel">
-                    <?php foreach ($packages as $index => $package): ?>
-                        <div class="col-md-4">
-                            <div class="package-card <?= $index === 0 ? 'selected' : '' ?>" 
-                                data-package-id="<?= $package['id'] ?>"
-                                onclick="selectPackage(this, <?= $package['id'] ?>)">
-                                <div class="package-name"><?= esc($package['name']) ?></div>
-                                <div class="package-price">₱<?= number_format($package['base_price'], 2) ?></div>
-                                <div class="package-details">
-                                    <ul style="padding-left: 15px; margin-bottom: 0;">
-                                        <li><strong><?= $package['base_hours'] ?> hours</strong> base duration</li>
-                                        <li><strong>₱<?= number_format($package['overtime_rate'], 2) ?>/hour</strong> overtime rate</li>
-                                        <li>Up to <strong><?= $package['max_capacity'] ?> guests</strong> capacity</li>
-                                    </ul>
-                                </div>
-                                <?php if (!empty($package['venue_names'])): ?>
-                                    <div class="package-venues">
-                                        <strong>Includes:</strong><br>
-                                        <?php 
-                                        $venueNames = explode(',', $package['venue_names']);
-                                        foreach ($venueNames as $venueName): 
-                                        ?>
-                                            <span class="venue-tag"><?= esc(trim($venueName)) ?></span>
-                                        <?php endforeach; ?>
-                                    </div>
-                                <?php endif; ?>
-                                <div class="text-center mt-3">
-                                    <small class="text-muted">Click to select this package</small>
-                                </div>
-                            </div>
+<div class="package-carousel-improved">
+    <div class="carousel-header">
+        <h3 style="color: #3b2a18; font-weight: bold; font-size: 22px; margin: 0 0 5px 0;">Available Packages</h3>
+        <p style="color: #666; font-size: 13px; margin: 0;">Select a package that best fits your event</p>
+    </div>
+
+    <div class="scroll-hint">
+        <i class="fas fa-arrow-right"></i> Scroll or use arrow buttons to browse
+    </div>
+
+    <div class="carousel-container">
+        <div class="carousel-track" id="carouselTrack">
+            <?php foreach ($packages as $index => $package): ?>
+                <div class="package-card-carousel <?= $index === 0 ? 'selected' : '' ?>" 
+                    data-package-id="<?= $package['id'] ?>"
+                    onclick="selectPackage(this, <?= $package['id'] ?>)">
+                    
+                    <div class="package-badge">Package</div>
+                    <div class="package-name-carousel"><?= esc($package['name']) ?></div>
+                    <div class="package-price-carousel">
+                        <span>₱</span><?= number_format($package['base_price'], 2) ?>
+                    </div>
+
+                    <ul class="package-details-carousel">
+                        <li><strong><?= $package['base_hours'] ?></strong> hours base duration</li>
+                        <li><strong>₱<?= number_format($package['overtime_rate'], 2) ?></strong>/hour overtime</li>
+                        <li>Up to <strong><?= $package['max_capacity'] ?></strong> guests capacity</li>
+                    </ul>
+
+                    <?php if (!empty($package['venue_names'])): ?>
+                        <div class="package-venues-carousel">
+                            <strong>Included Venues:</strong>
+                            <?php 
+                            $venueNames = explode(',', $package['venue_names']);
+                            foreach ($venueNames as $venueName): 
+                            ?>
+                                <span class="venue-tag-carousel"><?= esc(trim($venueName)) ?></span>
+                            <?php endforeach; ?>
                         </div>
-                    <?php endforeach; ?>
+                    <?php endif; ?>
+
+                    <button class="select-btn-carousel" type="button">Select Package</button>
                 </div>
-                
-                <?php if (count($packages) > 3): ?>
-                <div class="carousel-controls">
-                    <button class="carousel-btn" onclick="scrollCarousel(-1)">◄ Previous</button>
-                    <button class="carousel-btn" onclick="scrollCarousel(1)">Next ►</button>
-                </div>
-                <?php endif; ?>
-            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+
+    <div class="carousel-indicators-improved" id="indicatorsContainer"></div>
+
+    <div class="carousel-controls-improved">
+        <button class="carousel-btn-improved" id="prevBtn" onclick="carouselPrevious()" type="button" title="Previous">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <span id="carouselCounter" style="color: #7c6a43; font-weight: bold; min-width: 70px; text-align: center;">
+            1 / <?= count($packages) > 3 ? count($packages) : count($packages) ?>
+        </span>
+        <button class="carousel-btn-improved" id="nextBtn" onclick="carouselNext()" type="button" title="Next">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+</div>
 
             <!-- BOOKING FORM -->
             <div class="inquiry-form mt-4">
@@ -672,7 +968,7 @@
                                 id="total_guests" value="<?= old('total_guests') ?>"
                                 placeholder="e.g., 50" min="1" required>
                             <div id="capacity-info" class="form-text">
-                                <small>Maximum capacity: <span id="max-capacity">--</span> guests</small>
+                                <small>Maximum capacity: <span id="max-capacity" value="<?= old('max-capacity') ?>">--</span> guests</small>
                             </div>
                             <div id="capacity-warning" class="text-danger small mt-1" style="display: none;">
                                 <i class="fas fa-exclamation-triangle"></i> 
@@ -1327,14 +1623,201 @@ document.addEventListener("DOMContentLoaded", function() {
         console.log('Addons being submitted:', selectedAddons);
     }
 
-    // Carousel scrolling function
-    function scrollCarousel(direction) {
-        const carousel = document.getElementById('package-carousel');
-        if (carousel) {
-            const scrollAmount = 300;
-            carousel.scrollLeft += direction * scrollAmount;
-        }
+    // Carousel scrolling function (kept for reference)
+function scrollCarousel(direction) {
+    const carousel = document.getElementById('package-carousel');
+    if (carousel) {
+        const scrollAmount = 300;
+        carousel.scrollLeft += direction * scrollAmount;
     }
+}
+
+// ==================== 1. PACKAGE SELECTION LOGIC (FINAL FIX) ====================
+function selectPackage(clickedCard, packageId) {
+    const carouselCards = document.querySelectorAll('.package-card-carousel');
+    const packageIdInput = document.getElementById('package_id');
+    const totalGuestsInput = document.getElementById('total_guests');
+    
+    // 1. Check if the clicked card is currently selected
+    // Note: We don't allow unselection in this implementation, clicking a selected card does nothing.
+    const isCurrentlySelected = clickedCard.classList.contains('selected');
+
+    if (isCurrentlySelected) {
+        return; 
+    }
+
+    // 2. Clear all previous selections
+    carouselCards.forEach(card => {
+        card.classList.remove('selected');
+        const btn = card.querySelector('.select-btn-carousel');
+        if (btn) btn.textContent = 'Select Package';
+    });
+
+    // 3. Select the new card
+    clickedCard.classList.add('selected');
+    packageIdInput.value = packageId;
+    clickedCard.querySelector('.select-btn-carousel').textContent = 'Package Selected';
+    
+}
+
+// ==================== 2. IMPROVED CAROUSEL FUNCTIONS (Unchanged) ====================
+
+let carouselCurrentIndex = 0; 
+
+function getCardsPerPage() {
+    if (window.innerWidth >= 992) return 3;
+    if (window.innerWidth >= 576) return 2;
+    return 1;
+}
+
+function updateCarouselIndicators() {
+    const track = document.getElementById('carouselTrack');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    if (!track) return;
+
+    const cards = track.querySelectorAll('.package-card-carousel');
+    const cardsPerPage = getCardsPerPage();
+    const totalPages = Math.ceil(cards.length / cardsPerPage);
+    
+    carouselCurrentIndex = Math.min(carouselCurrentIndex, totalPages - 1);
+    
+    const container = document.getElementById('indicatorsContainer');
+    if (container) {
+        container.innerHTML = Array.from({length: totalPages}, (_, i) => 
+            `<div class="indicator ${i === carouselCurrentIndex ? 'active' : ''}" 
+                 onclick="carouselScrollToPage(${i})"></div>`
+        ).join('');
+    }
+
+    if (prevBtn) prevBtn.disabled = carouselCurrentIndex === 0;
+    if (nextBtn) nextBtn.disabled = carouselCurrentIndex >= totalPages - 1;
+
+    updateCarouselCounter(totalPages);
+}
+
+function updateCarouselCounter(totalPages) {
+    const counter = document.getElementById('carouselCounter');
+    if (counter) {
+        const currentPage = Math.min(carouselCurrentIndex + 1, totalPages);
+        counter.textContent = `${currentPage} / ${totalPages}`;
+    }
+}
+
+function calculateScrollStep() {
+    const track = document.getElementById('carouselTrack');
+    const cards = track.querySelectorAll('.package-card-carousel');
+    if (cards.length === 0) return 0;
+
+    const trackStyle = window.getComputedStyle(track);
+    const gap = parseInt(trackStyle.getPropertyValue('gap')) || 20; 
+    
+    const cardWidth = cards[0].offsetWidth;
+    const cardsPerPage = getCardsPerPage();
+
+    return (cardWidth * cardsPerPage) + (gap * (cardsPerPage - 1));
+}
+
+function carouselNext() {
+    const track = document.getElementById('carouselTrack');
+    const cardsPerPage = getCardsPerPage();
+    const cards = track.querySelectorAll('.package-card-carousel');
+    const totalPages = Math.ceil(cards.length / cardsPerPage);
+
+    if (carouselCurrentIndex < totalPages - 1) {
+        carouselCurrentIndex++;
+        carouselScrollToPage(carouselCurrentIndex); 
+    }
+}
+
+function carouselPrevious() {
+    if (carouselCurrentIndex > 0) {
+        carouselCurrentIndex--;
+        carouselScrollToPage(carouselCurrentIndex);
+    }
+}
+
+function carouselScrollToPage(pageIndex) {
+    const track = document.getElementById('carouselTrack');
+    if (!track) return;
+
+    const stepWidth = calculateScrollStep();
+    
+    track.scrollTo({
+        left: pageIndex * stepWidth,
+        behavior: 'smooth'
+    });
+    
+    carouselCurrentIndex = pageIndex;
+    updateCarouselIndicators();
+}
+
+function updateCarouselIndex() {
+    const track = document.getElementById('carouselTrack');
+    if (!track) return;
+
+    const cards = track.querySelectorAll('.package-card-carousel');
+    if (cards.length === 0) return;
+
+    const stepWidth = calculateScrollStep();
+    
+    const newIndex = Math.round(track.scrollLeft / stepWidth);
+    
+    if (newIndex !== carouselCurrentIndex) {
+        carouselCurrentIndex = newIndex;
+        updateCarouselIndicators();
+    }
+}
+
+// Initialize carousel on page load
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        updateCarouselIndicators();
+        
+        const track = document.getElementById('carouselTrack');
+        if (track) {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            if (prevBtn) prevBtn.addEventListener('click', carouselPrevious);
+            if (nextBtn) nextBtn.addEventListener('click', carouselNext);
+
+            track.addEventListener('scroll', updateCarouselIndex);
+        }
+
+        // --- INITIALIZATION FIX: Apply capacity for the FIRST selected card ---
+        const initialSelectedCard = document.querySelector('.package-card-carousel.selected');
+        const totalGuestsInput = document.getElementById('total_guests');
+
+        if (initialSelectedCard) {
+            const packageId = initialSelectedCard.dataset.packageId;
+            document.getElementById('package_id').value = packageId;
+            const btn = initialSelectedCard.querySelector('.select-btn-carousel');
+            if (btn) btn.textContent = 'Package Selected';
+            
+            if (totalGuestsInput) {
+                const maxCapacity = parseInt(initialSelectedCard.dataset.maxCapacity, 10);
+                if (!isNaN(maxCapacity)) {
+                    // APPLY MAX CAPACITY ON LOAD
+                    totalGuestsInput.max = maxCapacity;
+                    console.log(`Initial Max Capacity set to: ${maxCapacity}`);
+                    
+                    // Adjust guest count if default is too high
+                    if (parseInt(totalGuestsInput.value, 10) > maxCapacity) {
+                        totalGuestsInput.value = maxCapacity;
+                    }
+                }
+            }
+        }
+
+    }, 100);
+});
+
+// Update on window resize
+window.addEventListener('resize', function() {
+    carouselScrollToPage(0);
+});
+
+
 
     // Event listeners
     if (elements.durationHours) {
@@ -1438,8 +1921,6 @@ document.getElementById("event_type").addEventListener("change", function() {
     }
 });
 </script>
-
-
 
 
 <?php include ('footer.php'); ?>
