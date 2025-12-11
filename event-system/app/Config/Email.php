@@ -6,7 +6,7 @@ use CodeIgniter\Config\BaseConfig;
 
 class Email extends BaseConfig
 {
-    public string $fromEmail  = 'farmease@noreply@gmail.com';
+    public string $fromEmail  = 'admin@networq.online';
     public string $fromName   = 'Farmease'; 
     public string $recipients = '';
 
@@ -28,17 +28,17 @@ class Email extends BaseConfig
     /**
      * SMTP Server Hostname
      */
-    public string $SMTPHost = 'smtp.gmail.com';
+    public string $SMTPHost = 'smtp.hostinger.com';
 
     /**
      * SMTP Username
      */
-    public string $SMTPUser = 'magnaye.rp@gmail.com';
+    public string $SMTPUser = 'admin@networq.online';
 
     /**
      * SMTP Password
      */
-    public string $SMTPPass = 'kdkt sjki tbsw uuvb';
+    public string $SMTPPass = 'Bruhdacious_321';
 
     /**
      * SMTP Port
@@ -56,11 +56,7 @@ class Email extends BaseConfig
     public bool $SMTPKeepAlive = false;
 
     /**
-     * SMTP Encryption.
-     *
-     * @var string '', 'tls' or 'ssl'. 'tls' will issue a STARTTLS command
-     *             to the server. 'ssl' means implicit SSL. Connection on port
-     *             465 should set this to ''.
+     * SMTP Encryption: '', 'tls', or 'ssl'
      */
     public string $SMTPCrypto = 'tls';
 
@@ -80,7 +76,7 @@ class Email extends BaseConfig
     public string $mailType = 'html';
 
     /**
-     * Character set (utf-8, iso-8859-1, etc.)
+     * Character set
      */
     public string $charset = 'UTF-8';
 
@@ -98,10 +94,6 @@ class Email extends BaseConfig
      * Newline character. (Use “\r\n” to comply with RFC 822)
      */
     public string $CRLF = "\r\n";
-
-    /**
-     * Newline character. (Use “\r\n” to comply with RFC 822)
-     */
     public string $newline = "\r\n";
 
     /**
