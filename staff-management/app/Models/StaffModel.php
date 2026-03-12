@@ -6,7 +6,7 @@ use CodeIgniter\Model;
 
 class StaffModel extends Model
 {
-    protected $table = 'staff'; // Assume DB table
+protected $table = 'staffs';
     protected $primaryKey = 'id';
     protected $allowedFields = ['fullname', 'phone', 'email', 'address'];
 }

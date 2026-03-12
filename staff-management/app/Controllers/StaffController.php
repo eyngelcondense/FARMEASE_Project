@@ -6,25 +6,36 @@ use App\Controllers\BaseController;
 
 class StaffController extends BaseController
 {
-    public function dashboard()
+public function dashboard()
     {
+        if (!session()->get('isLoggedIn')) {
+            return redirect()->to('login');
+        }
         $data['title'] = 'Staff Dashboard';
-        // Fetch staff data via API or DB
+        $data['staffName'] = session()->get('staff_name');
+        // Add summary stats: upcoming bookings, etc.
         return view('staff/dashboard', $data);
     }
 
-    public function profile()
+public function profile()
     {
         $data['title'] = 'Staff Profile';
-        $staffId = $this->request->getPostGet('id') ?? session()->get('staff_id');
-        // $data['staff'] = model('StaffModel')->find($staffId);
+        $staffId = session()->get('staff_id');
+        if (!$staffId) {
+            return redirect()->to('login');
+        }
+        $staffModel = model('StaffModel');
+        $data['staff'] = $staffModel->find($staffId);
         return view('staff/profile', $data);
     }
 
-    public function schedule()
+public function schedule()
     {
+        if (!session()->get('isLoggedIn')) {
+            return redirect()->to('login');
+        }
         $data['title'] = 'My Schedule';
-        // API call to FARMEASE schedule
+        // TODO: Query bookings assigned to this staff
         return view('staff/schedule', $data);
     }
 
