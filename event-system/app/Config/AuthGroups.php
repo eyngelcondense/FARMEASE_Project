@@ -53,6 +53,10 @@ class AuthGroups extends ShieldAuthGroups
             'title'       => 'Staff',
             'description' => 'Can view assigned bookings and update work status',
         ],
+        'studio' => [
+            'title'       => 'Studio Staff',
+            'description' => 'Can manage studio bookings and schedules',
+        ],
     ];
 
     /**

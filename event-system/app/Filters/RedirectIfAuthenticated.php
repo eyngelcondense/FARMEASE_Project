@@ -2,32 +2,44 @@
 
 namespace App\Filters;
 
+use App\Libraries\SsoToken;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Filters\FilterInterface;
+use Config\SsoConfig;
 
 class RedirectIfAuthenticated implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
-        // If user is logged in
         if (auth()->loggedIn()) {
-            $user = auth()->user();
+            $user   = auth()->user();
+            $config = new SsoConfig();
 
-            // Redirect based on role
-            if ($user->can('admin.access') || $user->role === 'admin') {
-                return redirect()->to('dashboard');
+            // --- NEW: Check if user belongs to an external app group ---
+            foreach ($config->groupUrlMap as $group => $url) {
+                if ($user->inGroup($group)) {
+                    $token = SsoToken::generate(
+                        $user->id,
+                        $user->email,
+                        $group
+                    );
+                    return redirect()->to($url . '/sso/authenticate?token=' . urlencode($token));
+                }
             }
 
-            if ($user->can('client.access') || $user->role === 'client') {
-                return redirect()->to('/client/home');
+            if ($user->can('admin.access') || $user->inGroup('admin')) {
+                return redirect()->to('/dashboard');
+            }
+
+            if ($user->can('client.access') || $user->inGroup('client')) {
+                return redirect()->to('/home');
             }
 
             // Default fallback
             return redirect()->to('/home');
         }
 
-        // If not logged in, continue normally (show landing)
         return null;
     }
 

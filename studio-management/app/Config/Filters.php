@@ -34,6 +34,8 @@ class Filters extends BaseFilters
         'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
+        'authcheck'     => \App\Filters\AuthCheckFilter::class,
+        'ssoAuth' => \App\Filters\SsoAuthFilter::class,
     ];
 
     /**
@@ -75,6 +77,7 @@ class Filters extends BaseFilters
             // 'honeypot',
             // 'csrf',
             // 'invalidchars',
+            // 'ssoAuth',
         ],
         'after' => [
             // 'honeypot',
@@ -106,5 +109,17 @@ class Filters extends BaseFilters
      *
      * @var array<string, array<string, list<string>>>
      */
-    public array $filters = [];
+    public array $filters = [
+        'authcheck' => ['before' => [
+            'studio/*',
+            'availability/*',
+            'assignment/*',
+            'staff-management/*',
+            'scheduling/*',
+        ]],
+        'ssoAuth' => [
+            'before' => ['*'],
+            'except' => ['studio/sso/authenticate'],
+        ],
+    ];
 }
