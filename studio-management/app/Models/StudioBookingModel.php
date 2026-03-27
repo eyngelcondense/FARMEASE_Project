@@ -31,18 +31,57 @@ class StudioBookingModel extends Model
 
     public function getBookingsWithDetails()
     {
-        $builder = $this->db->table('studio_bookings sb');
-        $builder->select('sb.*, s.name as studio_name, s.location, b.booking_reference, b.event_date');
-        $builder->join('studios s', 'sb.studio_id = s.id');
-        $builder->join('bookings b', 'sb.booking_id = b.id');
-        $builder->orderBy('sb.created_at', 'DESC');
+        log_message('debug', 'StudioBookingModel: getBookingsWithDetails() called');
         
-        return $builder->get()->getResult();
+        try {
+            $db = \Config\Database::connect();
+            log_message('debug', 'StudioBookingModel: database connected');
+            
+            $builder = $db->table('studio_bookings sb');
+            $builder->select('sb.*, s.name as studio_name, s.location, b.booking_reference, b.event_date, b.start_time, b.end_time, b.event_type, c.fullname as client_name');
+            $builder->join('studios s', 'sb.studio_id = s.id');
+            $builder->join('bookings b', 'sb.booking_id = b.id');
+            $builder->join('clients c', 'b.client_id = c.id');
+            $builder->orderBy('sb.created_at', 'DESC');
+            
+            $result = $builder->get()->getResult();
+            log_message('debug', 'StudioBookingModel: query executed, got ' . count($result) . ' results');
+            
+            return $result;
+            
+        } catch (\Exception $e) {
+            log_message('error', 'StudioBookingModel: Exception in getBookingsWithDetails(): ' . $e->getMessage());
+            return [];
+        }
     }
 
     public function getStudiosForBooking($bookingId)
     {
         return $this->select('studio_id')->where('booking_id', $bookingId)->findAll();
+    }
+    
+    public function getBookingsForStudio($studioId)
+    {
+        log_message('debug', 'StudioBookingModel: getBookingsForStudio called for studio ' . $studioId);
+        
+        try {
+            $db = \Config\Database::connect();
+            $builder = $db->table('studio_bookings sb');
+            $builder->select('sb.*, b.booking_reference, b.event_date, b.start_time, b.end_time, b.event_type, b.total_hours, b.total_guests, b.total_amount, c.fullname as client_name, c.email as client_email, c.phone as client_phone');
+            $builder->join('bookings b', 'sb.booking_id = b.id');
+            $builder->join('clients c', 'b.client_id = c.id');
+            $builder->where('sb.studio_id', $studioId);
+            $builder->orderBy('b.event_date', 'DESC');
+            
+            $result = $builder->get()->getResult();
+            log_message('debug', 'StudioBookingModel: found ' . count($result) . ' bookings for studio ' . $studioId);
+            
+            return $result;
+            
+        } catch (\Exception $e) {
+            log_message('error', 'StudioBookingModel: Exception in getBookingsForStudio(): ' . $e->getMessage());
+            return [];
+        }
     }
 }
 

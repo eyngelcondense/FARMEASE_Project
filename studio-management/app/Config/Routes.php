@@ -6,8 +6,16 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 $routes->get('/', 'AuthController::login');
+
+// Test route for debugging
+$routes->get('test', 'TestController::index');
+
 $routes->group('studio', ['filter' => 'authcheck'], function($routes) {
     $routes->get('dashboard', 'StudioController::dashboard');
+    $routes->get('bookings', 'StudioController::bookings');
+    $routes->get('info', 'StudioController::info');
+    $routes->get('gallery', 'StudioController::gallery');
+    $routes->get('schedule', 'StudioController::schedule');
 });
 $routes->get('availability', 'AvailabilityController::index', ['filter' => 'authcheck']);
 $routes->get('assignment', 'AssignmentController::index', ['filter' => 'authcheck']);
