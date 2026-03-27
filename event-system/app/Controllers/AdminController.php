@@ -45,4 +45,9 @@ class AdminController extends BaseController
     {
         return view('admin/manage-staff', ['current_page' => 'manage_staff']);
     }
+
+    public function studiosView()
+    {
+        return view('admin/studios', ['current_page' => 'studios']);
+    }
 }

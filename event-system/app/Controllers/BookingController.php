@@ -107,6 +107,7 @@ class BookingController extends BaseController
             'duration_hours' => 'required|integer|greater_than[0]',
             'total_guests' => 'required|integer|greater_than[0]',
             'package_id' => 'required|integer',
+            'studio_id' => 'permit_empty|integer',
             'special_requests' => 'permit_empty|max_length[1000]'
         ];
 
@@ -233,7 +234,59 @@ class BookingController extends BaseController
 
             log_message('debug', 'Addons processed - Count: ' . count($addonsData) . ', Amount: ' . $addonsAmount);
 
-            $totalAmount = $baseAmount + $overtimeAmount + $addonsAmount;
+            // Process studio booking if selected
+            $studioAmount = 0;
+            $studioId = $this->request->getPost('studio_id');
+            
+            if ($studioId) {
+                try {
+                    // Make API call to studio-management to get studio details and check availability
+                    $client = \Config\Services::curlrequest([
+                        'timeout' => 10,
+                        'connect_timeout' => 5
+                    ]);
+                    
+                    $studioResponse = $client->get("http://localhost:8081/api/studio/{$studioId}", [
+                        'headers' => [
+                            'Accept' => 'application/json',
+                            'Content-Type' => 'application/json'
+                        ]
+                    ]);
+                    
+                    if ($studioResponse->getStatusCode() === 200) {
+                        $studio = json_decode($studioResponse->getBody(), true);
+                        
+                        if (!$studio || !isset($studio['cost'])) {
+                            throw new \Exception('Invalid studio data received.');
+                        }
+                        
+                        // Calculate studio cost
+                        $studioBaseCost = (float)$studio['cost'] * (int)$totalHours;
+                        $studioAdminFee = $studioBaseCost * 0.10; // 10% admin fee
+                        $studioAmount = $studioBaseCost + $studioAdminFee;
+                        
+                        log_message('debug', "Studio booking - ID: {$studioId}, Cost: {$studioAmount}");
+                        
+                        // Create studio booking via API
+                        $bookingData = [
+                            'studio_id' => (int)$studioId,
+                            'booking_id' => $bookingId // Will be set after booking is created
+                        ];
+                        
+                        // We'll create the studio booking after the main booking is saved
+                        $this->studioBookingData = $bookingData;
+                        
+                    } else {
+                        log_message('error', 'Studio API returned status: ' . $studioResponse->getStatusCode());
+                        throw new \Exception('Selected studio is not available or API error occurred.');
+                    }
+                } catch (\Exception $e) {
+                    log_message('error', 'Studio booking API error: ' . $e->getMessage());
+                    throw new \Exception('Unable to process studio booking. Please try again or contact support.');
+                }
+            }
+
+            $totalAmount = $baseAmount + $overtimeAmount + $addonsAmount + $studioAmount;
 
             $eventType = $this->request->getPost('event_type');
             $eventOther = $this->request->getPost('event_other');
@@ -259,6 +312,7 @@ class BookingController extends BaseController
                 'base_amount' => (float)$baseAmount,
                 'overtime_amount' => (float)$overtimeAmount,
                 'addons_amount' => (float)$addonsAmount,
+                'studio_amount' => (float)$studioAmount,
                 'total_amount' => (float)$totalAmount,
                 'special_requests' => $this->request->getPost('special_requests'),
                 'status' => 'pending',
@@ -291,11 +345,51 @@ class BookingController extends BaseController
                 $this->bookingAddonModel->saveBookingAddons($bookingId, $formattedAddons);
             }
 
+            // Create studio booking if studio was selected
+            if (isset($this->studioBookingData)) {
+                try {
+                    $this->studioBookingData['booking_id'] = $bookingId;
+                    
+                    $client = \Config\Services::curlrequest([
+                        'timeout' => 10,
+                        'connect_timeout' => 5
+                    ]);
+                    
+                    $studioBookingResponse = $client->post("http://localhost:8081/api/booking/create", [
+                        'json' => $this->studioBookingData,
+                        'headers' => [
+                            'Accept' => 'application/json',
+                            'Content-Type' => 'application/json'
+                        ]
+                    ]);
+                    
+                    if ($studioBookingResponse->getStatusCode() === 201) {
+                        log_message('debug', 'Studio booking created successfully for booking ID: ' . $bookingId);
+                    } else {
+                        $responseBody = $studioBookingResponse->getBody();
+                        log_message('error', 'Studio booking failed - Status: ' . $studioBookingResponse->getStatusCode() . ', Body: ' . $responseBody);
+                        throw new \Exception('Studio booking could not be confirmed. The studio might be unavailable for the selected time.');
+                    }
+                } catch (\Exception $e) {
+                    log_message('error', 'Studio booking creation error: ' . $e->getMessage());
+                    // Don't fail the entire booking if studio booking fails
+                    // Log the error but allow the main booking to succeed
+                    log_message('warning', 'Main booking succeeded but studio booking failed for booking ID: ' . $bookingId);
+                }
+            }
+
             $db->transCommit();
 
             $successMessage = 'Booking request submitted successfully! Your reference number is: ' . $bookingData['booking_reference'];
-            if ($addonsAmount > 0) {
-                $successMessage .= ' (Includes ₱' . number_format($addonsAmount, 2) . ' in addons)';
+            if ($addonsAmount > 0 || $studioAmount > 0) {
+                $additionalServices = [];
+                if ($addonsAmount > 0) {
+                    $additionalServices[] = '₱' . number_format($addonsAmount, 2) . ' in addons';
+                }
+                if ($studioAmount > 0) {
+                    $additionalServices[] = '₱' . number_format($studioAmount, 2) . ' in studio booking';
+                }
+                $successMessage .= ' (Includes ' . implode(' and ', $additionalServices) . ')';
             }
 
             return redirect()->back()->with('message', $successMessage);

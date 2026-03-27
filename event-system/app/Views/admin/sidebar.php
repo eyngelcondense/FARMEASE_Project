@@ -138,6 +138,20 @@ if (!isset($current_page)) {
                 </a>
             </li>
             <li class="nav-item">
+                <a href="<?= site_url('admin/staffs')?>" 
+                   class="nav-link <?= $current_page === 'staffs' ? 'active' : '' ?>">
+                    <i class="fas fa-users"></i>
+                    <span>Staff Management</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="<?= site_url('admin/studios')?>" 
+                   class="nav-link <?= $current_page === 'studios' ? 'active' : '' ?>">
+                    <i class="fas fa-building"></i>
+                    <span>Studio Management</span>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a href="<?= site_url('logout')?>" class="nav-link">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Log Out</span>

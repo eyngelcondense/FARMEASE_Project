@@ -34,3 +34,27 @@ $routes->get('staff-management/(:num)',       'StaffManagementController::show/$
 
 $routes->get('scheduling',                    'SchedulingController::index',      ['filter' => 'authcheck']);
 $routes->get('scheduling/upcoming',           'SchedulingController::upcoming',   ['filter' => 'authcheck']);
+
+// API Routes - for admin panel integration
+$routes->group('api', ['filter' => 'cors'], function($routes) {
+    // Staff API endpoints
+    $routes->get('staff/list', 'ApiController::getStaffList');
+    $routes->get('staff/(:num)', 'ApiController::getStaff/$1');
+    $routes->post('staff', 'ApiController::createStaff');
+    $routes->put('staff/(:num)', 'ApiController::updateStaff/$1');
+    $routes->delete('staff/(:num)', 'ApiController::deleteStaff/$1');
+    $routes->get('staff/stats', 'ApiController::getStaffStats');
+    $routes->get('staff/(:num)/assignments', 'ApiController::getStaffAssignments/$1');
+    
+    // Assignments API endpoints
+    $routes->get('assignments/list', 'ApiController::getAssignmentsList');
+    $routes->get('assignments/(:num)', 'ApiController::getAssignment/$1');
+    $routes->post('assignments', 'ApiController::createAssignment');
+    $routes->put('assignments/(:num)', 'ApiController::updateAssignment/$1');
+    $routes->delete('assignments/(:num)', 'ApiController::deleteAssignment/$1');
+    $routes->get('assignments/stats', 'ApiController::getAssignmentStats');
+    
+    // Bookings API endpoints
+    $routes->get('bookings/unassigned', 'ApiController::getUnassignedBookings');
+    $routes->get('bookings/(:num)', 'ApiController::getBooking/$1');
+});

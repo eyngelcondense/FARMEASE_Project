@@ -1008,6 +1008,40 @@
                             </div>
                         </div>
 
+                        <!-- Studio Section -->
+                        <div class="col-12 mt-4">
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <h5 class="card-title mb-0">Studio Booking (Optional)</h5>
+                                    <small class="text-muted">Add a studio space to your event for an additional fee</small>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Select Studio</label>
+                                            <select class="form-select" name="studio_id" id="studio_id">
+                                                <option value="">No Studio (Only Venue)</option>
+                                                <option value="" disabled>Loading available studios...</option>
+                                            </select>
+                                            <small class="form-text text-muted">Studios are available based on your event date and capacity requirements</small>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Studio Pricing</label>
+                                            <div id="studio-pricing" class="p-3 bg-light rounded">
+                                                <p class="mb-0"><strong>Select a studio to see pricing</strong></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="studio-availability" class="mt-3" style="display: none;">
+                                        <div class="alert alert-info">
+                                            <i class="fas fa-info-circle"></i>
+                                            <span id="studio-availability-text">Checking availability...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Hidden package ID field -->
                         <input type="hidden" name="package_id" id="package_id" value="<?= old('package_id', $packages[0]['id'] ?? '') ?>" required>
 
@@ -1918,6 +1952,198 @@ document.getElementById("event_type").addEventListener("change", function() {
         txt.style.display = "none";
         txt.required = false;
         txt.value = "";
+    }
+});
+
+// ==================== STUDIO BOOKING FUNCTIONALITY ====================
+
+// Load available studios based on event details
+function loadAvailableStudios() {
+    const eventDate = document.getElementById('event_date').value;
+    const guestCount = document.getElementById('total_guests').value;
+    const studioSelect = document.getElementById('studio_id');
+    
+    if (!eventDate || !guestCount) {
+        studioSelect.innerHTML = '<option value="">No Studio (Only Venue)</option><option value="" disabled>Select event date and guest count first</option>';
+        return;
+    }
+    
+    // Show loading
+    studioSelect.innerHTML = '<option value="">No Studio (Only Venue)</option><option value="" disabled>Loading available studios...</option>';
+    
+    fetch(`/studio-management/api/studio/available/${eventDate}/${guestCount}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(studios => {
+            studioSelect.innerHTML = '<option value="">No Studio (Only Venue)</option>';
+            
+            if (studios.length === 0) {
+                studioSelect.innerHTML += '<option value="" disabled>No studios available for selected date and capacity</option>';
+                document.getElementById('studio-availability').style.display = 'none';
+                return;
+            }
+            
+            studios.forEach(studio => {
+                const option = document.createElement('option');
+                option.value = studio.id;
+                option.textContent = `${studio.name} - ₱${studio.cost}/hour (Capacity: ${studio.capacity})`;
+                option.dataset.cost = studio.cost;
+                option.dataset.capacity = studio.capacity;
+                option.dataset.location = studio.location || '';
+                studioSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading studios:', error);
+            studioSelect.innerHTML = '<option value="">No Studio (Only Venue)</option><option value="" disabled>Error loading studios</option>';
+            // Show user-friendly error
+            const availabilityDiv = document.getElementById('studio-availability');
+            if (availabilityDiv) {
+                availabilityDiv.style.display = 'block';
+                availabilityDiv.innerHTML = `
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Unable to load studios. Please try again later.</span>
+                    </div>
+                `;
+            }
+        });
+}
+
+// Update studio pricing when studio is selected
+function updateStudioPricing() {
+    const studioSelect = document.getElementById('studio_id');
+    const durationHours = document.getElementById('duration_hours').value;
+    const pricingDiv = document.getElementById('studio-pricing');
+    
+    if (!studioSelect.value || !durationHours) {
+        pricingDiv.innerHTML = '<p class="mb-0"><strong>Select a studio and duration to see pricing</strong></p>';
+        document.getElementById('studio-availability').style.display = 'none';
+        return;
+    }
+    
+    const selectedOption = studioSelect.options[studioSelect.selectedIndex];
+    const studioId = studioSelect.value;
+    const hourlyRate = parseFloat(selectedOption.dataset.cost || 0);
+    
+    // Calculate pricing
+    const baseCost = hourlyRate * parseFloat(durationHours);
+    const adminFee = baseCost * 0.10; // 10% administrative fee
+    const totalCost = baseCost + adminFee;
+    
+    pricingDiv.innerHTML = `
+        <div class="pricing-breakdown">
+            <div class="d-flex justify-content-between mb-1">
+                <span>Base Cost (${durationHours} hours × ₱${hourlyRate}/hour):</span>
+                <strong>₱${baseCost.toFixed(2)}</strong>
+            </div>
+            <div class="d-flex justify-content-between mb-1">
+                <span>Administrative Fee (10%):</span>
+                <strong>₱${adminFee.toFixed(2)}</strong>
+            </div>
+            <hr class="my-2">
+            <div class="d-flex justify-content-between">
+                <span><strong>Total Studio Cost:</strong></span>
+                <strong class="text-primary">₱${totalCost.toFixed(2)}</strong>
+            </div>
+        </div>
+    `;
+    
+    // Check studio availability
+    checkStudioAvailability(studioId);
+}
+
+// Check studio availability for selected date
+function checkStudioAvailability(studioId) {
+    const eventDate = document.getElementById('event_date').value;
+    const availabilityDiv = document.getElementById('studio-availability');
+    const availabilityText = document.getElementById('studio-availability-text');
+    
+    if (!studioId || !eventDate) {
+        availabilityDiv.style.display = 'none';
+        return;
+    }
+    
+    availabilityDiv.style.display = 'block';
+    availabilityText.textContent = 'Checking availability...';
+    
+    fetch(`/studio-management/api/studio/${studioId}/availability/${eventDate}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.is_available) {
+                availabilityDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Studio is available on ${formatDate(eventDate)}</span>
+                    </div>
+                `;
+            } else {
+                availabilityDiv.innerHTML = `
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Studio is not available on ${formatDate(eventDate)}</span>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error checking availability:', error);
+            availabilityDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-times-circle"></i>
+                    <span>Unable to check studio availability. Please try again.</span>
+                </div>
+            `;
+        });
+}
+
+// Format date for display
+function formatDate(dateString) {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+}
+
+// Add event listeners for studio functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Event date change
+    const eventDateInput = document.getElementById('event_date');
+    if (eventDateInput) {
+        eventDateInput.addEventListener('change', function() {
+            loadAvailableStudios();
+            updateStudioPricing();
+        });
+    }
+    
+    // Guest count change
+    const guestInput = document.getElementById('total_guests');
+    if (guestInput) {
+        guestInput.addEventListener('change', function() {
+            loadAvailableStudios();
+            updateStudioPricing();
+        });
+    }
+    
+    // Duration change
+    const durationInput = document.getElementById('duration_hours');
+    if (durationInput) {
+        durationInput.addEventListener('change', function() {
+            updateStudioPricing();
+        });
+    }
+    
+    // Studio selection change
+    const studioSelect = document.getElementById('studio_id');
+    if (studioSelect) {
+        studioSelect.addEventListener('change', updateStudioPricing);
     }
 });
 </script>
