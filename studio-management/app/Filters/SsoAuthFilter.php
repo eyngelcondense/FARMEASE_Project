@@ -18,7 +18,7 @@ class SsoAuthFilter implements FilterInterface
         }
 
         if (!session()->get('sso_auth')) {
-            return redirect()->to('http://farmease-app/login');
+            return redirect()->to('http://localhost:8080/login');
         }
     }
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null) {}

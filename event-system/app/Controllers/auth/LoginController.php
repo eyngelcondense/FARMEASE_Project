@@ -64,12 +64,13 @@ class LoginController extends ShieldLogin
 
         if ($user->inGroup('admin')) {
             return redirect()->to('/admin/dashboard');
-        if ($user->inGroup('staff')) {
+        } elseif ($user->inGroup('staff')) {
             return redirect()->to('http://localhost:8082/staff/dashboard');
-        }
+        } elseif ($user->inGroup('studio')) {
+            return redirect()->to('http://localhost:8083/studio/dashboard');
+        } else {
             return redirect()->to('/home');
         }
-        return redirect()->to('/');
     }
 
     public function logout(): RedirectResponse

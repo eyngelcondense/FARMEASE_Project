@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Libraries\SsoToken;
 use App\Models\StaffModel;
+use Config\SsoConfig;
 
 class SsoController extends BaseController
 {
@@ -15,11 +16,12 @@ class SsoController extends BaseController
 
     public function authenticate()
     {
+        $config  = new SsoConfig();
         $token   = $this->request->getGet('token');
         $payload = SsoToken::verify($token);
 
         if (! $payload) {
-            return redirect()->to('http://localhost:8080/logout')
+            return redirect()->to($config->loginUrl)
                 ->with('error', 'Session expired. Please login again.');
         }
 
@@ -45,18 +47,13 @@ class SsoController extends BaseController
                 ]);
             } else {
                 log_message('warning', 'No staff record found for user_id: ' . $payload['uid']);
-                return redirect()->to('http://localhost:8080/logout')
+                return redirect()->to($config->loginUrl)
                     ->with('error', 'No staff profile found.');
             }
         }
 
         // Redirect to appropriate system based on group
-        $landingRoutes = [
-            'staff'  => 'http://localhost:8082/staff/dashboard',
-            'studio' => 'http://localhost:8083/studio/dashboard',
-        ];
-
-        $target = $landingRoutes[$payload['group']] ?? 'http://localhost:8080';
+        $target = $config->landingRoutes[$payload['group']] ?? $config->loginUrl;
 
         return redirect()->to($target);
     }
@@ -72,13 +69,14 @@ class SsoController extends BaseController
         // this route may not be needed — authenticate() handles everything.
         // Add OAuth callback logic here if your SSO provider requires it.
 
+        $config = new SsoConfig();
         $token = $this->request->getGet('token');
 
         if ($token) {
             return $this->authenticate();
         }
 
-        return redirect()->to('http://localhost:8080/logout')
+        return redirect()->to($config->loginUrl)
             ->with('error', 'Invalid SSO callback.');
     }
 }

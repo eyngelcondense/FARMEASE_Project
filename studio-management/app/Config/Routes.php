@@ -10,6 +10,12 @@ $routes->get('/', 'AuthController::login');
 // Test route for debugging
 $routes->get('test', 'TestController::index');
 
+// SSO routes — no auth filter required
+$routes->get('studio/sso/authenticate', 'SsoController::authenticate');
+
+// Logout route — accessible without auth filter
+$routes->get('studio/logout', 'StudioController::logout');
+
 $routes->group('studio', ['filter' => 'authcheck'], function($routes) {
     $routes->get('dashboard', 'StudioController::dashboard');
     $routes->get('bookings', 'StudioController::bookings');
@@ -22,8 +28,6 @@ $routes->get('assignment', 'AssignmentController::index', ['filter' => 'authchec
 $routes->get('staff-management', 'StaffManagementController::index', ['filter' => 'authcheck']);
 $routes->get('scheduling', 'SchedulingController::index', ['filter' => 'authcheck']);
 
-
-$routes->get('studio/sso/authenticate', 'SsoController::authenticate');
 
 // API Routes - for admin panel integration
 $routes->group('api', ['filter' => 'cors'], function($routes) {

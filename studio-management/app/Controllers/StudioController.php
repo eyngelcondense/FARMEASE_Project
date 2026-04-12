@@ -280,5 +280,18 @@ class StudioController extends BaseController
             return redirect()->back()->with('error', 'Studio model not available.');
         }
     }
+
+    // ========================================================================
+    // LOGOUT — Clear SSO session and redirect to event system
+    // ========================================================================
+
+    public function logout()
+    {
+        session()->destroy();
+        log_message('info', 'Studio user logged out. Redirecting to event system.');
+        $config = new \Config\SsoConfig();
+        return redirect()->to($config->loginUrl)->with('message', 'You have been logged out.');
+    }
 }
+
 

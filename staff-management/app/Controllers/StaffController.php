@@ -259,4 +259,16 @@ class StaffController extends BaseController
         $this->assignmentModel->delete($id);
         return redirect()->back()->with('success', 'Assignment removed.');
     }
+
+    // ========================================================================
+    // LOGOUT — Clear SSO session and redirect to event system
+    // ========================================================================
+
+    public function logout()
+    {
+        session()->destroy();
+        log_message('info', 'Staff logged out. Redirecting to event system.');
+        $config = new \Config\SsoConfig();
+        return redirect()->to($config->loginUrl)->with('message', 'You have been logged out.');
+    }
 }

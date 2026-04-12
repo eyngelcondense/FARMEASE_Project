@@ -6,16 +6,17 @@ use App\Controllers\BaseController;
 
 class AuthController extends BaseController
 {
-public function login()
+    public function login()
     {
         if ($this->request->getMethod() === 'post') {
             $email = $this->request->getPost('email');
-            $password = $this->request->getPost('password'); // In production, hash this
+            $password = $this->request->getPost('password');
             
             $staffModel = model('StaffModel');
             $staff = $staffModel->where('email', $email)->first();
             
-            if ($staff && $password === $staff['password']) { // Simple check; use hash_equals() & hashed pw in prod
+            // Verify password using hash_verify
+            if ($staff && password_verify($password, $staff['password'])) {
                 session()->set([
                     'staff_id' => $staff['id'],
                     'staff_name' => $staff['name'],

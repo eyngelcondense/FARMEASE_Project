@@ -3,16 +3,18 @@
 namespace App\Controllers;
 
 use App\Libraries\SsoToken;
+use Config\SsoConfig;
 
 class SsoController extends BaseController
 {
     public function authenticate()
     {
+        $config  = new SsoConfig();
         $token   = $this->request->getGet('token');
         $payload = SsoToken::verify($token);
 
         if (!$payload) {
-            return redirect()->to('http://localhost:8080/login')
+            return redirect()->to($config->loginUrl)
                             ->with('error', 'Session expired. Please login again.');
         }
 
@@ -23,13 +25,8 @@ class SsoController extends BaseController
             'sso_auth'    => true,
         ]);
 
-        $landingRoutes = [
-            'staff'  => 'http://localhost:8082/staff/dashboard',
-            'studio' => 'http://localhost:8083/studio/dashboard',
-        ];
-
         $group  = $payload['group'];
-        $target = $landingRoutes[$group] ?? 'http://localhost:8083/studio/dashboard';
+        $target = $config->landingRoutes[$group] ?? $config->landingRoutes['studio'];
 
         return redirect()->to($target);
     }

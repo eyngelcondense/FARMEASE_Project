@@ -23,7 +23,7 @@ class AuthCheckFilter implements FilterInterface
         if (!$session->get('isLoggedIn') && !$session->get('sso_auth')) {
             log_message('debug', 'AuthCheckFilter blocked path: ' . $path);
             session()->setTempdata('beforeLoginUrl', current_url(), 30);
-            return redirect()->to('http://farmease-app/login');
+            return redirect()->to('http://localhost:8080/login');
         }
     }
 

@@ -8,6 +8,9 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('staff/sso/authenticate', 'SsoController::authenticate');
 $routes->get('staff/sso/callback',     'SsoController::callback');
 
+// Logout route — accessible without auth filter
+$routes->get('staff/logout', 'StaffController::logout');
+
 // Staff portal — auth required
 $routes->group('staff', ['filter' => 'authcheck'], function($routes) {
     $routes->get('dashboard',      'StaffController::dashboard');

@@ -30,7 +30,7 @@
                                            class="form-control"
                                            id="name"
                                            name="name"
-                                           value="<?= esc($is_array($studio) ? $studio['name'] : $studio->name) ?>"
+                                           value="<?= esc(is_array($studio) ? $studio['name'] : $studio->name) ?>"
                                            required>
                                 </div>
                                 <div class="col-md-6">
@@ -39,7 +39,7 @@
                                            class="form-control"
                                            id="location"
                                            name="location"
-                                           value="<?= esc($is_array($studio) ? $studio['location'] : $studio->location) ?>"
+                                           value="<?= esc(is_array($studio) ? $studio['location'] : $studio->location) ?>"
                                            required>
                                 </div>
                             </div>
@@ -51,7 +51,7 @@
                                            class="form-control"
                                            id="capacity"
                                            name="capacity"
-                                           value="<?= esc($is_array($studio) ? $studio['capacity'] : $studio->capacity) ?>"
+                                           value="<?= esc(is_array($studio) ? $studio['capacity'] : $studio->capacity) ?>"
                                            min="1"
                                            required>
                                     <div class="form-text">Maximum number of guests</div>
@@ -64,7 +64,7 @@
                                                class="form-control"
                                                id="cost"
                                                name="cost"
-                                               value="<?= esc($is_array($studio) ? $studio['cost'] : $studio->cost) ?>"
+                                           value="<?= esc(is_array($studio) ? $studio['cost'] : $studio->cost) ?>"
                                                step="0.01"
                                                min="0"
                                                required>
@@ -94,12 +94,12 @@
                     <div class="card-body">
                         <h6>Current Details</h6>
                         <ul class="list-unstyled">
-                            <li><strong>Name:</strong> <?= esc($is_array($studio) ? $studio['name'] : $studio->name) ?></li>
-                            <li><strong>Location:</strong> <?= esc($is_array($studio) ? $studio['location'] : $studio->location) ?: 'Not specified' ?></li>
-                            <li><strong>Capacity:</strong> <?= esc($is_array($studio) ? $studio['capacity'] : $studio->capacity) ?> guests</li>
-                            <li><strong>Cost/Hour:</strong> ₱<?= number_format($is_array($studio) ? $studio['cost'] : $studio->cost, 2) ?></li>
-                            <li><strong>Created:</strong> <?= date('M d, Y', strtotime($is_array($studio) ? $studio['created_at'] : $studio->created_at)) ?></li>
-                            <li><strong>Last Updated:</strong> <?= date('M d, Y', strtotime($is_array($studio) ? $studio['updated_at'] : $studio->updated_at)) ?></li>
+                            <li><strong>Name:</strong> <?= esc(is_array($studio) ? $studio['name'] : $studio->name) ?></li>
+                            <li><strong>Location:</strong> <?= esc(is_array($studio) ? $studio['location'] : $studio->location) ?: 'Not specified' ?></li>
+                            <li><strong>Capacity:</strong> <?= esc(is_array($studio) ? $studio['capacity'] : $studio->capacity) ?> guests</li>
+                            <li><strong>Cost/Hour:</strong> ₱<?= number_format(is_array($studio) ? $studio['cost'] : $studio->cost, 2) ?></li>
+                            <li><strong>Created:</strong> <?= date('M d, Y', strtotime(is_array($studio) ? $studio['created_at'] : $studio->created_at)) ?></li>
+                            <li><strong>Last Updated:</strong> <?= date('M d, Y', strtotime(is_array($studio) ? $studio['updated_at'] : $studio->updated_at)) ?></li>
                         </ul>
 
                         <h6 class="mt-3">Quick Actions</h6>
