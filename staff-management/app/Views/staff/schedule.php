@@ -1,276 +1,282 @@
-<?= $this->extend('staff/header') ?>
-<?= $this->section('content') ?>
-
 <?php
-if (empty($bookings)) {
-    $bookings = [
-        ['id'=>1,'booking_reference'=>'FE-2506-001','event_type'=>'Wedding','event_date'=>'2025-06-02','start_time'=>'09:00:00','end_time'=>'18:00:00','status'=>'approved','venue_name'=>'Main Hall','client_fullname'=>'Santos Family','is_assigned'=>1],
-        ['id'=>2,'booking_reference'=>'FE-2506-002','event_type'=>'Debut','event_date'=>'2025-06-05','start_time'=>'14:00:00','end_time'=>'22:00:00','status'=>'confirmed','venue_name'=>'Garden Venue','client_fullname'=>'Reyes Family','is_assigned'=>0],
-        ['id'=>3,'booking_reference'=>'FE-2506-003','event_type'=>'Corporate Event','event_date'=>'2025-06-09','start_time'=>'08:00:00','end_time'=>'17:00:00','status'=>'confirmed','venue_name'=>'Function Room A','client_fullname'=>'Dela Cruz Corp.','is_assigned'=>1],
-        ['id'=>4,'booking_reference'=>'FE-2506-004','event_type'=>'Birthday Party','event_date'=>'2025-06-12','start_time'=>'15:00:00','end_time'=>'21:00:00','status'=>'approved','venue_name'=>'Poolside','client_fullname'=>'Garcia Family','is_assigned'=>0],
-        ['id'=>5,'booking_reference'=>'FE-2506-005','event_type'=>'Wedding','event_date'=>'2025-06-14','start_time'=>'09:00:00','end_time'=>'20:00:00','status'=>'approved','venue_name'=>'Main Hall','client_fullname'=>'Dela Cruz Family','is_assigned'=>1],
-        ['id'=>6,'booking_reference'=>'FE-2506-006','event_type'=>'Debut','event_date'=>'2025-06-15','start_time'=>'13:00:00','end_time'=>'21:00:00','status'=>'confirmed','venue_name'=>'Garden Venue','client_fullname'=>'Santos Debut','is_assigned'=>0],
-        ['id'=>7,'booking_reference'=>'FE-2506-007','event_type'=>'Corporate Event','event_date'=>'2025-06-18','start_time'=>'08:00:00','end_time'=>'17:00:00','status'=>'confirmed','venue_name'=>'Function Room A','client_fullname'=>'Reyes Corp.','is_assigned'=>1],
-        ['id'=>8,'booking_reference'=>'FE-2506-008','event_type'=>'Photo Shoot','event_date'=>'2025-06-25','start_time'=>'08:00:00','end_time'=>'13:00:00','status'=>'approved','venue_name'=>'Studio 1','client_fullname'=>'Garcia Photography','is_assigned'=>1],
-        ['id'=>9,'booking_reference'=>'FE-2506-009','event_type'=>'Birthday Party','event_date'=>'2025-06-28','start_time'=>'16:00:00','end_time'=>'22:00:00','status'=>'confirmed','venue_name'=>'Poolside','client_fullname'=>'Cruz Family','is_assigned'=>0],
-    ];
-}
-if (empty($staff)) $staff = ['id'=>1,'name'=>'Maria Cristina Reyes','role'=>'event_coordinator'];
+    $current_page = 'schedule';
+    
+    if (empty($bookings)) {
+        $bookings = [
+            ['id'=>1,'booking_reference'=>'FE-2506-001','event_type'=>'Wedding','event_date'=>'2025-06-02','start_time'=>'09:00:00','end_time'=>'18:00:00','status'=>'approved','venue_name'=>'Main Hall','client_fullname'=>'Santos Family','is_assigned'=>1],
+            ['id'=>2,'booking_reference'=>'FE-2506-002','event_type'=>'Debut','event_date'=>'2025-06-05','start_time'=>'14:00:00','end_time'=>'22:00:00','status'=>'confirmed','venue_name'=>'Garden Venue','client_fullname'=>'Reyes Family','is_assigned'=>0],
+            ['id'=>3,'booking_reference'=>'FE-2506-003','event_type'=>'Corporate Event','event_date'=>'2025-06-09','start_time'=>'08:00:00','end_time'=>'17:00:00','status'=>'confirmed','venue_name'=>'Function Room A','client_fullname'=>'Dela Cruz Corp.','is_assigned'=>1],
+            ['id'=>4,'booking_reference'=>'FE-2506-004','event_type'=>'Birthday Party','event_date'=>'2025-06-12','start_time'=>'15:00:00','end_time'=>'21:00:00','status'=>'approved','venue_name'=>'Poolside','client_fullname'=>'Garcia Family','is_assigned'=>0],
+            ['id'=>5,'booking_reference'=>'FE-2506-005','event_type'=>'Wedding','event_date'=>'2025-06-14','start_time'=>'09:00:00','end_time'=>'20:00:00','status'=>'approved','venue_name'=>'Main Hall','client_fullname'=>'Dela Cruz Family','is_assigned'=>1],
+            ['id'=>6,'booking_reference'=>'FE-2506-006','event_type'=>'Debut','event_date'=>'2025-06-15','start_time'=>'13:00:00','end_time'=>'21:00:00','status'=>'confirmed','venue_name'=>'Garden Venue','client_fullname'=>'Santos Debut','is_assigned'=>0],
+            ['id'=>7,'booking_reference'=>'FE-2506-007','event_type'=>'Corporate Event','event_date'=>'2025-06-18','start_time'=>'08:00:00','end_time'=>'17:00:00','status'=>'confirmed','venue_name'=>'Function Room A','client_fullname'=>'Reyes Corp.','is_assigned'=>1],
+            ['id'=>8,'booking_reference'=>'FE-2506-008','event_type'=>'Photo Shoot','event_date'=>'2025-06-25','start_time'=>'08:00:00','end_time'=>'13:00:00','status'=>'approved','venue_name'=>'Studio 1','client_fullname'=>'Garcia Photography','is_assigned'=>1],
+            ['id'=>9,'booking_reference'=>'FE-2506-009','event_type'=>'Birthday Party','event_date'=>'2025-06-28','start_time'=>'16:00:00','end_time'=>'22:00:00','status'=>'confirmed','venue_name'=>'Poolside','client_fullname'=>'Cruz Family','is_assigned'=>0],
+        ];
+    }
+    if (empty($staff)) $staff = ['id'=>1,'name'=>'Maria Cristina Reyes','role'=>'event_coordinator'];
 
-$byDate        = [];
-foreach ($bookings as $b) $byDate[$b['event_date']][] = $b;
-$totalAssigned = count(array_filter($bookings, fn($b) => $b['is_assigned']));
-$totalAll      = count($bookings);
+    $firstName = explode(' ', $staff['name'])[0];
+    $hour      = (int) date('G');
+    $greeting  = match(true) { $hour < 12 => 'Good morning', $hour < 18 => 'Good afternoon', default => 'Good evening' };
+    $roleLabel = match($staff['role']) {
+        'event_coordinator' => 'Event Coordinator',
+        'front_desk'        => 'Front Desk',
+        'customer_service'  => 'Customer Service',
+        default             => ucwords(str_replace('_', ' ', $staff['role'])),
+    };
+
+    $byDate        = [];
+    foreach ($bookings as $b) $byDate[$b['event_date']][] = $b;
+    $totalAssigned = count(array_filter($bookings, fn($b) => $b['is_assigned']));
+    $totalAll      = count($bookings);
 ?>
 
+<?php
+$page_title    = 'Staff Schedule - San Isidro Labrador Resort';
+?>
+<?= $this->extend('staff/layout_sidebar') ?>
+<?= $this->section('content') ?>
+
 <style>
-  body { font-family: 'Poppins', sans-serif; background-color: #f8f6f3; color: #3b2a18; }
-
-  .page-wrap { max-width: 1200px; margin: 0 auto; padding: 36px 24px; }
-
-  /* ── Page header ── */
-  .pg-head { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 22px; }
-  .pg-title { font-family: 'IM Fell English', serif; font-size: 26px; color: #3b2a18; }
-  .pg-sub   { font-size: 12px; color: #7a6a58; margin-top: 3px; }
-
-  /* ── Toolbar ── */
   .toolbar {
-    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-    background: #fff; border: 1px solid #ddd4c6;
-    border-radius: 10px; padding: 8px 12px;
-    box-shadow: 0 2px 12px rgba(59,42,24,0.06);
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    background: var(--surface-color); border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm); padding: 12px 16px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 24px;
   }
-  .view-tabs { display: flex; gap: 2px; }
+  .view-tabs { display: flex; gap: 4px; }
   .vtab {
-    padding: 5px 14px; border-radius: 6px; font-size: 12px; font-weight: 600;
-    cursor: pointer; border: none; background: transparent; color: #7a6a58; transition: all 0.15s;
+    padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600;
+    cursor: pointer; border: none; background: transparent; color: var(--text-muted); transition: var(--transition);
   }
-  .vtab.active { background: #3b2a18; color: #f5e3c6; }
-  .vtab:hover:not(.active) { background: #f7f3ef; color: #3b2a18; }
-  .tsep { width: 1px; height: 24px; background: #ddd4c6; margin: 0 4px; }
+  .vtab.active { background: var(--text-main); color: var(--surface-color); }
+  .vtab:hover:not(.active) { background: var(--bg-color); color: var(--text-main); }
+  .tsep { width: 1px; height: 24px; background: var(--border-color); margin: 0 8px; }
   .nav-arr {
-    width: 30px; height: 30px; border-radius: 6px;
-    border: 1px solid #ddd4c6; background: #fff;
+    width: 36px; height: 36px; border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color); background: var(--surface-color);
     cursor: pointer; display: flex; align-items: center; justify-content: center;
-    font-size: 15px; color: #3b2a18; transition: background 0.12s;
+    font-size: 14px; color: var(--text-main); transition: var(--transition);
   }
-  .nav-arr:hover { background: #f7f3ef; }
-  .period-lbl { font-family: 'IM Fell English', serif; font-size: 15px; min-width: 155px; text-align: center; color: #3b2a18; }
+  .nav-arr:hover { background: var(--primary-light); color: var(--primary-color); border-color: var(--primary-light); }
+  .period-lbl { font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 18px; min-width: 160px; text-align: center; color: var(--text-main); }
   .today-btn {
-    padding: 5px 14px; border-radius: 6px; border: 1px solid #ddd4c6;
-    background: #fff; font-size: 12px; font-weight: 600; cursor: pointer;
-    color: #3b2a18; transition: background 0.12s;
+    padding: 8px 20px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);
+    background: var(--surface-color); font-size: 13px; font-weight: 600; cursor: pointer;
+    color: var(--text-main); transition: var(--transition);
   }
-  .today-btn:hover { background: #f0ece4; color: #c19a6b; }
+  .today-btn:hover { background: var(--primary-light); color: var(--primary-color); border-color: var(--primary-color); }
 
-  /* ── Stats strip ── */
-  .stats-strip { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px; }
-  @media(max-width:640px) { .stats-strip { grid-template-columns: 1fr 1fr; } }
-  .sbox {
-    background: #fff; border: 1px solid #ddd4c6; border-radius: 10px;
-    padding: 14px 16px; box-shadow: 0 2px 10px rgba(59,42,24,0.05);
-  }
-  .sbox-val { font-family: 'IM Fell English', serif; font-size: 24px; color: #3b2a18; }
-  .sbox-lbl { font-size: 11px; color: #7a6a58; margin-top: 2px; }
+  .legend { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 24px; }
+  .leg { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); font-weight: 500; }
+  .leg-dot { width: 10px; height: 10px; border-radius: 50%; }
 
-  /* ── Legend ── */
-  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
-  .leg { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #7a6a58; }
-  .leg-dot { width: 8px; height: 8px; border-radius: 50%; }
-
-  /* ── Calendar ── */
-  .cal-shell { background: #fff; border: 1px solid #ddd4c6; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(59,42,24,0.06); }
-  .day-names { display: grid; grid-template-columns: repeat(7,1fr); background: #e9e3db; border-bottom: 1px solid #ddd4c6; }
-  .day-name { text-align: center; padding: 9px 0; font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: #7a6a58; }
+  .cal-shell { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+  .day-names { display: grid; grid-template-columns: repeat(7,1fr); background: var(--bg-color); border-bottom: 1px solid var(--border-color); }
+  .day-name { text-align: center; padding: 16px 0; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
   .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); }
   .cal-cell {
-    min-height: 110px; border-right: 1px solid #ddd4c6; border-bottom: 1px solid #ddd4c6;
-    padding: 8px; transition: background 0.1s;
+    min-height: 140px; border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);
+    padding: 12px; transition: var(--transition);
   }
   .cal-cell:nth-child(7n) { border-right: none; }
-  .cal-cell:hover { background: #faf8f5; }
-  .cal-cell.other .cell-num { color: #c5bfb8; }
-  .cal-cell.today { background: rgba(193,154,107,0.06); }
-  .cal-cell.today .cni { background: #3b2a18; color: #f5e3c6; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
-  .cell-num { font-size: 12px; font-weight: 600; margin-bottom: 5px; color: #3b2a18; }
-  .weekend .cell-num { color: #c19a6b; }
-  .cal-cell.other.weekend .cell-num { color: rgba(193,154,107,0.4); }
+  .cal-cell:hover { background: #FAFAFA; }
+  .cal-cell.other .cell-num { color: #E0E0E0; }
+  .cal-cell.today { background: var(--primary-light); }
+  .cal-cell.today .cni { background: var(--primary-color); color: #FFFFFF; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(181, 155, 117, 0.4); }
+  .cell-num { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: var(--text-main); font-family: 'Outfit', sans-serif; }
+  .weekend .cell-num { color: var(--primary-color); }
+  .cal-cell.other.weekend .cell-num { color: rgba(181, 155, 117, 0.4); }
 
   .evt {
-    font-size: 10.5px; font-weight: 500; padding: 3px 7px; border-radius: 5px;
-    margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    cursor: pointer; display: block; transition: opacity 0.15s;
+    font-size: 11px; font-weight: 600; padding: 6px 10px; border-radius: 6px;
+    margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    cursor: pointer; display: block; transition: var(--transition);
   }
-  .evt:hover { opacity: 0.75; }
-  .evt.assigned   { background: #f0ece4; color: #3b2a18; border-left: 2.5px solid #c19a6b; }
-  .evt.unassigned { background: #f7f5f2; color: #7a6a58; border-left: 2.5px solid #ddd4c6; }
-  .more-pill { font-size: 10px; color: #b2a187; margin-top: 1px; cursor: pointer; }
+  .evt:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+  .evt.assigned   { background: #FFFFFF; color: var(--text-main); border: 1px solid var(--border-color); border-left: 4px solid var(--primary-color); }
+  .evt.unassigned { background: #F9F9F9; color: var(--text-muted); border: 1px solid var(--border-color); border-left: 4px solid #D9D9D9; }
+  .more-pill { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-top: 4px; cursor: pointer; transition: var(--transition); }
+  .more-pill:hover { color: var(--primary-color); }
 
-  /* ── List view ── */
   .list-view { display: none; }
   .list-view.active { display: block; }
   .cal-view.hidden { display: none; }
 
-  .list-date-row { display: flex; align-items: center; gap: 10px; padding: 14px 0 6px; margin-top: 4px; }
+  .list-date-row { display: flex; align-items: center; gap: 16px; padding: 24px 0 16px; margin-top: 8px; }
   .list-date-pill {
-    font-family: 'IM Fell English', serif; font-size: 13px;
-    background: #3b2a18; color: #f5e3c6;
-    padding: 4px 12px; border-radius: 20px;
+    font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 600;
+    background: var(--text-main); color: var(--surface-color);
+    padding: 6px 16px; border-radius: 24px; box-shadow: var(--shadow-sm);
   }
-  .list-date-line { flex: 1; height: 1px; background: #ddd4c6; }
+  .list-date-line { flex: 1; height: 1px; background: var(--border-color); }
 
-  .list-card {
-    background: #fff; border: 1px solid #ddd4c6; border-radius: 10px;
-    padding: 14px 16px; margin-bottom: 10px;
-    display: flex; gap: 14px; align-items: flex-start;
-    box-shadow: 0 2px 10px rgba(59,42,24,0.05);
-    transition: box-shadow 0.15s; position: relative; overflow: hidden; cursor: pointer;
-  }
-  .list-card:hover { box-shadow: 0 4px 18px rgba(59,42,24,0.1); }
-  .list-card.assigned::before   { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:#c19a6b; }
-  .list-card.unassigned::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:#ddd4c6; }
-  .lc-time { font-size: 11px; font-weight: 600; color: #7a6a58; min-width: 70px; padding-top: 2px; line-height: 1.6; }
+  .lc-time { font-size: 13px; font-weight: 700; color: var(--text-muted); min-width: 90px; padding-top: 2px; line-height: 1.6; font-family: 'Outfit', sans-serif; }
   .lc-body { flex: 1; min-width: 0; }
-  .lc-title { font-size: 14px; font-weight: 600; color: #3b2a18; }
-  .lc-meta  { font-size: 12px; color: #7a6a58; margin-top: 3px; }
-  .lc-ref   { font-size: 10px; color: #b2a187; margin-top: 4px; letter-spacing: 0.04em; }
-  .lc-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+  .lc-title { font-size: 16px; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
+  .lc-meta  { font-size: 14px; color: var(--text-muted); font-weight: 500; }
+  .lc-ref   { font-size: 11px; color: var(--primary-hover); margin-top: 6px; letter-spacing: 0.05em; font-weight: 600; }
+  .lc-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
 
-  .status-pill {
-    font-size: 10px; font-weight: 600; padding: 3px 10px;
-    border-radius: 20px; text-transform: uppercase; letter-spacing: 0.04em;
-  }
-  .sp-approved  { background: #edf5e8; color: #3a6e28; }
-  .sp-confirmed { background: #f0ece4; color: #7a6a58; border: 1px solid #ddd4c6; }
-  .sp-completed { background: #e9e3db; color: #7a6a58; }
-  .badge-assigned { font-size: 10px; font-weight: 600; padding: 3px 10px; border-radius: 20px; background: #f0ece4; color: #c19a6b; border: 1px solid rgba(193,154,107,0.3); }
+  .badge-assigned { font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; background: var(--primary-light); color: var(--primary-color); border: 1px solid rgba(181, 155, 117, 0.2); }
 
-  /* ── Drawer ── */
-  .drawer-overlay { display: none; position: fixed; inset: 0; background: rgba(59,42,24,0.4); z-index: 200; }
+  .drawer-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 2000; }
   .drawer-overlay.open { display: block; }
   .drawer {
-    position: fixed; right: 0; top: 0; bottom: 0; width: 350px;
-    background: #f8f6f3; box-shadow: -6px 0 28px rgba(59,42,24,0.15);
-    z-index: 201; overflow-y: auto; padding: 26px;
-    transform: translateX(100%); transition: transform 0.28s ease;
+    position: fixed; right: 0; top: 0; bottom: 0; width: 400px;
+    background: var(--surface-color); box-shadow: -10px 0 40px rgba(0,0,0,0.1);
+    z-index: 2001; overflow-y: auto; padding: 40px 32px;
+    transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .drawer.open { transform: translateX(0); }
   .drawer-close {
-    position: absolute; top: 16px; right: 16px;
-    width: 30px; height: 30px; border-radius: 7px;
-    background: #e9e3db; border: none; cursor: pointer;
+    position: absolute; top: 24px; right: 24px;
+    width: 36px; height: 36px; border-radius: var(--radius-sm);
+    background: var(--bg-color); border: 1px solid var(--border-color); cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    font-size: 16px; color: #7a6a58;
+    font-size: 18px; color: var(--text-muted); transition: var(--transition);
   }
-  .drawer-close:hover { background: #ddd4c6; }
-  .drawer-ref   { font-size: 10px; color: #b2a187; letter-spacing: 0.06em; margin-bottom: 6px; }
-  .drawer-title { font-family: 'IM Fell English', serif; font-size: 22px; color: #3b2a18; margin-bottom: 4px; }
-  .drawer-sub   { font-size: 13px; color: #7a6a58; margin-bottom: 18px; }
-  .drawer-lbl   { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #7a6a58; margin-bottom: 8px; }
-  .drawer-field { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #ddd4c6; font-size: 13px; }
+  .drawer-close:hover { background: var(--primary-light); color: var(--primary-color); border-color: var(--primary-light); transform: rotate(90deg); }
+  .drawer-ref   { font-size: 12px; font-weight: 700; color: var(--primary-color); letter-spacing: 0.08em; margin-bottom: 8px; }
+  .drawer-title { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 28px; color: var(--text-main); margin-bottom: 4px; line-height: 1.2; }
+  .drawer-sub   { font-size: 15px; color: var(--text-muted); font-weight: 500; margin-bottom: 32px; }
+  .drawer-lbl   { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+  .drawer-field { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed var(--border-color); font-size: 14px; }
   .drawer-field:last-child { border-bottom: none; }
-  .df-key { color: #7a6a58; }
-  .df-val { font-weight: 500; color: #3b2a18; text-align: right; }
-  .assigned-banner { background: #f0ece4; border: 1px solid rgba(193,154,107,0.35); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #c19a6b; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .df-key { color: var(--text-muted); font-weight: 500; }
+  .df-val { font-weight: 600; color: var(--text-main); text-align: right; }
+  .assigned-banner { background: var(--primary-light); border: 1px solid rgba(181, 155, 117, 0.2); border-radius: var(--radius-sm); padding: 16px; font-size: 14px; color: var(--primary-color); font-weight: 700; margin-bottom: 32px; display: flex; align-items: center; gap: 12px; }
 </style>
 
-<div class="page-wrap">
-
-  <!-- Header -->
-  <div class="pg-head">
-    <div>
-      <div class="pg-title">Schedule</div>
-      <div class="pg-sub">All venue bookings — read only · <?= esc($staff['name']) ?></div>
+<header class="top-header">
+    <div class="welcome-section">
+        <div class="admin-avatar">
+            <i class="fas fa-user"></i>
+        </div>
+        <div class="welcome-text">
+            <h2><?= $greeting ?>, <?= esc($firstName) ?>!</h2>
+            <p><?= $roleLabel ?></p>
+        </div>
     </div>
+    <div class="header-actions">
+        <button class="icon-btn" onclick="goToday()" title="Today">
+            <i class="fas fa-calendar-day"></i>
+        </button>
+    </div>
+</header>
+
+<div class="dashboard-content">
+    <div class="page-header">
+        <h1 class="page-title">Event Schedule</h1>
+        <div class="gold-line"></div>
+        <p class="page-subtitle">View all venue bookings and assignments</p>
+    </div>
+
     <div class="toolbar">
-      <div class="view-tabs">
-        <button class="vtab active" id="btn-month" onclick="setView('month')">Month</button>
-        <button class="vtab"        id="btn-list"  onclick="setView('list')">List</button>
-      </div>
-      <div class="tsep"></div>
-      <button class="nav-arr" onclick="navigate(-1)">‹</button>
-      <span class="period-lbl" id="period-lbl"></span>
-      <button class="nav-arr" onclick="navigate(1)">›</button>
-      <button class="today-btn" onclick="goToday()">Today</button>
+        <div class="view-tabs">
+            <button class="vtab active" id="btn-month" onclick="setView('month')">Month</button>
+            <button class="vtab"        id="btn-list"  onclick="setView('list')">List</button>
+        </div>
+        <div class="tsep"></div>
+        <button class="nav-arr" onclick="navigate(-1)"><i class="fas fa-chevron-left"></i></button>
+        <span class="period-lbl" id="period-lbl"></span>
+        <button class="nav-arr" onclick="navigate(1)"><i class="fas fa-chevron-right"></i></button>
+        <button class="today-btn" onclick="goToday()">Today</button>
     </div>
-  </div>
 
-  <!-- Stats -->
-  <div class="stats-strip">
-    <div class="sbox"><div class="sbox-val"><?= $totalAll ?></div><div class="sbox-lbl">Bookings this month</div></div>
-    <div class="sbox"><div class="sbox-val"><?= $totalAssigned ?></div><div class="sbox-lbl">I'm assigned to</div></div>
-    <div class="sbox"><div class="sbox-val"><?= count(array_filter($bookings, fn($b) => $b['status']==='approved')) ?></div><div class="sbox-lbl">Approved</div></div>
-    <div class="sbox"><div class="sbox-val"><?= count(array_filter($bookings, fn($b) => $b['status']==='confirmed')) ?></div><div class="sbox-lbl">Confirmed</div></div>
-  </div>
-
-  <!-- Legend -->
-  <div class="legend">
-    <div class="leg"><div class="leg-dot" style="background:#c19a6b"></div>My assignment</div>
-    <div class="leg"><div class="leg-dot" style="background:#ddd4c6"></div>Other bookings</div>
-    <div class="leg"><div class="leg-dot" style="background:#7a9a6a"></div>Approved</div>
-    <div class="leg"><div class="leg-dot" style="background:#b2a187"></div>Confirmed</div>
-  </div>
-
-  <!-- Calendar -->
-  <div class="cal-shell cal-view" id="cal-view">
-    <div class="day-names">
-      <?php foreach(['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] as $d): ?>
-        <div class="day-name"><?= $d ?></div>
-      <?php endforeach; ?>
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+            <div class="stat-info"><h3>Monthly Bookings</h3><p><?= $totalAll ?></p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+            <div class="stat-info"><h3>My Assignments</h3><p><?= $totalAssigned ?></p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-check"></i></div>
+            <div class="stat-info"><h3>Approved</h3><p><?= count(array_filter($bookings, fn($b) => $b['status']==='approved')) ?></p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-thumbs-up"></i></div>
+            <div class="stat-info"><h3>Confirmed</h3><p><?= count(array_filter($bookings, fn($b) => $b['status']==='confirmed')) ?></p></div>
+        </div>
     </div>
-    <div class="cal-grid" id="cal-grid"></div>
-  </div>
 
-  <!-- List view -->
-  <div class="list-view" id="list-view">
-    <?php
-    $grouped = []; foreach ($bookings as $b) $grouped[$b['event_date']][] = $b; ksort($grouped);
-    foreach ($grouped as $date => $rows):
-      $dt = new DateTime($date);
-    ?>
-    <div class="list-date-row">
-      <span class="list-date-pill"><?= $dt->format('D, M j') ?></span>
-      <div class="list-date-line"></div>
+    <div class="legend">
+        <div class="leg"><div class="leg-dot" style="background:#c19a6b"></div>My assignment</div>
+        <div class="leg"><div class="leg-dot" style="background:#ddd4c6"></div>Other bookings</div>
+        <div class="leg"><div class="leg-dot" style="background:#28a745"></div>Approved</div>
+        <div class="leg"><div class="leg-dot" style="background:#8b7d6b"></div>Confirmed</div>
     </div>
-    <?php foreach ($rows as $b):
-      $ac    = $b['is_assigned'] ? 'assigned' : 'unassigned';
-      $sc    = 'sp-' . $b['status'];
-      $start = date('g:i A', strtotime($b['start_time']));
-      $end   = date('g:i A', strtotime($b['end_time']));
-    ?>
-    <div class="list-card <?= $ac ?>" onclick="openDrawer(<?= htmlspecialchars(json_encode($b), ENT_QUOTES) ?>)">
-      <div class="lc-time"><?= $start ?><br><?= $end ?></div>
-      <div class="lc-body">
-        <div class="lc-title"><?= esc($b['event_type']) ?> — <?= esc($b['client_fullname']) ?></div>
-        <div class="lc-meta">📍 <?= esc($b['venue_name']) ?></div>
-        <div class="lc-ref"><?= esc($b['booking_reference']) ?></div>
-      </div>
-      <div class="lc-right">
-        <span class="status-pill <?= $sc ?>"><?= ucfirst($b['status']) ?></span>
-        <?php if ($b['is_assigned']): ?><span class="badge-assigned">Assigned</span><?php endif; ?>
-      </div>
+
+    <!-- Calendar View -->
+    <div class="cal-shell cal-view" id="cal-view">
+        <div class="day-names">
+            <?php foreach(['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] as $d): ?>
+                <div class="day-name"><?= $d ?></div>
+            <?php endforeach; ?>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
     </div>
-    <?php endforeach; endforeach; ?>
-  </div>
+
+    <!-- List View -->
+    <div class="list-view" id="list-view">
+        <?php
+        $grouped = []; foreach ($bookings as $b) $grouped[$b['event_date']][] = $b; ksort($grouped);
+        foreach ($grouped as $date => $rows):
+            $dt = new DateTime($date);
+        ?>
+        <div class="list-date-row">
+            <span class="list-date-pill"><?= $dt->format('D, M j') ?></span>
+            <div class="list-date-line"></div>
+        </div>
+        <?php foreach ($rows as $b):
+            $ac    = $b['is_assigned'] ? 'assigned' : 'unassigned';
+            $sc    = 'status-' . $b['status'];
+            $start = date('g:i A', strtotime($b['start_time']));
+            $end   = date('g:i A', strtotime($b['end_time']));
+        ?>
+        <div class="list-card <?= $ac ?>" onclick="openDrawer(<?= htmlspecialchars(json_encode($b), ENT_QUOTES) ?>)">
+            <div class="card-main p-3" style="display: flex; gap: 15px; width: 100%;">
+                <div class="lc-time"><?= $start ?><br><?= $end ?></div>
+                <div class="lc-body">
+                    <div class="lc-title"><?= esc($b['event_type']) ?> — <?= esc($b['client_fullname']) ?></div>
+                    <div class="lc-meta">📍 <?= esc($b['venue_name']) ?></div>
+                    <div class="lc-ref"><?= esc($b['booking_reference']) ?></div>
+                </div>
+                <div class="lc-right">
+                    <span class="assignment-status <?= $sc ?>"><?= ucfirst($b['status']) ?></span>
+                    <?php if ($b['is_assigned']): ?><span class="badge-assigned">Assigned</span><?php endif; ?>
+                </div>
+            </div>
+        </div>
+        <?php endforeach; endforeach; ?>
+    </div>
 </div>
 
 <!-- Drawer -->
 <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
-  <button class="drawer-close" onclick="closeDrawer()">×</button>
-  <div class="drawer-ref"   id="d-ref"></div>
-  <div class="drawer-title" id="d-title"></div>
-  <div class="drawer-sub"   id="d-sub"></div>
-  <div id="d-assigned-banner" class="assigned-banner" style="display:none">✓ You are assigned to this event</div>
-  <div class="drawer-lbl">Booking Details</div>
-  <div class="drawer-field"><span class="df-key">Venue</span>     <span class="df-val" id="d-venue"></span></div>
-  <div class="drawer-field"><span class="df-key">Date</span>      <span class="df-val" id="d-date"></span></div>
-  <div class="drawer-field"><span class="df-key">Time</span>      <span class="df-val" id="d-time"></span></div>
-  <div class="drawer-field"><span class="df-key">Event type</span><span class="df-val" id="d-type"></span></div>
-  <div class="drawer-field"><span class="df-key">Status</span>    <span class="df-val" id="d-status"></span></div>
-  <div class="drawer-field"><span class="df-key">Client</span>    <span class="df-val" id="d-client"></span></div>
+    <button class="drawer-close" onclick="closeDrawer()">×</button>
+    <div class="drawer-ref"   id="d-ref"></div>
+    <div class="drawer-title" id="d-title"></div>
+    <div class="drawer-sub"   id="d-sub"></div>
+    <div id="d-assigned-banner" class="assigned-banner" style="display:none">✓ You are assigned to this event</div>
+    <div class="drawer-lbl">Booking Details</div>
+    <div class="drawer-field"><span class="df-key">Venue</span>     <span class="df-val" id="d-venue"></span></div>
+    <div class="drawer-field"><span class="df-key">Date</span>      <span class="df-val" id="d-date"></span></div>
+    <div class="drawer-field"><span class="df-key">Time</span>      <span class="df-val" id="d-time"></span></div>
+    <div class="drawer-field"><span class="df-key">Event type</span><span class="df-val" id="d-type"></span></div>
+    <div class="drawer-field"><span class="df-key">Status</span>    <span class="df-val" id="d-status"></span></div>
+    <div class="drawer-field"><span class="df-key">Client</span>    <span class="df-val" id="d-client"></span></div>
 </div>
 
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
 <script>
 const bookings = <?= json_encode(array_values($bookings)) ?>;
 const byDate   = {};
@@ -338,5 +344,4 @@ function closeDrawer() {
 }
 renderCal();
 </script>
-
 <?= $this->endSection() ?>

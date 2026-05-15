@@ -8,6 +8,11 @@ use CodeIgniter\Filters\FilterInterface;
 
 class AuthCheckFilter implements FilterInterface
 {
+    private function centralLogoutUrl(string $reason = 'staff_authcheck_blocked'): string
+    {
+        return 'http://localhost:8080/logout?reason=' . urlencode($reason) . '&source=staff-management';
+    }
+
     public function before(RequestInterface $request, $arguments = null)
     {
         $path = $request->getPath();
@@ -23,7 +28,8 @@ class AuthCheckFilter implements FilterInterface
         if (!$session->get('isLoggedIn') && !$session->get('sso_auth')) {
             log_message('debug', 'AuthCheckFilter blocked path: ' . $path);
             session()->setTempdata('beforeLoginUrl', current_url(), 30);
-            return redirect()->to('http://localhost:8080/logout');
+            // Prevent SSO bounce loops by clearing central auth first.
+            return redirect()->to($this->centralLogoutUrl('staff_auth_missing'));
         }
     }
 

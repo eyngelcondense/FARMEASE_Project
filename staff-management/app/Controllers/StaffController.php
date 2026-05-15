@@ -17,13 +17,33 @@ class StaffController extends BaseController
         $this->assignmentModel = model(StaffAssignmentModel::class);
     }
 
+    private function centralLogoutUrl(string $reason = 'staff_session_invalid'): string
+    {
+        $config = new \Config\SsoConfig();
+        $base = preg_replace('#/login/?$#', '/logout', $config->loginUrl) ?: 'http://localhost:8080/logout';
+        return $base . '?reason=' . urlencode($reason) . '&source=staff-management';
+    }
+
     // ── Auth check helper ────────────────────────────────────────────────────
     // Use this instead of redirecting from __construct (doesn't work in CI4).
     // Better: apply the Session filter in app/Config/Filters.php to your routes.
     private function requireLogin(): ?object
     {
         if (! session()->get('sso_auth') || ! session()->get('staff_id')) {
-            return redirect()->to('http://localhost:8080/logout');
+            // Write debug info to writable logs for easier troubleshooting
+            $logDir = defined('WRITEPATH') ? WRITEPATH . 'logs/' : APPPATH . '../writable/logs/';
+            if (! is_dir($logDir)) {
+                @mkdir($logDir, 0755, true);
+            }
+
+            $debug = [
+                'time'    => date('c'),
+                'session' => session()->get(),
+                'uri'     => current_url(false),
+            ];
+            @file_put_contents($logDir . 'auth_debug.log', json_encode($debug, JSON_UNESCAPED_SLASHES) . PHP_EOL, FILE_APPEND | LOCK_EX);
+
+            return redirect()->to($this->centralLogoutUrl('staff_session_missing'));
         }
         return null;
     }
@@ -268,7 +288,6 @@ class StaffController extends BaseController
     {
         session()->destroy();
         log_message('info', 'Staff logged out. Redirecting to event system.');
-        $config = new \Config\SsoConfig();
-        return redirect()->to($config->loginUrl)->with('message', 'You have been logged out.');
+        return redirect()->to($this->centralLogoutUrl('staff_manual_logout'))->with('message', 'You have been logged out.');
     }
 }

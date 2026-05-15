@@ -5,11 +5,13 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\StudioModel;
 use App\Models\StudioBookingModel;
+use App\Models\StudioImageModel;
 
 class StudioController extends BaseController
 {
     protected $studioModel;
     protected $bookingModel;
+    protected $imageModel;
 
     public function __construct()
     {
@@ -20,6 +22,9 @@ class StudioController extends BaseController
         
         $this->bookingModel = model(StudioBookingModel::class);
         log_message('debug', 'StudioController: bookingModel initialized');
+
+        $this->imageModel = model(StudioImageModel::class);
+        log_message('debug', 'StudioController: imageModel initialized');
 
         helper('form');
         
@@ -223,8 +228,7 @@ class StudioController extends BaseController
         if ($this->studioModel) {
             log_message('debug', 'StudioController: getting gallery for studio ' . $studioId);
             $data['studio'] = $this->studioModel->find($studioId);
-            // TODO: Get gallery images
-            $data['images'] = [];
+            $data['images'] = $this->imageModel ? $this->imageModel->getStudioImages($studioId) : [];
             log_message('debug', 'StudioController: gallery loaded');
         } else {
             log_message('error', 'StudioController: studioModel is NULL in gallery method');
@@ -279,6 +283,121 @@ class StudioController extends BaseController
             log_message('error', 'StudioController: studioModel is NULL in updateInfo method');
             return redirect()->back()->with('error', 'Studio model not available.');
         }
+    }
+
+    public function uploadImages()
+    {
+        if (! $this->imageModel) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Image model not available.']);
+        }
+
+        $files = $this->request->getFileMultiple('images');
+        if (empty($files)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Please select at least one photo.']);
+        }
+
+        $studioId = 1;
+        $uploadDir = FCPATH . 'uploads/studios/gallery/';
+        if (! is_dir($uploadDir)) {
+            mkdir($uploadDir, 0775, true);
+        }
+
+        $existingCount = (int) $this->imageModel->where('studio_id', $studioId)->countAllResults();
+        $created = 0;
+
+        foreach ($files as $file) {
+            if (! $file || ! $file->isValid() || $file->hasMoved()) {
+                continue;
+            }
+
+            $randomName = $file->getRandomName();
+            $file->move($uploadDir, $randomName);
+
+            $this->imageModel->insert([
+                'studio_id'  => $studioId,
+                'image_path' => 'uploads/studios/gallery/' . $randomName,
+                'image_name' => $file->getClientName(),
+                'alt_text'   => pathinfo($file->getClientName(), PATHINFO_FILENAME),
+                'is_primary' => ($existingCount === 0 && $created === 0) ? 1 : 0,
+                'sort_order' => $existingCount + $created + 1,
+                'status'     => 'active',
+            ]);
+
+            $created++;
+        }
+
+        if ($created === 0) {
+            return $this->response->setJSON(['success' => false, 'message' => 'No valid images were uploaded.']);
+        }
+
+        return $this->response->setJSON(['success' => true, 'message' => $created . ' photo(s) uploaded successfully.']);
+    }
+
+    public function updateImage()
+    {
+        if (! $this->imageModel) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Image model not available.']);
+        }
+
+        $imageId = (int) $this->request->getPost('image_id');
+        $image = $this->imageModel->find($imageId);
+
+        if (! $image) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Image not found.']);
+        }
+
+        $isPrimary = (int) $this->request->getPost('is_primary') === 1 ? 1 : 0;
+        if ($isPrimary) {
+            $this->imageModel->unsetAllPrimary($image['studio_id']);
+        }
+
+        $updated = $this->imageModel->update($imageId, [
+            'alt_text'   => $this->request->getPost('alt_text'),
+            'is_primary' => $isPrimary,
+            'status'     => 'active',
+        ]);
+
+        return $this->response->setJSON([
+            'success' => (bool) $updated,
+            'message' => $updated ? 'Photo details updated successfully.' : 'Failed to update photo details.',
+        ]);
+    }
+
+    public function setPrimaryImage()
+    {
+        if (! $this->imageModel) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Image model not available.']);
+        }
+
+        $imageId = (int) $this->request->getPost('image_id');
+        $image = $this->imageModel->find($imageId);
+
+        if (! $image) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Image not found.']);
+        }
+
+        $this->imageModel->unsetAllPrimary($image['studio_id']);
+        $updated = $this->imageModel->update($imageId, ['is_primary' => 1]);
+
+        return $this->response->setJSON([
+            'success' => (bool) $updated,
+            'message' => $updated ? 'Primary photo updated successfully.' : 'Failed to set primary photo.',
+        ]);
+    }
+
+    public function deleteImage()
+    {
+        if (! $this->imageModel) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Image model not available.']);
+        }
+
+        $imageId = (int) $this->request->getPost('image_id');
+        $deleted = $this->imageModel->deleteImage($imageId);
+
+        return $this->response->setJSON([
+            'success' => (bool) $deleted,
+            'message' => $deleted ? 'Photo deleted successfully.' : 'Failed to delete photo.',
+        ]);
     }
 
     // ========================================================================

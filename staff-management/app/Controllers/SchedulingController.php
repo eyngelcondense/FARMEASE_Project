@@ -52,7 +52,26 @@ class SsoController extends BaseController
                     'staff_photo' => $staff['profile_photo'] ?? null,
                 ]);
             } else {
+                // Log to CI logger
                 log_message('warning', 'No staff record found for user_id: ' . $payload['uid']);
+
+                // Also append to a writable debug log for easy inspection
+                $logDir = defined('WRITEPATH') ? WRITEPATH . 'logs/' : APPPATH . '../writable/logs/';
+                if (! is_dir($logDir)) {
+                    @mkdir($logDir, 0755, true);
+                }
+
+                $debugData = [
+                    'time'    => date('c'),
+                    'uid'     => $payload['uid'] ?? null,
+                    'email'   => $payload['email'] ?? null,
+                    'group'   => $payload['group'] ?? null,
+                    'session' => session()->get(),
+                    'note'    => 'No staff profile found (scheduling controller)',
+                ];
+
+                @file_put_contents($logDir . 'sso_debug.log', json_encode($debugData, JSON_UNESCAPED_SLASHES) . PHP_EOL, FILE_APPEND | LOCK_EX);
+
                 return redirect()->to('http://localhost:8080/logout')
                     ->with('error', 'No staff profile found. Please contact your administrator.');
             }

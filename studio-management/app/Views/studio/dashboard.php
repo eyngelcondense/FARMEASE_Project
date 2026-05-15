@@ -1,285 +1,459 @@
-<?= $this->extend('studio/header') ?>
-<?= $this->section('content') ?>
+<?php
+    $current_page = isset($current_page) ? $current_page : 'dashboard'; 
+?>
 
-<div class="container mt-5">
-    <h1 class="mb-4">My Studio Dashboard</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studio Dashboard - San Isidro Labrador Resort</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css">
+</head>
+<?= $this->include('studio/style') ?>
 
-    <!-- Today's Schedule Highlight -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h4 class="card-title mb-1">
-                                <i class="fas fa-calendar-day"></i> Today's Schedule
-                            </h4>
-                            <p class="mb-0"><?php echo date('l, F j, Y'); ?></p>
+<body>
+    <?= $this->include('studio/sidebar') ?>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Main Content Area -->
+    <div class="main-layout" id="mainLayout">
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="welcome-section">
+                <div class="admin-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="welcome-text">
+                    <h2>Welcome back, Studio Owner!</h2>
+                    <p>Studio Management</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" onclick="refreshDashboard()" title="Refresh Dashboard">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <!-- Stats Cards -->
+            <div class="stats-row" id="statsRow">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Total Bookings</h3>
+                        <p id="totalBookings">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-peso-sign"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Revenue</h3>
+                        <p id="totalRevenue">Php 0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Total Guests</h3>
+                        <p id="totalGuests">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Rating</h3>
+                        <p id="studioRating">4.8</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Today's Bookings</h3>
+                        <p id="todayCount">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Charts Row -->
+            <div class="chart-row">
+                <!-- Today's Schedule -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>
+                            <i class="fas fa-clock"></i> Today's Schedule
+                        </h3>
+                        <div class="chart-controls">
+                            <button class="icon-btn" onclick="refreshBookings()" style="width: 32px; height: 32px;">
+                                <i class="fas fa-redo-alt" style="font-size: 14px;"></i>
+                            </button>
                         </div>
-                        <div class="text-end">
-                            <h3 class="mb-0">
-                                <?php
-                                $todayBookings = array_filter($bookings, function($booking) {
-                                    return $booking->event_date === date('Y-m-d');
-                                });
-                                echo count($todayBookings);
-                                ?>
-                            </h3>
-                            <small>booking(s) today</small>
+                    </div>
+                    <div class="mini-card-content" id="todaySchedule">
+                        <div class="text-center py-3">
+                            <i class="fas fa-calendar-check fa-2x text-muted mb-2"></i>
+                            <p class="text-muted mb-0">No bookings today</p>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Bookings -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>
+                            <i class="fas fa-calendar-week"></i> Upcoming This Week
+                        </h3>
+                        <div class="chart-controls">
+                            <a href="<?= site_url('studio/bookings') ?>" class="view-all">View All</a>
+                        </div>
+                    </div>
+                    <div class="mini-card-content" id="upcomingSchedule">
+                        <div class="text-center py-3">
+                            <i class="fas fa-calendar-times fa-2x text-muted mb-2"></i>
+                            <p class="text-muted mb-0">No upcoming bookings</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Row -->
+            <div class="bottom-row">
+                <!-- Recent Bookings -->
+                <div class="mini-card">
+                    <div class="mini-card-header">
+                        <h4>Recent Bookings</h4>
+                        <a href="<?= site_url('studio/bookings') ?>" class="view-all">View All</a>
+                    </div>
+                    <div class="mini-card-content" id="recentBookings">
+                        <div class="text-center py-4">
+                            <p class="text-muted">Loading recent bookings...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="mini-card">
+                    <div class="mini-card-header">
+                        <h4>Quick Actions</h4>
+                    </div>
+                    <div class="mini-card-content">
+                        <a href="<?= site_url('studio/bookings') ?>" class="btn btn-sm btn-outline-primary w-100 mb-2">
+                            <i class="fas fa-calendar-alt"></i> View All Bookings
+                        </a>
+                        <a href="<?= site_url('studio/info') ?>" class="btn btn-sm btn-outline-primary w-100 mb-2">
+                            <i class="fas fa-building"></i> Studio Information
+                        </a>
+                        <a href="<?= site_url('studio/gallery') ?>" class="btn btn-sm btn-outline-primary w-100 mb-2">
+                            <i class="fas fa-images"></i> Manage Gallery
+                        </a>
+                        <a href="<?= site_url('studio/schedule') ?>" class="btn btn-sm btn-outline-primary w-100">
+                            <i class="fas fa-clock"></i> Full Schedule
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Quick Stats Cards -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card text-white bg-info">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        <i class="fas fa-calendar-alt"></i> Total Bookings
-                    </h5>
-                    <h2 class="display-6"><?= count($bookings) ?></h2>
-                    <small>This month</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-success">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        <i class="fas fa-dollar-sign"></i> Monthly Revenue
-                    </h5>
-                    <h2 class="display-6">₱<?php
-                        $monthlyRevenue = array_sum(array_column($bookings, 'total_amount'));
-                        echo number_format($monthlyRevenue, 0);
-                    ?></h2>
-                    <small>Estimated earnings</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-warning">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        <i class="fas fa-users"></i> Total Guests
-                    </h5>
-                    <h2 class="display-6"><?php
-                        $totalGuests = array_sum(array_column($bookings, 'total_guests'));
-                        echo number_format($totalGuests);
-                    ?></h2>
-                    <small>People served</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-danger">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        <i class="fas fa-star"></i> Rating
-                    </h5>
-                    <h2 class="display-6">4.8</h2>
-                    <small>Client satisfaction</small>
-                </div>
-            </div>
+    <!-- Loading Spinner -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
         </div>
     </div>
 
-    <!-- Today's Bookings -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">
-                        <i class="fas fa-clock"></i> Today's Schedule
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <?php if (!empty($todayBookings)): ?>
-                        <div class="list-group">
-                            <?php foreach ($todayBookings as $booking): ?>
-                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong><?= esc($booking->start_time) ?> - <?= esc($booking->end_time) ?></strong>
-                                        <br>
-                                        <small class="text-muted">
-                                            <i class="fas fa-user"></i> <?= esc($booking->client_name) ?> |
-                                            <i class="fas fa-users"></i> <?= esc($booking->total_guests) ?> guests |
-                                            <i class="fas fa-tag"></i> <?= esc($booking->event_type) ?>
-                                        </small>
-                                    </div>
-                                    <div class="btn-group btn-group-sm">
-                                        <button class="btn btn-outline-primary" onclick="contactClient('<?= esc($booking->client_email) ?>', '<?= esc($booking->client_name) ?>')">
-                                            <i class="fas fa-envelope"></i>
-                                        </button>
-                                        <button class="btn btn-outline-success" onclick="callClient('<?= esc($booking->client_phone) ?>')">
-                                            <i class="fas fa-phone"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php else: ?>
-                        <div class="text-center py-4">
-                            <i class="fas fa-calendar-check fa-3x text-muted mb-3"></i>
-                            <h6 class="text-muted">No bookings today</h6>
-                            <p class="text-muted mb-0">Enjoy your free day!</p>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Initialize everything when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initSidebar();
+            loadDashboardStats();
+            loadTodaySchedule();
+            loadUpcomingSchedule();
+            loadRecentBookings();
+        });
 
-        <!-- Upcoming Bookings -->
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">
-                        <i class="fas fa-calendar-week"></i> Upcoming This Week
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <?php
-                    $upcomingBookings = array_filter($bookings, function($booking) {
-                        $eventDate = strtotime($booking->event_date);
-                        $now = time();
-                        $weekFromNow = strtotime('+1 week');
-                        return $eventDate > $now && $eventDate <= $weekFromNow;
-                    });
-                    ?>
+        // Toggle Sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainLayout = document.getElementById('mainLayout');
+            
+            sidebar.classList.toggle('collapsed');
+            mainLayout.classList.toggle('expanded');
+            
+            // Save state to localStorage
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            localStorage.setItem('sidebarCollapsed', isCollapsed);
+        }
 
-                    <?php if (!empty($upcomingBookings)): ?>
-                        <div class="list-group">
-                            <?php
-                            usort($upcomingBookings, function($a, $b) {
-                                return strtotime($a->event_date) - strtotime($b->event_date);
-                            });
-                            $upcomingBookings = array_slice($upcomingBookings, 0, 5); // Show next 5
-                            ?>
-
-                            <?php foreach ($upcomingBookings as $booking): ?>
-                                <div class="list-group-item">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div>
-                                            <strong class="text-primary">
-                                                <?= date('M d', strtotime($booking->event_date)) ?>
-                                            </strong>
-                                            <span class="badge bg-info ms-2">
-                                                <?= esc($booking->start_time) ?>-<?= esc($booking->end_time) ?>
-                                            </span>
-                                            <br>
-                                            <small class="text-muted">
-                                                <i class="fas fa-user"></i> <?= esc($booking->client_name) ?> |
-                                                <i class="fas fa-tag"></i> <?= esc($booking->event_type) ?>
-                                            </small>
-                                        </div>
-                                        <div class="btn-group btn-group-sm">
-                                            <button class="btn btn-outline-primary btn-sm" onclick="contactClient('<?= esc($booking->client_email) ?>', '<?= esc($booking->client_name) ?>')">
-                                                <i class="fas fa-envelope"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php else: ?>
-                        <div class="text-center py-4">
-                            <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
-                            <h6 class="text-muted">No upcoming bookings</h6>
-                            <p class="text-muted mb-0">Check back later for new reservations.</p>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Quick Actions -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">
-                        <i class="fas fa-bolt"></i> Quick Actions
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-3 text-center mb-3">
-                            <a href="<?= base_url('studio/bookings') ?>" class="btn btn-outline-primary btn-lg w-100">
-                                <i class="fas fa-calendar-alt fa-2x mb-2"></i>
-                                <br>
-                                <strong>View All Bookings</strong>
-                            </a>
-                        </div>
-                        <div class="col-md-3 text-center mb-3">
-                            <a href="<?= base_url('studio/info') ?>" class="btn btn-outline-info btn-lg w-100">
-                                <i class="fas fa-building fa-2x mb-2"></i>
-                                <br>
-                                <strong>Update Studio Info</strong>
-                            </a>
-                        </div>
-                        <div class="col-md-3 text-center mb-3">
-                            <a href="<?= base_url('studio/gallery') ?>" class="btn btn-outline-success btn-lg w-100">
-                                <i class="fas fa-images fa-2x mb-2"></i>
-                                <br>
-                                <strong>Manage Gallery</strong>
-                            </a>
-                        </div>
-                        <div class="col-md-3 text-center mb-3">
-                            <a href="<?= base_url('studio/schedule') ?>" class="btn btn-outline-warning btn-lg w-100">
-                                <i class="fas fa-clock fa-2x mb-2"></i>
-                                <br>
-                                <strong>Full Schedule</strong>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- DataTables JavaScript -->
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-$(document).ready(function() {
-    $('#bookingsTable').DataTable({
-        responsive: true,
-        pageLength: 10,
-        order: [[4, 'desc']], // Sort by event date
-        language: {
-            search: "Search bookings...",
-            lengthMenu: "Show _MENU_ bookings",
-            info: "Showing _START_ to _END_ of _TOTAL_ bookings",
-            paginate: {
-                first: "First",
-                last: "Last",
-                next: "Next",
-                previous: "Previous"
+        // Initialize sidebar state
+        function initSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainLayout = document.getElementById('mainLayout');
+            const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            
+            if (isCollapsed) {
+                sidebar.classList.add('collapsed');
+                mainLayout.classList.add('expanded');
             }
         }
-    });
-});
 
-function confirmLogout(event) {
-    event.preventDefault();
-    const confirmAction = confirm("Are you sure you want to log out?");
-    if (confirmAction) {
-        window.location.href = event.currentTarget.href;
-    }
-    return false;
-}
-</script>
+        // Toggle Mobile Sidebar
+        function toggleMobileSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
 
-<?= $this->include('studio/footer') ?>
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (window.innerWidth <= 992) {
+                if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+
+        // Refresh Dashboard
+        async function refreshDashboard() {
+            showLoading(true);
+            await Promise.all([
+                loadDashboardStats(),
+                loadTodaySchedule(),
+                loadUpcomingSchedule(),
+                loadRecentBookings()
+            ]);
+            showLoading(false);
+            
+            // Show refresh confirmation
+            showToast('Dashboard refreshed successfully', 'success');
+        }
+
+        // Show/Hide Loading
+        function showLoading(show) {
+            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+        }
+
+        // Toast Notification
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast-notification toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-content">
+                    <i class="fas fa-${type === 'success' ? 'check' : 'info'}-circle"></i>
+                    <span>${message}</span>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Load Dashboard Stats
+        async function loadDashboardStats() {
+            try {
+                const response = await fetch('<?= site_url("studio/dashboard/stats") ?>');
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateStatsDisplay(data.data);
+                }
+            } catch (error) {
+                console.error('Error loading dashboard stats:', error);
+                // Use sample data if API fails
+                updateStatsDisplay({
+                    total_bookings: 12,
+                    revenue: 45000,
+                    total_guests: 250,
+                    today_bookings: 2
+                });
+            }
+        }
+
+        function updateStatsDisplay(stats) {
+            document.getElementById('totalBookings').textContent = stats.total_bookings || 0;
+            document.getElementById('totalRevenue').textContent = `Php ${(stats.revenue || 0).toLocaleString()}`;
+            document.getElementById('totalGuests').textContent = (stats.total_guests || 0).toLocaleString();
+            document.getElementById('todayCount').textContent = stats.today_bookings || 0;
+        }
+
+        // Load Today's Schedule
+        async function loadTodaySchedule() {
+            try {
+                const response = await fetch('<?= site_url("studio/dashboard/today-schedule") ?>');
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateTodayScheduleDisplay(data.bookings);
+                }
+            } catch (error) {
+                console.error('Error loading today schedule:', error);
+            }
+        }
+
+        function updateTodayScheduleDisplay(bookings) {
+            const container = document.getElementById('todaySchedule');
+            
+            if (!bookings || bookings.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="fas fa-calendar-check fa-2x text-muted mb-2"></i>
+                        <p class="text-muted">No bookings today</p>
+                        <small class="text-muted">Enjoy your free day!</small>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = bookings.map(booking => `
+                <div class="booking-item">
+                    <div class="booking-info">
+                        <strong>${booking.start_time} - ${booking.end_time}</strong>
+                        <span class="booking-package">${booking.client_name || 'No Client'}</span>
+                    </div>
+                    <div class="booking-meta">
+                        <span class="booking-date"><i class="fas fa-users"></i> ${booking.total_guests || 0} guests</span>
+                        <span class="booking-status status-${booking.status}">${booking.status}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load Upcoming Schedule
+        async function loadUpcomingSchedule() {
+            try {
+                const response = await fetch('<?= site_url("studio/dashboard/upcoming-schedule") ?>');
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateUpcomingScheduleDisplay(data.bookings);
+                }
+            } catch (error) {
+                console.error('Error loading upcoming schedule:', error);
+            }
+        }
+
+        function updateUpcomingScheduleDisplay(bookings) {
+            const container = document.getElementById('upcomingSchedule');
+            
+            if (!bookings || bookings.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="fas fa-calendar-times fa-2x text-muted mb-2"></i>
+                        <p class="text-muted">No upcoming bookings</p>
+                        <small class="text-muted">Check back later for new reservations.</small>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = bookings.map(booking => `
+                <div class="event-item">
+                    <div class="event-info">
+                        <strong>${formatDate(booking.event_date)}</strong>
+                        <span class="event-venue">${booking.client_name || 'No Client'}</span>
+                    </div>
+                    <div class="event-meta">
+                        <span class="event-time">${booking.start_time}</span>
+                        <span class="booking-status status-${booking.status}">${booking.status}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load Recent Bookings
+        async function loadRecentBookings() {
+            try {
+                const response = await fetch('<?= site_url("studio/dashboard/recent-bookings") ?>');
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateRecentBookingsDisplay(data.bookings);
+                }
+            } catch (error) {
+                console.error('Error loading recent bookings:', error);
+            }
+        }
+
+        function updateRecentBookingsDisplay(bookings) {
+            const container = document.getElementById('recentBookings');
+            
+            if (!bookings || bookings.length === 0) {
+                container.innerHTML = '<div class="text-center py-4"><p class="text-muted">No recent bookings</p></div>';
+                return;
+            }
+
+            container.innerHTML = bookings.map(booking => `
+                <div class="booking-item">
+                    <div class="booking-info">
+                        <strong>${booking.client_name}</strong>
+                        <span class="booking-package">${formatDate(booking.event_date)}</span>
+                    </div>
+                    <div class="booking-meta">
+                        <span class="booking-date">${booking.start_time} - ${booking.end_time}</span>
+                        <span class="booking-status status-${booking.status}">${booking.status}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Refresh Bookings
+        function refreshBookings() {
+            loadTodaySchedule();
+            loadUpcomingSchedule();
+            loadRecentBookings();
+        }
+
+        // Utility Functions
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            return new Date(dateString).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            });
+        }
+
+        function formatTime(timeString) {
+            if (!timeString) return 'N/A';
+            return new Date(`2000-01-01T${timeString}`).toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            });
+        }
+    </script>
 
 </body>
 </html>
-<?= $this->endSection() ?>

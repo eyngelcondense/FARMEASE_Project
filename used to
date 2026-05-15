@@ -1,0 +1,29 @@
+{
+    "workbench.colorTheme": "Dobri Next -C05- Electron",
+    "liveServer.settings.donotShowInfoMsg": true,
+    "editor.accessibilitySupport": "off",
+    "chat.instructionsFilesLocations": {
+        ".github/instructions": true,
+        ".claude/rules": true,
+        "~/.copilot/instructions": true,
+        "~/.claude/rules": true,
+        "/var/folders/d0/snf3ly8959s47l0p1zrj912m0000gn/T/postman-collections-post-response.instructions.md": true,
+        "/var/folders/d0/snf3ly8959s47l0p1zrj912m0000gn/T/postman-collections-pre-request.instructions.md": true,
+        "/var/folders/d0/snf3ly8959s47l0p1zrj912m0000gn/T/postman-folder-post-response.instructions.md": true,
+        "/var/folders/d0/snf3ly8959s47l0p1zrj912m0000gn/T/postman-folder-pre-request.instructions.md": true,
+        "/var/folders/d0/snf3ly8959s47l0p1zrj912m0000gn/T/postman-http-request-post-response.instructions.md": true,
+        "/var/folders/d0/snf3ly8959s47l0p1zrj912m0000gn/T/postman-http-request-pre-request.instructions.md": true
+    },
+    
+    
+    "workbench.activityBar.location": "hidden",
+    "workbench.secondarySideBar.defaultVisibility": "hidden",
+    "editor.minimap.enabled": false,
+    "claudeCode.preferredLocation": "panel",
+    "explorer.confirmDelete": false,
+    "workbench.editor.empty.hint": "hidden",
+    "workbench.editor.enablePreview": false,
+    "chat.mcp.gallery.enabled": true,
+    "python.defaultInterpreterPath": "/Users/magnaye.rp/Library/Application Support/Autodesk/webdeploy/production/a5622f4599acfbd64092660b8146f6dfac84b731/Autodesk Fusion.app/Contents/Frameworks/Python.framework/Versions/Current/bin/python"
+}
+

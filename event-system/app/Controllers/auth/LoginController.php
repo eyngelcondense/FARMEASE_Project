@@ -2,8 +2,10 @@
 
 namespace App\Controllers\auth;
 
+use App\Libraries\SsoToken;
 use CodeIgniter\Shield\Controllers\LoginController as ShieldLogin;
 use CodeIgniter\HTTP\RedirectResponse;
+use Config\SsoConfig;
 
 class LoginController extends ShieldLogin
 {
@@ -12,6 +14,26 @@ class LoginController extends ShieldLogin
      */
     public function loginView(): string
     {
+        $reason = (string) $this->request->getGet('reason');
+        $source = (string) $this->request->getGet('source');
+
+        if ($reason !== '') {
+            $messages = [
+                'staff_profile_missing' => 'Staff login failed: no staff profile matched your account.',
+                'staff_session_missing' => 'Staff login failed: staff session was not established.',
+                'staff_auth_missing'    => 'Staff login failed: authentication state was missing.',
+                'staff_sso_failure'     => 'Staff login failed during SSO processing.',
+                'staff_session_invalid' => 'Staff login failed: invalid staff session.',
+            ];
+
+            $label = $messages[$reason] ?? ('SSO redirect reason: ' . $reason . '.');
+            if ($source !== '') {
+                $label .= ' Source: ' . $source . '.';
+            }
+
+            session()->setFlashdata('error', $label);
+        }
+
         return view('auth/login');
     }
 
@@ -65,9 +87,15 @@ class LoginController extends ShieldLogin
         if ($user->inGroup('admin')) {
             return redirect()->to('/admin/dashboard');
         } elseif ($user->inGroup('staff')) {
-            return redirect()->to('http://localhost:8082/staff/dashboard');
+            $config = new SsoConfig();
+            $token = SsoToken::generate($user->id, $user->email, 'staff');
+            $url = rtrim($config->groupUrlMap['staff'] ?? 'http://localhost:8082/staff', '/');
+            return redirect()->to($url . '/sso/authenticate?token=' . urlencode($token));
         } elseif ($user->inGroup('studio')) {
-            return redirect()->to('http://localhost:8083/studio/dashboard');
+            $config = new SsoConfig();
+            $token = SsoToken::generate($user->id, $user->email, 'studio');
+            $url = rtrim($config->groupUrlMap['studio'] ?? 'http://localhost:8083/studio', '/');
+            return redirect()->to($url . '/sso/authenticate?token=' . urlencode($token));
         } else {
             return redirect()->to('/home');
         }
@@ -75,9 +103,25 @@ class LoginController extends ShieldLogin
 
     public function logout(): RedirectResponse
         {
+            $reason = $this->request->getGet('reason');
+            $source = $this->request->getGet('source');
+
             auth()->logout();
             session()->destroy();
-            return redirect()->to('/login')->with('message', 'You have been logged out.');
+
+            $url = '/login';
+            $query = [];
+            if ($reason) {
+                $query['reason'] = $reason;
+            }
+            if ($source) {
+                $query['source'] = $source;
+            }
+            if (! empty($query)) {
+                $url .= '?' . http_build_query($query);
+            }
+
+            return redirect()->to($url)->with('message', 'You have been logged out.');
         }
 
 }

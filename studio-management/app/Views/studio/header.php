@@ -30,7 +30,9 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #f5f3f0;
+            background:
+                radial-gradient(circle at top left, rgba(193,154,107,0.12), transparent 28%),
+                linear-gradient(180deg, #fbf8f4 0%, #f6f2ec 100%);
             color: #3b2a18;
             overflow-x: hidden;
             transition: all 0.3s ease;
@@ -38,15 +40,17 @@
 
         /* ===== HEADER STYLES ===== */
         .header-bar {
-            background-color: #b2a187;
-            padding: 5px 0;
+            background: linear-gradient(135deg, #3b2a18 0%, #7a6a58 72%, #c19a6b 100%);
+            padding: 8px 0;
+            box-shadow: 0 10px 28px rgba(59,42,24,0.15);
         }
 
         .header-container {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 50px;
+            padding: 0 28px;
+            gap: 18px;
         }
 
         .header-logo {
@@ -66,15 +70,16 @@
 
         .header-logo-text h5 {
             margin: 0;
-            font-size: 1rem;
-            color: #3b2a18;
-            letter-spacing: 2px;
+            font-family: 'IM Fell English', serif;
+            font-size: 1.1rem;
+            color: #f5e3c6;
+            letter-spacing: 1.5px;
         }
 
         .header-logo-text p {
             margin: 0;
-            font-size: 0.7rem;
-            color: #8b6f47;
+            font-size: 0.72rem;
+            color: rgba(245,227,198,0.68);
         }
 
         /* Profile Dropdown */
@@ -86,14 +91,14 @@
         .profile-btn {
             background: none;
             border: none;
-            color: #3b2a18;
+            color: #f5e3c6;
             font-size: 1.6rem;
             cursor: pointer;
             transition: color 0.3s;
         }
 
         .profile-btn:hover {
-            color: #fffcf8ff;
+            color: #fff;
         }
 
         .dropdown-menu {
@@ -101,24 +106,26 @@
             position: absolute;
             right: 0;
             background-color: #ffffff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            min-width: 160px;
+            border: 1px solid #ddd4c6;
+            border-radius: 14px;
+            box-shadow: 0 18px 40px rgba(59,42,24,0.16);
+            min-width: 190px;
             z-index: 10;
+            padding: 8px;
         }
 
         .dropdown-menu a {
             color: #3b2a18;
             text-decoration: none;
             display: block;
-            padding: 10px 15px;
+            padding: 10px 12px;
             font-size: 0.9rem;
             transition: background-color 0.3s;
+            border-radius: 10px;
         }
 
         .dropdown-menu a:hover {
-            background-color: #f5f1eb;
+            background-color: #f0ece4;
         }
 
         .profile-dropdown:hover .dropdown-menu {
@@ -127,10 +134,11 @@
 
         /* Navigation */
         .navbar {
-            background-color: #ffffff;
-            border-top: 1px solid #ddd;
-            border-bottom: 1px solid #ddd;
+            background-color: rgba(255,255,255,0.78);
+            border-top: 1px solid #e9e3db;
+            border-bottom: 1px solid #e9e3db;
             padding: 0;
+            backdrop-filter: blur(8px);
         }
 
         .navbar-nav {
@@ -140,7 +148,7 @@
         .navbar-nav .nav-link {
             color: #3b2a18;
             font-weight: 600;
-            margin: 0 20px;
+            margin: 0 18px;
             padding: 15px 0;
             font-size: 0.95rem;
             position: relative;
@@ -150,7 +158,7 @@
 
         /* Hover Effect */
         .navbar-nav .nav-link:hover {
-            color: #8b6f47;
+            color: #c19a6b;
         }
 
         /* Active Link (Current Page) */
@@ -161,12 +169,12 @@
             left: 0;
             width: 100%;
             height: 2px;
-            background-color: #8b6f47;
+            background-color: #c19a6b;
             transition: width 0.3s ease;
         }
 
         .navbar-nav .nav-link.active {
-            color: #8b6f47;
+            color: #c19a6b;
         }
 
         /* Mobile Menu Toggle */
@@ -176,7 +184,7 @@
             top: 20px;
             right: 20px;
             z-index: 1001;
-            background: #8b6f47;
+            background: #c19a6b;
             color: white;
             border: none;
             padding: 10px;
@@ -239,7 +247,7 @@
                 <div class="dropdown-menu">
                     <a href="<?= base_url('studio/profile') ?>">Profile Settings</a>
                     <hr style="margin: 5px 0;">
-                    <a href="<?= base_url('logout') ?>" 
+                    <a href="<?= base_url('studio/logout') ?>" 
                         class="logout-btn" 
                         title="Logout"
                         onclick="return confirmLogout(event)">
@@ -268,7 +276,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?= (uri_string() == 'studio/info') ? 'active' : '' ?>" href="<?= base_url('studio/info') ?>">
+                        <a class="nav-link <?= (uri_string() == 'studio/info' || uri_string() == 'studio/profile') ? 'active' : '' ?>" href="<?= base_url('studio/info') ?>">
                             <i class="fas fa-building"></i> Studio Info
                         </a>
                     </li>

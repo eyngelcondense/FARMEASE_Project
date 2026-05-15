@@ -135,7 +135,7 @@
 function bookStudio(studioId, studioName) {
     if (confirm(`Are you sure you want to book "${studioName}"?`)) {
         // Redirect to booking form with studio pre-selected
-        window.location.href = `<?= base_url('bookings') ?>?studio_id=${studioId}`;
+        window.location.href = `<?= base_url('studio/bookings') ?>?studio_id=${studioId}`;
     }
 }
 </script>
