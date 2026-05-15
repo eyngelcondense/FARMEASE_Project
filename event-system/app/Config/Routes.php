@@ -49,6 +49,8 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:client'
     $routes->post('booking/submit', 'BookingController::submit');
     $routes->get('booking/booked-dates', 'BookingController::bookedDates');
     $routes->get('booking/available-time-slots', 'BookingController::availableTimeSlots');
+    $routes->get('booking/available-studios', 'BookingController::availableStudios');
+    $routes->get('booking/studio/(:num)', 'BookingController::studioDetails/$1');
     $routes->get('booking/package-venues', 'BookingController::packageVenues');
 
     $routes->get('booking_history', 'BookingController::history');
@@ -104,6 +106,7 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->post('bookings/(:num)/approve', 'AdminBookingsController::approveBooking/$1');
     $routes->post('bookings/(:num)/approve-with-conflicts', 'AdminBookingsController::approveBookingWithConflicts/$1');
     $routes->post('bookings/(:num)/reject', 'AdminBookingsController::rejectBooking/$1');
+    $routes->post('bookings/(:num)/assign-staff', 'AdminBookingsController::assignStaff/$1');
     $routes->get('bookings/stats', 'AdminBookingsController::getBookingStats');
 
     $routes->get('admin/payments', 'AdminPaymentsController::index');
@@ -187,5 +190,18 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->get('admin/contracts/download/(:num)', 'AdminContractsController::download/$1');
     $routes->post('admin/contracts/upload-signed/(:num)', 'AdminContractsController::uploadSigned/$1');
     $routes->post('admin/contracts/send_debug/(:num)', 'AdminContractsController::send_debug/$1');
+
+    // Studio management routes
+    $routes->get('admin/studios', 'AdminStudiosController::index');
+    $routes->get('admin/studios/data', 'AdminStudiosController::getStudiosAjax');
+    $routes->get('admin/studios/create', 'AdminStudiosController::create');
+    $routes->post('admin/studios/store', 'AdminStudiosController::store');
+    $routes->get('admin/studios/(:num)', 'AdminStudiosController::show/$1');
+    $routes->get('admin/studios/(:num)/edit', 'AdminStudiosController::edit/$1');
+    $routes->post('admin/studios/(:num)', 'AdminStudiosController::update/$1');
+    $routes->post('admin/studios/(:num)/toggle-status', 'AdminStudiosController::toggleStatus/$1');
+    $routes->delete('admin/studios/(:num)', 'AdminStudiosController::delete/$1');
+    $routes->get('admin/studios/availability', 'AdminStudiosController::availability');
+    $routes->get('admin/studios/statistics', 'AdminStudiosController::getStatistics');
     
 });

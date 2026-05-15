@@ -28,6 +28,8 @@ to your `app` folder. The affected files can be copied or merged from
 Copy `env` to `.env` and tailor for your app, specifically the baseURL
 and any database settings.
 
+For SSO deployments, keep the shared `SSO_SECRET_KEY` aligned with the event and staff systems, and use `studio/logout` for the local logout route. See [SSO_DEPLOYMENT_INSTRUCTIONS.md](../SSO_DEPLOYMENT_INSTRUCTIONS.md).
+
 ## Important Change with index.php
 
 `index.php` is no longer in the root of the project! It has been moved inside the *public* folder,

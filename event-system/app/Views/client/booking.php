@@ -401,9 +401,26 @@
 
                         <div class="col-12">
                             <label class="form-label">Number of Guests *</label>
-                            <input type="number" class="form-control" name="pax" 
-                                value="<?= old('pax') ?>"
+                          <input type="number" class="form-control" name="pax" id="pax"
+                            value="<?= old('pax') ?>"
                                 placeholder="e.g., 50" min="1" required>
+                        </div>
+
+                        <div class="col-12">
+                          <label class="form-label">Select Studio (Optional)</label>
+                          <select class="form-select" name="studio_id" id="studio_id">
+                            <option value="">No Studio (Only Venue)</option>
+                            <option value="" disabled>Select date, start time, duration, and pax first</option>
+                          </select>
+                          <small class="form-text text-muted">Available studios update automatically as you fill in the booking details.</small>
+                        </div>
+
+                        <div class="col-12" id="studio-pricing-wrap" style="display:none;">
+                          <label class="form-label">Studio Pricing</label>
+                          <div id="studio-pricing" class="p-3 bg-light rounded">
+                            <p class="mb-0"><strong>Select a studio to see pricing</strong></p>
+                          </div>
+                          <div id="studio-availability" class="mt-2" style="display:none;"></div>
                         </div>
 
                         <div class="col-12">
@@ -445,6 +462,14 @@ document.addEventListener("DOMContentLoaded", function() {
   const packageSelect = document.querySelector("select[name='package']");
   const categorySelect = document.getElementById("category");
   const oldCategory = "<?= old('category') ?>";
+  const studioSelect = document.getElementById("studio_id");
+  const studioPricingWrap = document.getElementById("studio-pricing-wrap");
+  const studioPricing = document.getElementById("studio-pricing");
+  const studioAvailability = document.getElementById("studio-availability");
+  const paxInput = document.getElementById("pax");
+  const eventDateInput = document.getElementById("event_date");
+  const durationInput = document.getElementById("duration_hours");
+  const startTimeInput = document.querySelector("input[name='start_time']");
 
   function updateCategoryDropdown() {
     const selected = packageSelect.value;
@@ -487,11 +512,190 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   packageSelect.addEventListener("change", updateCategoryDropdown);
+  packageSelect.addEventListener("change", function() {
+    if (studioSelect) {
+      studioSelect.value = "";
+    }
+    if (studioPricing) {
+      studioPricing.innerHTML = '<p class="mb-0"><strong>Select a studio to see pricing</strong></p>';
+    }
+    if (studioAvailability) {
+      studioAvailability.style.display = 'none';
+      studioAvailability.innerHTML = '';
+    }
+    loadAvailableStudios();
+  });
+
+  if (categorySelect) {
+    categorySelect.addEventListener("change", function() {
+      if (studioSelect) {
+        studioSelect.value = "";
+      }
+      if (studioPricing) {
+        studioPricing.innerHTML = '<p class="mb-0"><strong>Select a studio to see pricing</strong></p>';
+      }
+      if (studioAvailability) {
+        studioAvailability.style.display = 'none';
+        studioAvailability.innerHTML = '';
+      }
+      loadAvailableStudios();
+    });
+  }
+
+  function buildStudioQuery() {
+    const params = new URLSearchParams();
+    if (eventDateInput && eventDateInput.value) {
+      params.set('date', eventDateInput.value);
+    }
+    if (paxInput && paxInput.value) {
+      params.set('guest_count', paxInput.value);
+    }
+    if (startTimeInput && startTimeInput.value) {
+      params.set('start_time', startTimeInput.value);
+    }
+    if (startTimeInput && startTimeInput.value && durationInput && durationInput.value) {
+      const endTime = new Date(`1970-01-01T${startTimeInput.value}:00`);
+      endTime.setHours(endTime.getHours() + parseInt(durationInput.value, 10));
+      params.set('end_time', endTime.toTimeString().slice(0, 5));
+    }
+    return params.toString();
+  }
+
+  function loadAvailableStudios() {
+    if (!studioSelect) {
+      return;
+    }
+
+    const eventDate = eventDateInput ? eventDateInput.value : '';
+    const guestCount = paxInput ? paxInput.value : '';
+    const duration = durationInput ? durationInput.value : '';
+    const startTime = startTimeInput ? startTimeInput.value : '';
+
+    if (!eventDate || !guestCount) {
+      studioSelect.innerHTML = '<option value="">No Studio (Only Venue)</option><option value="" disabled>Select date and pax first</option>';
+      if (studioPricingWrap) studioPricingWrap.style.display = 'none';
+      return;
+    }
+
+    studioSelect.innerHTML = '<option value="">No Studio (Only Venue)</option><option value="" disabled>Loading available studios...</option>';
+
+    const query = buildStudioQuery();
+    fetch(`<?= site_url('booking/available-studios') ?>?${query}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(studios => {
+        studioSelect.innerHTML = '<option value="">No Studio (Only Venue)</option>';
+
+        if (!Array.isArray(studios) || studios.length === 0) {
+          studioSelect.innerHTML += '<option value="" disabled>No studios available for the selected details</option>';
+          if (studioPricingWrap) studioPricingWrap.style.display = 'none';
+          return;
+        }
+
+        studios.forEach(studio => {
+          const option = document.createElement('option');
+          option.value = studio.id;
+          option.textContent = `${studio.name} - ₱${Number(studio.cost).toFixed(2)}/hour (Capacity: ${studio.capacity})`;
+          option.dataset.cost = studio.cost;
+          option.dataset.capacity = studio.capacity;
+          option.dataset.location = studio.location || '';
+          studioSelect.appendChild(option);
+        });
+
+        if (studioPricingWrap) studioPricingWrap.style.display = 'block';
+      })
+      .catch(error => {
+        console.error('Error loading studios:', error);
+        studioSelect.innerHTML = '<option value="">No Studio (Only Venue)</option><option value="" disabled>Error loading studios</option>';
+        if (studioPricingWrap) studioPricingWrap.style.display = 'none';
+        if (studioAvailability) {
+          studioAvailability.style.display = 'block';
+          studioAvailability.innerHTML = '<div class="alert alert-warning mb-0">Unable to load studios right now. Please try again.</div>';
+        }
+      });
+  }
+
+  function updateStudioPricing() {
+    if (!studioSelect || !studioPricing) {
+      return;
+    }
+
+    const selectedOption = studioSelect.options[studioSelect.selectedIndex];
+    const durationValue = durationInput ? parseFloat(durationInput.value || 0) : 0;
+
+    if (!studioSelect.value || !selectedOption || !selectedOption.dataset || !selectedOption.dataset.cost) {
+      studioPricing.innerHTML = '<p class="mb-0"><strong>Select a studio to see pricing</strong></p>';
+      if (studioAvailability) studioAvailability.style.display = 'none';
+      return;
+    }
+
+    const hourlyRate = parseFloat(selectedOption.dataset.cost || 0);
+    const baseCost = hourlyRate * durationValue;
+    const adminFee = baseCost * 0.10;
+    const totalCost = baseCost + adminFee;
+
+    studioPricing.innerHTML = `
+      <div class="d-flex justify-content-between mb-1">
+        <span>Base Cost (${durationValue} hours × ₱${hourlyRate.toFixed(2)}/hour):</span>
+        <strong>₱${baseCost.toFixed(2)}</strong>
+      </div>
+      <div class="d-flex justify-content-between mb-1">
+        <span>Administrative Fee (10%):</span>
+        <strong>₱${adminFee.toFixed(2)}</strong>
+      </div>
+      <hr class="my-2">
+      <div class="d-flex justify-content-between">
+        <span><strong>Total Studio Cost:</strong></span>
+        <strong class="text-primary">₱${totalCost.toFixed(2)}</strong>
+      </div>
+    `;
+
+    if (studioAvailability) {
+      studioAvailability.style.display = 'block';
+      studioAvailability.innerHTML = `<div class="alert alert-info mb-0">Pricing updated for ${selectedOption.textContent}</div>`;
+    }
+  }
+
+  let studioLoadTimer = null;
+  function queueLoadStudios() {
+    clearTimeout(studioLoadTimer);
+    studioLoadTimer = setTimeout(loadAvailableStudios, 250);
+  }
 
   // Trigger on page load if package is pre-selected
   if (packageSelect.value && packageSelect.value !== "Select Package") {
     updateCategoryDropdown();
   }
+
+  if (paxInput) {
+    paxInput.addEventListener("input", queueLoadStudios);
+    paxInput.addEventListener("change", loadAvailableStudios);
+  }
+
+  if (eventDateInput) {
+    eventDateInput.addEventListener("change", loadAvailableStudios);
+  }
+
+  if (durationInput) {
+    durationInput.addEventListener("change", function() {
+      loadAvailableStudios();
+      updateStudioPricing();
+    });
+  }
+
+  if (startTimeInput) {
+    startTimeInput.addEventListener("change", loadAvailableStudios);
+  }
+
+  if (studioSelect) {
+    studioSelect.addEventListener("change", updateStudioPricing);
+  }
+
+  loadAvailableStudios();
 });
 </script>
 

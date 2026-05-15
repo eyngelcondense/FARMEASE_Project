@@ -32,6 +32,9 @@ $routes->get('assignment',                    'AssignmentController::index',    
 $routes->post('assignment/accept/(:num)',     'AssignmentController::accept/$1',  ['filter' => 'authcheck']);
 $routes->post('assignment/complete/(:num)',   'AssignmentController::complete/$1',['filter' => 'authcheck']);
 
+$routes->get('staff/assignToBooking',         'StaffController::assignToBooking', ['filter' => 'authcheck']);
+$routes->post('staff/assignToBooking',        'StaffController::assignToBooking', ['filter' => 'authcheck']);
+
 $routes->get('staff-management',              'StaffManagementController::index', ['filter' => 'authcheck']);
 $routes->get('staff-management/(:num)',       'StaffManagementController::show/$1',['filter' => 'authcheck']);
 

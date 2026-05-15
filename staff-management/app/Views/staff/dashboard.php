@@ -53,6 +53,28 @@ $current_page  = 'dashboard';
 </header>
 
 <div class="dashboard-content">
+    <section class="hero-panel">
+        <div class="hero-copy">
+            <div class="hero-kicker">Staff Overview</div>
+            <h1>Stay on top of assignments, availability, and team activity.</h1>
+            <p>Everything important for your shift is organized in one place so you can move from planning to execution faster.</p>
+        </div>
+        <div class="hero-metrics">
+            <div class="hero-metric">
+                <span>Upcoming shifts</span>
+                <strong><?= $upcomingCount ?></strong>
+            </div>
+            <div class="hero-metric">
+                <span>Bookings this month</span>
+                <strong><?= $allBookingsThisMonth ?></strong>
+            </div>
+            <div class="hero-metric">
+                <span>Team members</span>
+                <strong><?= $teamCount ?></strong>
+            </div>
+        </div>
+    </section>
+
     <div class="stats-row" id="statsRow">
         <div class="stat-card">
             <div class="stat-icon">
@@ -93,9 +115,12 @@ $current_page  = 'dashboard';
     </div>
 
     <div class="bottom-row">
-        <div class="mini-card">
+        <div class="mini-card assignments-panel">
             <div class="mini-card-header">
-                <h4>Recent Assignments</h4>
+                <div>
+                    <h4>Recent Assignments</h4>
+                    <p class="panel-subtitle">A quick look at your next event workload.</p>
+                </div>
                 <a href="<?= site_url('staff/assignments') ?>" class="view-all">View All</a>
             </div>
             <div class="mini-card-content" id="recentAssignments">
@@ -110,15 +135,17 @@ $current_page  = 'dashboard';
                 ?>
                     <div class="assignment-row">
                         <div class="assignment-info">
-                            <strong><?= esc($a['event_type']) ?> — <?= esc($a['client_fullname']) ?></strong>
-                            <span style="font-size: 13px; color: var(--text-muted); font-weight: 500;">📍 <?= esc($a['venue_name']) ?></span>
+                            <div>
+                                <strong><?= esc($a['event_type']) ?> — <?= esc($a['client_fullname']) ?></strong>
+                                <span class="assignment-venue">📍 <?= esc($a['venue_name']) ?></span>
+                            </div>
+                            <span class="assignment-status status-<?= $a['status'] ?>"><?= ucfirst($a['status']) ?></span>
                         </div>
                         <div class="assignment-meta">
                             <span><?= esc($formatDate($a['event_date'])) ?></span>
                             <span><?= $start ?> – <?= $end ?></span>
-                            <span class="assignment-status status-<?= $a['status'] ?>"><?= ucfirst($a['status']) ?></span>
                         </div>
-                        <div style="font-size: 11px; color: var(--primary-hover); font-weight: 600; margin-top: 8px; letter-spacing: 0.05em;"><?= esc($a['booking_reference']) ?></div>
+                        <div class="assignment-reference"><?= esc($a['booking_reference']) ?></div>
                     </div>
                 <?php
                     endforeach;
@@ -127,22 +154,38 @@ $current_page  = 'dashboard';
             </div>
         </div>
 
-        <div class="mini-card">
+        <div class="mini-card quick-actions-panel">
             <div class="mini-card-header">
                 <h4>Quick Actions</h4>
             </div>
-            <div class="mini-card-content">
-                <a href="<?= site_url('staff/schedule') ?>" class="btn btn-sm btn-outline-primary w-100 mb-2">
-                    <i class="fas fa-calendar-alt"></i> My Schedule
+            <div class="mini-card-content action-stack">
+                <a href="<?= site_url('staff/schedule') ?>" class="action-link">
+                    <span class="action-icon"><i class="fas fa-calendar-alt"></i></span>
+                    <span>
+                        <strong>My Schedule</strong>
+                        <small>Review shifts and timings</small>
+                    </span>
                 </a>
-                <a href="<?= site_url('assignment') ?>" class="btn btn-sm btn-outline-primary w-100 mb-2">
-                    <i class="fas fa-tasks"></i> View Assignments
+                <a href="<?= site_url('assignment') ?>" class="action-link">
+                    <span class="action-icon"><i class="fas fa-tasks"></i></span>
+                    <span>
+                        <strong>View Assignments</strong>
+                        <small>Open work allocated to you</small>
+                    </span>
                 </a>
-                <a href="<?= site_url('availability') ?>" class="btn btn-sm btn-outline-primary w-100 mb-2">
-                    <i class="fas fa-clock"></i> Set Availability
+                <a href="<?= site_url('availability') ?>" class="action-link">
+                    <span class="action-icon"><i class="fas fa-clock"></i></span>
+                    <span>
+                        <strong>Set Availability</strong>
+                        <small>Update your working hours</small>
+                    </span>
                 </a>
-                <a href="<?= site_url('staff/profile') ?>" class="btn btn-sm btn-outline-primary w-100">
-                    <i class="fas fa-user-cog"></i> My Profile
+                <a href="<?= site_url('staff/profile') ?>" class="action-link">
+                    <span class="action-icon"><i class="fas fa-user-cog"></i></span>
+                    <span>
+                        <strong>My Profile</strong>
+                        <small>Keep your details current</small>
+                    </span>
                 </a>
             </div>
         </div>

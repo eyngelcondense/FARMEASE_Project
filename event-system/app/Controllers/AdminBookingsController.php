@@ -8,6 +8,7 @@ use App\Models\ClientModel;
 use App\Models\PackageModel;
 use App\Models\VenueModel;
 use App\Models\PaymentModel;
+use App\Models\NotificationModel;
 
 class AdminBookingsController extends BaseController
 {
@@ -16,6 +17,7 @@ class AdminBookingsController extends BaseController
     protected $packageModel;
     protected $venueModel;
     protected $paymentModel;
+    protected $notificationModel;
 
     public function __construct()
     {
@@ -24,6 +26,7 @@ class AdminBookingsController extends BaseController
         $this->packageModel = new PackageModel();
         $this->venueModel = new VenueModel();
         $this->paymentModel = new PaymentModel();
+        $this->notificationModel = new NotificationModel();
     }
 
     /**
@@ -224,14 +227,36 @@ class AdminBookingsController extends BaseController
         }
 
         try {
+            $booking = $this->bookingModel->find($id);
+            if (!$booking) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Booking not found'
+                ]);
+            }
+
             $this->bookingModel->update($id, [
                 'status' => 'rejected',
+                'contract_rejected' => 1,
+                'rejection_reason' => $reason,
                 'updated_at' => date('Y-m-d H:i:s')
             ]);
 
+            $refundAmount = $this->refundDownPaymentIfAny($booking);
+            $this->notifyClientForBooking(
+                $booking,
+                'Booking Rejected',
+                $refundAmount > 0
+                    ? "Your booking {$booking['booking_reference']} was rejected. Your down payment of ₱" . number_format($refundAmount, 2) . ' has been marked refunded.'
+                    : "Your booking {$booking['booking_reference']} was rejected. Reason: {$reason}",
+                'danger'
+            );
+
             return $this->response->setJSON([
                 'success' => true,
-                'message' => 'Booking rejected successfully'
+                'message' => $refundAmount > 0
+                    ? 'Booking rejected successfully and down payment marked refunded.'
+                    : 'Booking rejected successfully'
             ]);
         } catch (\Exception $e) {
             return $this->response->setJSON([
@@ -550,6 +575,12 @@ class AdminBookingsController extends BaseController
             if ($result) {
                 // Get updated booking details
                 $updatedBooking = $this->bookingModel->find($id);
+                $this->notifyClientForBooking(
+                    $updatedBooking,
+                    'Booking Approved',
+                    "Your booking {$updatedBooking['booking_reference']} has been approved. You may now proceed with staff assignment and contract processing.",
+                    'success'
+                );
 
                 log_message('debug', 'Booking approved successfully: ' . $id);
 
@@ -589,17 +620,42 @@ class AdminBookingsController extends BaseController
             $db->transStart();
 
             // Approve the current booking
+            $currentBooking = $this->bookingModel->find($id);
             $this->bookingModel->update($id, [
                 'status' => 'approved',
                 'updated_at' => date('Y-m-d H:i:s')
             ]);
 
+            if ($currentBooking) {
+                $this->notifyClientForBooking(
+                    $currentBooking,
+                    'Booking Approved',
+                    "Your booking {$currentBooking['booking_reference']} has been approved.",
+                    'success'
+                );
+            }
+
             // Reject conflicting bookings
             foreach ($conflicts as $conflictId) {
+                $conflictBooking = $this->bookingModel->find($conflictId);
                 $this->bookingModel->update($conflictId, [
                     'status' => 'rejected',
+                    'contract_rejected' => 1,
+                    'rejection_reason' => 'Automatically rejected due to a booking conflict.',
                     'updated_at' => date('Y-m-d H:i:s')
                 ]);
+
+                if ($conflictBooking) {
+                    $refundAmount = $this->refundDownPaymentIfAny($conflictBooking);
+                    $this->notifyClientForBooking(
+                        $conflictBooking,
+                        'Booking Rejected',
+                        $refundAmount > 0
+                            ? "Your booking {$conflictBooking['booking_reference']} was automatically rejected due to a conflict. Your down payment of ₱" . number_format($refundAmount, 2) . ' has been marked refunded.'
+                            : "Your booking {$conflictBooking['booking_reference']} was automatically rejected due to a conflict.",
+                        'danger'
+                    );
+                }
             }
 
             $db->transComplete();
@@ -673,6 +729,8 @@ class AdminBookingsController extends BaseController
             $buttons .= "<button class='btn btn-success btn-sm me-1' onclick='approveBooking({$booking['id']})'>Approve</button>";
             $buttons .= "<button class='btn btn-danger btn-sm me-1' onclick='rejectBooking({$booking['id']})'>Reject</button>";
         } elseif ($booking['status'] === 'approved') {
+            $buttons .= "<button class='btn btn-primary btn-sm me-1' onclick='assignStaff({$booking['id']})'>Assign Staff</button>";
+            $buttons .= "<button class='btn btn-info btn-sm me-1' onclick='openContract({$booking['id']})'>Contract</button>";
             $buttons .= "<button class='btn btn-danger btn-sm me-1' onclick='rejectBooking({$booking['id']})'>Revoke</button>";
         } elseif ($booking['status'] === 'rejected') {
             $buttons .= "<button class='btn btn-success btn-sm me-1' onclick='approveBooking({$booking['id']})'>Approve</button>";
@@ -681,5 +739,163 @@ class AdminBookingsController extends BaseController
         $buttons .= "<button class='btn btn-outline-secondary btn-sm' onclick='viewDetails({$booking['id']})'>Details</button>";
         
         return $buttons;
+    }
+
+    public function assignStaff($id)
+    {
+        $booking = $this->bookingModel->find($id);
+        if (!$booking) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Booking not found']);
+        }
+
+        if ($booking['status'] !== 'approved') {
+            return $this->response->setJSON(['success' => false, 'message' => 'Staff can only be assigned to approved bookings']);
+        }
+
+        $staffIds = $this->request->getPost('staff_ids') ?? [];
+        $role = $this->request->getPost('role') ?: 'event_coordinator';
+        $notes = $this->request->getPost('notes') ?: null;
+
+        if (empty($staffIds)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'At least one staff member is required']);
+        }
+
+        try {
+            $client = \Config\Services::curlrequest([
+                'timeout' => 15,
+                'connect_timeout' => 5
+            ]);
+
+            $response = $client->post('http://localhost:8082/staff-management/api/assignments', [
+                'json' => [
+                    'staff_ids' => array_map('intval', (array) $staffIds),
+                    'booking_id' => (int) $id,
+                    'role' => $role,
+                    'notes' => $notes,
+                ],
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json'
+                ]
+            ]);
+
+            if (!in_array($response->getStatusCode(), [200, 201], true)) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Failed to assign staff members'
+                ]);
+            }
+
+            $this->notifyAssignedStaff($booking, (array) $staffIds, $role, $notes);
+
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Staff assigned successfully'
+            ]);
+        } catch (\Exception $e) {
+            log_message('error', 'Assign staff error: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Failed to assign staff: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    private function notifyClientForBooking(array $booking, string $title, string $message, string $type = 'info'): void
+    {
+        $client = $this->clientModel->find($booking['client_id'] ?? null);
+        if (!$client) {
+            return;
+        }
+
+        $this->notificationModel->addNotification(
+            $title,
+            $message,
+            $type,
+            $client['user_id'] ?? null,
+            'booking',
+            $booking['id'] ?? null
+        );
+    }
+
+    private function notifyAssignedStaff(array $booking, array $staffIds, string $role, ?string $notes = null): void
+    {
+        if (empty($staffIds)) {
+            return;
+        }
+
+        $client = $this->clientModel->find($booking['client_id'] ?? null);
+        $clientName = $client['fullname'] ?? 'Client';
+
+        $client = \Config\Services::curlrequest([
+            'timeout' => 10,
+            'connect_timeout' => 5
+        ]);
+
+        foreach ($staffIds as $staffId) {
+            try {
+                $staffResponse = $client->get('http://localhost:8082/staff-management/api/staff/' . (int) $staffId, [
+                    'headers' => ['Accept' => 'application/json']
+                ]);
+
+                if ($staffResponse->getStatusCode() !== 200) {
+                    continue;
+                }
+
+                $staff = json_decode($staffResponse->getBody(), true);
+                if (empty($staff['user_id'])) {
+                    continue;
+                }
+
+                $assignmentMessage = "You have been assigned to booking {$booking['booking_reference']} for {$clientName} on {$booking['event_date']}.";
+                if ($notes) {
+                    $assignmentMessage .= ' Notes: ' . $notes;
+                }
+
+                $this->notificationModel->addNotification(
+                    'New Staff Assignment',
+                    $assignmentMessage,
+                    'info',
+                    $staff['user_id'],
+                    'staff_assignment',
+                    $booking['id'] ?? null
+                );
+            } catch (\Exception $e) {
+                log_message('error', 'Staff notification error for ID ' . $staffId . ': ' . $e->getMessage());
+            }
+        }
+    }
+
+    private function refundDownPaymentIfAny(array $booking): float
+    {
+        $payment = $this->paymentModel
+            ->where('booking_id', $booking['id'])
+            ->where('payment_type', 'down_payment')
+            ->where('status', 'verified')
+            ->first();
+
+        if (!$payment) {
+            $this->bookingModel->update($booking['id'], [
+                'payment_status' => 'refunded',
+                'down_payment_paid' => 0,
+                'down_payment_amount' => 0
+            ]);
+            return 0.0;
+        }
+
+        $refundAmount = (float) $payment['amount'];
+
+        $this->paymentModel->update($payment['id'], [
+            'status' => 'refunded',
+            'notes' => 'Refunded due to booking rejection'
+        ]);
+
+        $this->bookingModel->update($booking['id'], [
+            'payment_status' => 'refunded',
+            'down_payment_paid' => 0,
+            'down_payment_amount' => 0
+        ]);
+
+        return $refundAmount;
     }
 }

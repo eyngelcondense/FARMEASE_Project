@@ -1971,7 +1971,18 @@ function loadAvailableStudios() {
     // Show loading
     studioSelect.innerHTML = '<option value="">No Studio (Only Venue)</option><option value="" disabled>Loading available studios...</option>';
     
-    fetch(`/studio-management/api/studio/available/${eventDate}/${guestCount}`)
+    // compute optional start/end times
+    const startInputVal = document.getElementById('start_time') ? document.getElementById('start_time').value : '';
+    const duration = document.getElementById('duration_hours') ? document.getElementById('duration_hours').value : '';
+    let params = `date=${encodeURIComponent(eventDate)}&guest_count=${encodeURIComponent(guestCount)}`;
+    if (startInputVal && duration) {
+        const endTime = new Date(`1970-01-01T${startInputVal}:00`);
+        endTime.setHours(endTime.getHours() + parseInt(duration));
+        const endTimeStr = endTime.toTimeString().slice(0,5);
+        params += `&start_time=${encodeURIComponent(startInputVal)}&end_time=${encodeURIComponent(endTimeStr)}`;
+    }
+
+    fetch(`<?= site_url('booking/available-studios') ?>?${params}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -1987,7 +1998,7 @@ function loadAvailableStudios() {
                 return;
             }
             
-            studios.forEach(studio => {
+                    studios.forEach(studio => {
                 const option = document.createElement('option');
                 option.value = studio.id;
                 option.textContent = `${studio.name} - ₱${studio.cost}/hour (Capacity: ${studio.capacity})`;
@@ -2071,7 +2082,18 @@ function checkStudioAvailability(studioId) {
     availabilityDiv.style.display = 'block';
     availabilityText.textContent = 'Checking availability...';
     
-    fetch(`/studio-management/api/studio/${studioId}/availability/${eventDate}`)
+    // Re-check available studios for the selected date/time and verify this studio is available
+    const durationVal = document.getElementById('duration_hours') ? document.getElementById('duration_hours').value : '';
+    let params = `date=${encodeURIComponent(eventDate)}&guest_count=${encodeURIComponent(document.getElementById('total_guests').value || '')}`;
+    const startVal = document.getElementById('start_time') ? document.getElementById('start_time').value : '';
+    if (startVal && durationVal) {
+        const endTime = new Date(`1970-01-01T${startVal}:00`);
+        endTime.setHours(endTime.getHours() + parseInt(durationVal));
+        const endTimeStr = endTime.toTimeString().slice(0,5);
+        params += `&start_time=${encodeURIComponent(startVal)}&end_time=${encodeURIComponent(endTimeStr)}`;
+    }
+
+    fetch(`<?= site_url('booking/available-studios') ?>?${params}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -2079,7 +2101,9 @@ function checkStudioAvailability(studioId) {
             return response.json();
         })
         .then(data => {
-            if (data.is_available) {
+            // data is an array of available studios; check if selected studio is in the list
+            const availableStudioIds = Array.isArray(data) ? data.map(s => String(s.id)) : [];
+            if (availableStudioIds.includes(String(studioId))) {
                 availabilityDiv.innerHTML = `
                     <div class="alert alert-success">
                         <i class="fas fa-check-circle"></i>

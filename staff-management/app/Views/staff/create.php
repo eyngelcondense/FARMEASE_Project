@@ -1,5 +1,5 @@
 <?php
-$current_page = 'staff_create';
+$current_page = 'staff_list';
 $page_title   = 'Add Staff - San Isidro Labrador Resort';
 ?>
 <?= $this->extend('staff/layout_sidebar') ?>

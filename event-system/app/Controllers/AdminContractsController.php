@@ -7,18 +7,21 @@ use App\Controllers\BaseController;
 use App\Models\ContractModel;
 use App\Models\BookingModel;
 use App\Models\ClientModel;
+use App\Models\NotificationModel;
 
 class AdminContractsController extends BaseController
 {
     protected $contractModel;
     protected $bookingModel;
     protected $clientModel;
+    protected $notificationModel;
 
     public function __construct()
     {
         $this->contractModel = new ContractModel();
         $this->bookingModel = new BookingModel();
         $this->clientModel = new ClientModel();
+        $this->notificationModel = new NotificationModel();
     }
 
     public function index()
@@ -34,6 +37,8 @@ class AdminContractsController extends BaseController
 
     public function create()
     {
+        $selectedBookingId = $this->request->getGet('booking_id');
+
         // Get approved bookings that don't have contracts yet
         $bookings = $this->bookingModel->getBookingsByStatus('approved');
         $availableBookings = [];
@@ -46,6 +51,7 @@ class AdminContractsController extends BaseController
 
         return view('admin/contracts/create', [
             'bookings' => $availableBookings,
+            'selectedBookingId' => $selectedBookingId,
             'title' => 'Create Contract - San Isidro Labrador Resort',
             'current_page' => 'contracts'
         ]);
@@ -143,6 +149,21 @@ class AdminContractsController extends BaseController
                 $sent = $contractModel->sendContract($id);
                 
                 if ($sent) {
+                    $contract = $this->contractModel->getContractsWithDetails(['contracts.id' => $id])[0] ?? null;
+                    if ($contract && !empty($contract['client_id'])) {
+                        $client = $this->clientModel->find($contract['client_id']);
+                        if ($client && !empty($client['user_id'])) {
+                            $this->notificationModel->addNotification(
+                                'Contract Sent',
+                                'A contract has been sent for your booking ' . ($contract['booking_reference'] ?? '') . '. Please review and sign it.',
+                                'info',
+                                $client['user_id'],
+                                'contract',
+                                $id
+                            );
+                        }
+                    }
+
                     return $this->response->setJSON([
                         'success' => true, 
                         'message' => 'Contract sent to client successfully. Contract is now locked and cannot be edited.'

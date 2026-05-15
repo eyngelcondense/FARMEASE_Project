@@ -220,6 +220,8 @@
 </div>
 
 <script>
+const staffApiBase = 'http://localhost:8082/staff-management/api';
+
 // Load staff data on page load
 $(document).ready(function() {
     loadStaffData();
@@ -229,7 +231,7 @@ $(document).ready(function() {
 // Load staff data via AJAX
 function loadStaffData() {
     $.ajax({
-        url: '/staff-management/api/staff/list',
+        url: `${staffApiBase}/staff/list`,
         method: 'GET',
         success: function(response) {
             let tbody = $('#staffTableBody');
@@ -274,7 +276,7 @@ function loadStaffData() {
 // Load staff statistics
 function loadStaffStats() {
     $.ajax({
-        url: '/staff-management/api/staff/stats',
+        url: `${staffApiBase}/staff/stats`,
         method: 'GET',
         success: function(response) {
             $('#totalStaff').text(response.total_staff || 0);
@@ -314,7 +316,7 @@ function addStaff() {
 function editStaff(id) {
     // Load staff data and show modal
     $.ajax({
-        url: `/staff-management/api/staff/${id}`,
+        url: `${staffApiBase}/staff/${id}`,
         method: 'GET',
         success: function(staff) {
             $('#staffModalTitle').text('Edit Staff');
@@ -337,7 +339,7 @@ function saveStaff() {
         role: $('#staffRole').val()
     };
 
-    const url = staffId ? `/staff-management/api/staff/${staffId}` : '/staff-management/api/staff';
+    const url = staffId ? `${staffApiBase}/staff/${staffId}` : `${staffApiBase}/staff`;
     const method = staffId ? 'PUT' : 'POST';
 
     $.ajax({

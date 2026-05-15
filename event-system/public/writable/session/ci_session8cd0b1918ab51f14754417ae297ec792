@@ -1,1 +1,0 @@
-__ci_last_regenerate|i:1778660387;error|s:84:"Staff login failed: no staff profile matched your account. Source: staff-management.";__ci_vars|a:1:{s:5:"error";s:3:"old";}csrf_test_name|s:32:"0cc06ab6355805e31dfadf4764702993";_ci_previous_url|s:80:"http://localhost:8080/login?reason=staff_profile_missing&source=staff-management";user|a:1:{s:2:"id";i:2;}

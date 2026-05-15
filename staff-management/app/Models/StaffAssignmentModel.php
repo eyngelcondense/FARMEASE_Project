@@ -16,12 +16,17 @@ class StaffAssignmentModel extends Model
         'staff_id',
         'booking_id',
         'role',
+        'status',
+        'notes',
+        'assigned_at',
     ];
 
     protected $validationRules = [
         'staff_id'   => 'required|is_natural_no_zero',
         'booking_id' => 'required|is_natural_no_zero',
         'role'       => 'permit_empty|in_list[event_coordinator,front_desk,customer_service]',
+        'status'     => 'permit_empty|in_list[assigned,accepted,completed,cancelled]',
+        'notes'      => 'permit_empty',
     ];
 
     protected $validationMessages = [
@@ -35,6 +40,9 @@ class StaffAssignmentModel extends Model
         ],
         'role' => [
             'in_list' => 'Role must be one of: Event Coordinator, Front Desk, Customer Service.',
+        ],
+        'status' => [
+            'in_list' => 'Status must be one of: assigned, accepted, completed, cancelled.',
         ],
     ];
 

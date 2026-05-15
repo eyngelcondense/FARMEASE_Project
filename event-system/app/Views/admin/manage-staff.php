@@ -358,7 +358,14 @@
 </div>
 
 <script>
+const staffApiBase = 'http://localhost:8082/staff-management/api';
+
 $(document).ready(function() {
+    const preselectedBookingId = new URLSearchParams(window.location.search).get('booking_id');
+    if (preselectedBookingId) {
+        window.pendingBookingId = preselectedBookingId;
+    }
+
     loadAssignments();
     loadStaffList();
     loadUnassignedBookings();
@@ -368,7 +375,7 @@ $(document).ready(function() {
 // Load all assignments
 function loadAssignments() {
     $.ajax({
-        url: '/staff-management/api/assignments/list',
+        url: `${staffApiBase}/assignments/list`,
         method: 'GET',
         success: function(response) {
             let tbody = $('#assignmentsTableBody');
@@ -415,7 +422,7 @@ function loadAssignments() {
 // Load staff list for filters and assignments
 function loadStaffList() {
     $.ajax({
-        url: '/staff-management/api/staff/list',
+        url: `${staffApiBase}/staff/list`,
         method: 'GET',
         success: function(response) {
             let staffFilter = $('#staffFilter');
@@ -444,7 +451,7 @@ function loadStaffList() {
 // Load unassigned bookings
 function loadUnassignedBookings() {
     $.ajax({
-        url: '/staff-management/api/bookings/unassigned',
+        url: `${staffApiBase}/bookings/unassigned`,
         method: 'GET',
         success: function(response) {
             let tbody = $('#unassignedTableBody');
@@ -474,6 +481,12 @@ function loadUnassignedBookings() {
                 
                 bookingSelect.append(`<option value="${booking.id}">${booking.booking_reference} - ${booking.event_type} (${formatDate(booking.event_date)})</option>`);
             });
+
+            if (window.pendingBookingId) {
+                const pendingBookingId = window.pendingBookingId;
+                window.pendingBookingId = null;
+                addAssignment(pendingBookingId);
+            }
         }
     });
 }
@@ -481,7 +494,7 @@ function loadUnassignedBookings() {
 // Load assignment statistics
 function loadAssignmentStats() {
     $.ajax({
-        url: '/staff-management/api/assignments/stats',
+        url: `${staffApiBase}/assignments/stats`,
         method: 'GET',
         success: function(response) {
             $('#totalAssignments').text(response.total_assignments || 0);
@@ -497,7 +510,7 @@ function loadStaffAssignments(staffId, staffName) {
     $('#selectedStaffName').text(`${staffName}'s Assignments`);
     
     $.ajax({
-        url: `/staff-management/api/staff/${staffId}/assignments`,
+        url: `${staffApiBase}/staff/${staffId}/assignments`,
         method: 'GET',
         success: function(response) {
             let container = $('#staffAssignments');
@@ -533,23 +546,25 @@ function loadStaffAssignments(staffId, staffName) {
 }
 
 // Assignment modal functions
-function addAssignment() {
+function addAssignment(bookingId = null) {
     $('#assignmentModalTitle').text('Create Assignment');
     $('#assignmentForm')[0].reset();
     $('#assignmentId').val('');
+    if (bookingId) {
+        $('#bookingSelect').val(String(bookingId));
+        loadBookingDetails(bookingId);
+    }
     new bootstrap.Modal(document.getElementById('assignmentModal')).show();
 }
 
 function quickAssign(bookingId) {
-    $('#bookingSelect').val(bookingId);
-    loadBookingDetails(bookingId);
-    addAssignment();
+    addAssignment(bookingId);
 }
 
 function editAssignment(id) {
     // Load assignment data and show modal
     $.ajax({
-        url: `/staff-management/api/assignments/${id}`,
+        url: `${staffApiBase}/assignments/${id}`,
         method: 'GET',
         success: function(assignment) {
             $('#assignmentModalTitle').text('Edit Assignment');
@@ -573,7 +588,7 @@ function saveAssignment() {
     };
 
     const assignmentId = $('#assignmentId').val();
-    const url = assignmentId ? `/staff-management/api/assignments/${assignmentId}` : '/staff-management/api/assignments';
+    const url = assignmentId ? `${staffApiBase}/assignments/${assignmentId}` : `${staffApiBase}/assignments`;
     const method = assignmentId ? 'PUT' : 'POST';
 
     $.ajax({
@@ -597,7 +612,7 @@ function saveAssignment() {
 function deleteAssignment(id) {
     if (confirm('Are you sure you want to delete this assignment?')) {
         $.ajax({
-            url: `/staff-management/api/assignments/${id}`,
+            url: `${staffApiBase}/assignments/${id}`,
             method: 'DELETE',
             success: function() {
                 loadAssignments();
@@ -613,7 +628,7 @@ function deleteAssignment(id) {
 
 function loadBookingDetails(bookingId) {
     $.ajax({
-        url: `/staff-management/api/bookings/${bookingId}`,
+        url: `${staffApiBase}/bookings/${bookingId}`,
         method: 'GET',
         success: function(booking) {
             $('#bookingDetails').html(`

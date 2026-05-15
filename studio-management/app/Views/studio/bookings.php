@@ -1,4 +1,4 @@
-<?= $this->extend('studio/header') ?>
+<?= $this->extend('studio/layout_sidebar') ?>
 <?= $this->section('content') ?>
 
 <div class="container mt-5">
@@ -141,8 +141,4 @@ function callClient(phone) {
 
 </main>
 
-<?= $this->include('studio/footer') ?>
-
-</body>
-</html>
 <?= $this->endSection() ?>

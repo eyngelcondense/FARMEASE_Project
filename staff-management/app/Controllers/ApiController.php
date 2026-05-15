@@ -188,13 +188,25 @@ class ApiController extends BaseController
      */
     public function createAssignment()
     {
-        $data = $this->request->getJSON();
-        
-        // Handle multiple staff assignment
-        $staffIds = $data->staff_ids;
-        $bookingId = $data->booking_id;
-        $role = $data->role;
-        $notes = $data->notes ?? null;
+        $data = (array) ($this->request->getJSON() ?: []);
+
+        $bookingId = (int) ($data['booking_id'] ?? 0);
+        $role = $data['role'] ?? 'event_coordinator';
+        $notes = $data['notes'] ?? null;
+        $staffIds = $data['staff_ids'] ?? ($data['staff_id'] ?? []);
+
+        if (!is_array($staffIds)) {
+            $staffIds = [$staffIds];
+        }
+
+        $staffIds = array_values(array_filter(array_map('intval', $staffIds)));
+
+        if ($bookingId <= 0 || empty($staffIds)) {
+            return $this->failValidationErrors([
+                'booking_id' => 'A valid booking is required.',
+                'staff_ids' => 'At least one staff member is required.',
+            ]);
+        }
         
         $successCount = 0;
         $errors = [];
@@ -215,7 +227,9 @@ class ApiController extends BaseController
                 'staff_id' => $staffId,
                 'booking_id' => $bookingId,
                 'role' => $role,
-                'notes' => $notes
+                'status' => 'assigned',
+                'notes' => $notes,
+                'assigned_at' => date('Y-m-d H:i:s'),
             ];
             
             if ($this->assignmentModel->insert($assignmentData)) {

@@ -51,6 +51,13 @@ if (!isset($current_page)) {
         </div>
         <ul class="nav-menu">
             <li class="nav-item">
+                <a href="<?= site_url('staff')?>" 
+                   class="nav-link <?= in_array($current_page, ['staff_list', 'staff_create']) ? 'active' : '' ?>">
+                    <i class="fas fa-user-friends"></i>
+                    <span>Staff Directory</span>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a href="<?= site_url('availability')?>" 
                    class="nav-link <?= $current_page === 'availability' ? 'active' : '' ?>">
                     <i class="fas fa-clock"></i>
@@ -59,7 +66,7 @@ if (!isset($current_page)) {
             </li>
             <li class="nav-item">
                 <a href="<?= site_url('staff-management')?>" 
-                   class="nav-link <?= $current_page === 'team' ? 'active' : '' ?>">
+                   class="nav-link <?= in_array($current_page, ['team', 'staff_list']) ? 'active' : '' ?>">
                     <i class="fas fa-users"></i>
                     <span>Team Members</span>
                 </a>
@@ -81,7 +88,7 @@ if (!isset($current_page)) {
                 </a>
             </li>
             <li class="nav-item">
-                <a href="<?= site_url('auth/logout')?>" 
+                <a href="<?= site_url('staff/logout')?>" 
                    class="nav-link">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>

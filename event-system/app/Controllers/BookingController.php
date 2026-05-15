@@ -7,6 +7,7 @@ use App\Models\BookingModel;
 use App\Models\PackageModel;
 use App\Models\PaymentModel;
 use App\Models\BookingAddonModel;
+use App\Models\StudioModel;
 
 
 class BookingController extends BaseController
@@ -17,6 +18,7 @@ class BookingController extends BaseController
     protected $addonModel;
     protected $bookingAddonModel;
     protected $paymentModel;
+    protected $studioModel;
 
     public function __construct()
     {
@@ -26,6 +28,7 @@ class BookingController extends BaseController
         $this->addonModel = new AddonModel();
         $this->bookingAddonModel = new BookingAddonModel();
         $this->paymentModel = new PaymentModel();
+        $this->studioModel = new StudioModel();
         
     }
 
@@ -239,50 +242,61 @@ class BookingController extends BaseController
             $studioId = $this->request->getPost('studio_id');
             
             if ($studioId) {
-                try {
-                    // Make API call to studio-management to get studio details and check availability
-                    $client = \Config\Services::curlrequest([
-                        'timeout' => 10,
-                        'connect_timeout' => 5
-                    ]);
-                    
-                    $studioResponse = $client->get("http://localhost:8081/api/studio/{$studioId}", [
-                        'headers' => [
-                            'Accept' => 'application/json',
-                            'Content-Type' => 'application/json'
-                        ]
-                    ]);
-                    
-                    if ($studioResponse->getStatusCode() === 200) {
-                        $studio = json_decode($studioResponse->getBody(), true);
-                        
-                        if (!$studio || !isset($studio['cost'])) {
-                            throw new \Exception('Invalid studio data received.');
+                // Prefer local studio data if available
+                $studio = $this->studioModel->find($studioId);
+
+                if ($studio) {
+                    // Calculate studio cost using local record
+                    $studioBaseCost = (float)$studio['cost'] * (int)$totalHours;
+                    $studioAdminFee = $studioBaseCost * 0.10; // 10% admin fee
+                    $studioAmount = $studioBaseCost + $studioAdminFee;
+
+                    log_message('debug', "Studio booking (local) - ID: {$studioId}, Cost: {$studioAmount}");
+
+                    $this->studioBookingData = [
+                        'studio_id' => (int)$studioId,
+                        'booking_id' => null
+                    ];
+                } else {
+                    // Fallback to external studio-management API if local not found
+                    try {
+                        $client = \Config\Services::curlrequest([
+                            'timeout' => 10,
+                            'connect_timeout' => 5
+                        ]);
+
+                        $studioResponse = $client->get("http://localhost:8081/api/studio/{$studioId}", [
+                            'headers' => [
+                                'Accept' => 'application/json',
+                                'Content-Type' => 'application/json'
+                            ]
+                        ]);
+
+                        if ($studioResponse->getStatusCode() === 200) {
+                            $studio = json_decode($studioResponse->getBody(), true);
+
+                            if (!$studio || !isset($studio['cost'])) {
+                                throw new \Exception('Invalid studio data received.');
+                            }
+
+                            $studioBaseCost = (float)$studio['cost'] * (int)$totalHours;
+                            $studioAdminFee = $studioBaseCost * 0.10; // 10% admin fee
+                            $studioAmount = $studioBaseCost + $studioAdminFee;
+
+                            log_message('debug', "Studio booking (external) - ID: {$studioId}, Cost: {$studioAmount}");
+
+                            $this->studioBookingData = [
+                                'studio_id' => (int)$studioId,
+                                'booking_id' => null
+                            ];
+                        } else {
+                            log_message('error', 'Studio API returned status: ' . $studioResponse->getStatusCode());
+                            throw new \Exception('Selected studio is not available or API error occurred.');
                         }
-                        
-                        // Calculate studio cost
-                        $studioBaseCost = (float)$studio['cost'] * (int)$totalHours;
-                        $studioAdminFee = $studioBaseCost * 0.10; // 10% admin fee
-                        $studioAmount = $studioBaseCost + $studioAdminFee;
-                        
-                        log_message('debug', "Studio booking - ID: {$studioId}, Cost: {$studioAmount}");
-                        
-                        // Create studio booking via API
-                        $bookingData = [
-                            'studio_id' => (int)$studioId,
-                            'booking_id' => $bookingId // Will be set after booking is created
-                        ];
-                        
-                        // We'll create the studio booking after the main booking is saved
-                        $this->studioBookingData = $bookingData;
-                        
-                    } else {
-                        log_message('error', 'Studio API returned status: ' . $studioResponse->getStatusCode());
-                        throw new \Exception('Selected studio is not available or API error occurred.');
+                    } catch (\Exception $e) {
+                        log_message('error', 'Studio booking API error: ' . $e->getMessage());
+                        throw new \Exception('Unable to process studio booking. Please try again or contact support.');
                     }
-                } catch (\Exception $e) {
-                    log_message('error', 'Studio booking API error: ' . $e->getMessage());
-                    throw new \Exception('Unable to process studio booking. Please try again or contact support.');
                 }
             }
 
@@ -458,6 +472,42 @@ class BookingController extends BaseController
         }
 
         return $this->response->setJSON($bookedDates);
+    }
+
+    /**
+     * Return available studios for a given date and optional time range and guest count.
+     * GET params: date, start_time (optional), end_time (optional), guest_count (optional)
+     */
+    public function availableStudios()
+    {
+        $date = $this->request->getGet('date');
+        $startTime = $this->request->getGet('start_time');
+        $endTime = $this->request->getGet('end_time');
+        $guestCount = $this->request->getGet('guest_count');
+
+        if (!$date) {
+            return $this->response->setJSON([]);
+        }
+
+        $studios = $this->studioModel->getAvailableStudios($date, $startTime, $endTime, $guestCount);
+        return $this->response->setJSON($studios);
+    }
+
+    /**
+     * Return details for a single studio
+     */
+    public function studioDetails($studioId = null)
+    {
+        if (!$studioId) {
+            return $this->response->setStatusCode(400)->setJSON(['error' => 'Studio ID required']);
+        }
+
+        $studio = $this->studioModel->find($studioId);
+        if (!$studio) {
+            return $this->response->setStatusCode(404)->setJSON(['error' => 'Studio not found']);
+        }
+
+        return $this->response->setJSON($studio);
     }
 
     public function availableTimeSlots()

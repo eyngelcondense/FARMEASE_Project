@@ -38,20 +38,22 @@ $staffs = $staffs ?? [];
                         <i class="fas fa-user-circle"></i>
                     </div>
                     <div class="staff-info">
-                        <h3><?= esc($staff->name ?? 'Staff Member') ?></h3>
-                        <p class="staff-role"><?= ucwords(str_replace('_', ' ', $staff->role ?? 'Staff')) ?></p>
+                        <h3><?= esc($staff['name'] ?? 'Staff Member') ?></h3>
+                        <p class="staff-role"><?= ucwords(str_replace('_', ' ', $staff['role'] ?? 'Staff')) ?></p>
                         <div class="staff-details">
-                            <?php if (!empty($staff->phone)): ?>
-                                <p><i class="fas fa-phone"></i> <?= esc($staff->phone) ?></p>
+                            <?php if (!empty($staff['phone'])): ?>
+                                <p><i class="fas fa-phone"></i> <?= esc($staff['phone']) ?></p>
                             <?php endif; ?>
-                            <?php if (!empty($staff->email)): ?>
-                                <p><i class="fas fa-envelope"></i> <?= esc($staff->email) ?></p>
+                            <?php if (!empty($staff['email'])): ?>
+                                <p><i class="fas fa-envelope"></i> <?= esc($staff['email']) ?></p>
                             <?php endif; ?>
                         </div>
                         <div class="staff-footer">
-                            <a href="<?= site_url('staff-management/show/' . $staff->id) ?>" class="btn-sm">
-                                <i class="fas fa-arrow-right"></i> View Profile
-                            </a>
+                            <?php if (!empty($staff['id'])): ?>
+                                <a href="<?= site_url('staff-management/show/' . $staff['id']) ?>" class="btn-sm">
+                                    <i class="fas fa-arrow-right"></i> View Profile
+                                </a>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

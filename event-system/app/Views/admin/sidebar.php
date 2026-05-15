@@ -145,6 +145,13 @@ if (!isset($current_page)) {
                 </a>
             </li>
             <li class="nav-item">
+                <a href="<?= site_url('admin/manage-staff')?>" 
+                   class="nav-link <?= $current_page === 'manage_staff' ? 'active' : '' ?>">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Staff Assignment</span>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a href="<?= site_url('admin/studios')?>" 
                    class="nav-link <?= $current_page === 'studios' ? 'active' : '' ?>">
                     <i class="fas fa-building"></i>

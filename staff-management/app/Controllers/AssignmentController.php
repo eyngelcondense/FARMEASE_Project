@@ -3,15 +3,18 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Models\StaffModel;
 use App\Models\StaffAssignmentModel;
 
 class AssignmentController extends BaseController
 {
     protected $assignmentModel;
+    protected StaffModel $staffModel;
 
     public function __construct()
     {
         $this->assignmentModel = model(StaffAssignmentModel::class);
+        $this->staffModel = model(StaffModel::class);
     }
 
     private function requireLogin(): ?object
@@ -31,13 +34,33 @@ class AssignmentController extends BaseController
 
     public function accept($id)
     {
-        // Update status to accepted
+        $assignment = $this->assignmentModel->find($id);
+
+        if (! $assignment) {
+            return redirect()->back()->with('error', 'Assignment not found.');
+        }
+
+        if ((int) session()->get('staff_id') !== (int) $assignment['staff_id']) {
+            return redirect()->back()->with('error', 'You can only accept your own assignments.');
+        }
+
+        $this->assignmentModel->update($id, ['status' => 'accepted']);
         return redirect()->back()->with('success', 'Assignment accepted.');
     }
 
     public function complete($id)
     {
-        // Mark as completed
+        $assignment = $this->assignmentModel->find($id);
+
+        if (! $assignment) {
+            return redirect()->back()->with('error', 'Assignment not found.');
+        }
+
+        if ((int) session()->get('staff_id') !== (int) $assignment['staff_id']) {
+            return redirect()->back()->with('error', 'You can only complete your own assignments.');
+        }
+
+        $this->assignmentModel->update($id, ['status' => 'completed']);
         return redirect()->back()->with('success', 'Assignment completed.');
     }
 }

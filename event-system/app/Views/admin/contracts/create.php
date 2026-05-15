@@ -516,6 +516,11 @@ Client Responsibilities:
         }
     });
 
+    const preselectedBookingId = <?= json_encode($selectedBookingId ?? null) ?>;
+    if (preselectedBookingId) {
+        $('#booking_id').val(String(preselectedBookingId)).trigger('change');
+    }
+
     // Template buttons with SweetAlert
     $('.template-btn').on('click', function() {
         const templateType = $(this).data('template');

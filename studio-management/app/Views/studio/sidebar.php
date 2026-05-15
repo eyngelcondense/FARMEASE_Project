@@ -88,7 +88,7 @@ if (!isset($current_page)) {
                 </a>
             </li>
             <li class="nav-item">
-                <a href="<?= site_url('auth/logout')?>" 
+                <a href="<?= site_url('studio/logout')?>" 
                    class="nav-link">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>

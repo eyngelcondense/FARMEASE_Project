@@ -1,4 +1,4 @@
-<?= $this->extend('studio/header') ?>
+<?= $this->extend('studio/layout_sidebar') ?>
 <?= $this->section('content') ?>
 
 <div class="container mt-5">
@@ -131,10 +131,4 @@
     <?php endif; ?>
 </div>
 
-</main>
-
-<?= $this->include('studio/footer') ?>
-
-</body>
-</html>
 <?= $this->endSection() ?>

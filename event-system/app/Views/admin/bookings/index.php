@@ -933,6 +933,14 @@ function confirmRejection() {
     });
 }
 
+function assignStaff(id) {
+    window.location.href = `<?= site_url('admin/manage-staff') ?>?booking_id=${id}`;
+}
+
+function openContract(id) {
+    window.location.href = `<?= site_url('admin/contracts/create') ?>?booking_id=${id}`;
+}
+
 function viewCalendar() {
     window.location.href = "<?= site_url('admin/calendar'); ?>";
 }
