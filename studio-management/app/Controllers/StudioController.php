@@ -259,6 +259,30 @@ class StudioController extends BaseController
         
         return view('studio/schedule', $data);
     }
+
+    public function feedback()
+    {
+        log_message('debug', 'StudioController: feedback() called');
+
+        $data['title'] = 'Studio Feedback';
+
+        // Attempt to load a Feedback model if available in the project
+        $data['feedbacks'] = [];
+        try {
+            if (class_exists(\App\Models\FeedbackModel::class)) {
+                $feedbackModel = model(\App\Models\FeedbackModel::class);
+                $data['feedbacks'] = $feedbackModel->orderBy('created_at', 'DESC')->findAll();
+                log_message('debug', 'StudioController: loaded ' . count($data['feedbacks']) . ' feedback items');
+            } else {
+                log_message('debug', 'StudioController: FeedbackModel not found; rendering empty feedback list');
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'StudioController: error loading feedbacks - ' . $e->getMessage());
+            $data['feedbacks'] = [];
+        }
+
+        return view('studio/feedback', $data);
+    }
     
     public function updateInfo()
     {

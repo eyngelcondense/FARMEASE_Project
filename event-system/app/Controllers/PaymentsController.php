@@ -34,8 +34,9 @@ class PaymentsController extends Controller
         }
         
         log_message('debug', 'PayMongo Secret Key found: ' . ($key ? 'YES' : 'NO'));
-        
-        return 'sk_test_vsbYDXKYZd3Lqm4nAdMMVYX8';
+
+        // Prefer configured key, fall back to test key for sandbox
+        return $key ?: 'sk_test_vsbYDXKYZd3Lqm4nAdMMVYX8';
     }
 
     private function getPayMongoPublicKey()
@@ -52,8 +53,9 @@ class PaymentsController extends Controller
         }
         
         log_message('debug', 'PayMongo Public Key found: ' . ($key ? 'YES' : 'NO'));
-        
-        return 'pk_test_9u7U6qEt2uiuvj1WVNx6n6o3';
+
+        // Prefer configured public key, fall back to test public key
+        return $key ?: 'pk_test_9u7U6qEt2uiuvj1WVNx6n6o3';
     }
 
     public function process($bookingId)
@@ -437,6 +439,24 @@ class PaymentsController extends Controller
                 'message' => 'Payment processing failed: ' . $e->getMessage()
             ]);
         }
+    }
+
+    /**
+     * Backwards-compatible submit endpoint (deprecated).
+     * Returns JSON for AJAX callers and redirects for form POSTs.
+     */
+    public function submit()
+    {
+        // If AJAX, respond with guidance to use process/create-redirect
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Deprecated endpoint. Use /payments/process/{booking_id} (card) or /payments/create-redirect (gcash/grab_pay).'
+            ]);
+        }
+
+        // For normal form submissions, redirect back with a helpful message
+        return redirect()->back()->with('error', 'Payment endpoint changed. Please use the payment UI to proceed.');
     }
 
     public function success()

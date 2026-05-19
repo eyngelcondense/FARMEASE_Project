@@ -22,6 +22,7 @@ $routes->group('studio', ['filter' => 'authcheck'], function($routes) {
     $routes->get('schedule', 'StudioController::schedule');
     $routes->get('available', 'StudioController::available');
     $routes->get('assignments', 'StudioController::assignments');
+    $routes->get('feedback', 'StudioController::feedback');
     $routes->get('create', 'StudioController::create');
     $routes->post('store', 'StudioController::store');
     $routes->get('show/(:num)', 'StudioController::show/$1');

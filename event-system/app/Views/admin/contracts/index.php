@@ -168,16 +168,16 @@ $current_page = isset($current_page) ? $current_page : 'contract';
 
                         <div class="card-body">
                             <?php if (session()->getFlashdata('success')): ?>
-                                <div class="alert alert-success alert-dismissible">
-                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                                    <i class="icon fas fa-check"></i> <?= session()->getFlashdata('success') ?>
+                                <div class="alert alert-success alert-dismissible d-flex align-items-center justify-content-between">
+                                    <div><i class="icon fas fa-check"></i> <?= session()->getFlashdata('success') ?></div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                 </div>
                             <?php endif; ?>
 
                             <?php if (session()->getFlashdata('error')): ?>
-                                <div class="alert alert-danger alert-dismissible">
-                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                                    <i class="icon fas fa-ban"></i> <?= session()->getFlashdata('error') ?>
+                                <div class="alert alert-danger alert-dismissible d-flex align-items-center justify-content-between">
+                                    <div><i class="icon fas fa-ban"></i> <?= session()->getFlashdata('error') ?></div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                 </div>
                             <?php endif; ?>
 
@@ -248,12 +248,12 @@ $current_page = isset($current_page) ? $current_page : 'contract';
                                                         
                                                         <?php if ($contract['status'] == 'sent'): ?>
                                                             <button type="button" class="btn btn-warning btn-sm upload-signed" 
-                                                                    data-id="<?= $contract['id'] ?>" 
-                                                                    data-toggle="modal" 
-                                                                    data-target="#uploadSignedModal"
-                                                                    title="Upload Signed Contract">
-                                                                <i class="fas fa-upload"></i>
-                                                            </button>
+                                                                        data-id="<?= $contract['id'] ?>" 
+                                                                        data-bs-toggle="modal" 
+                                                                        data-bs-target="#uploadSignedModal"
+                                                                        title="Upload Signed Contract">
+                                                                    <i class="fas fa-upload"></i>
+                                                                </button>
                                                         <?php endif; ?>
                                                         
                                                         <button type="button" class="btn btn-danger btn-sm delete-contract" 
@@ -283,15 +283,13 @@ $current_page = isset($current_page) ? $current_page : 'contract';
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="previewModalLabel">Contract Preview</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="previewContent">
                 <!-- Preview content will be loaded here -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" id="printPreview">
                     <i class="fas fa-print"></i> Print
                 </button>
@@ -306,26 +304,19 @@ $current_page = isset($current_page) ? $current_page : 'contract';
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="uploadSignedModalLabel">Upload Signed Contract</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="uploadSignedForm" method="post" enctype="multipart/form-data">
                 <div class="modal-body">
                     <input type="hidden" name="contract_id" id="uploadContractId">
-                    <div class="form-group">
-                        <label for="signed_contract">Upload Signed Contract (PDF/Image)</label>
-                        <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="signed_contract" name="signed_contract" accept=".pdf,.jpg,.jpeg,.png" required>
-                            <label class="custom-file-label" for="signed_contract">Choose file</label>
-                        </div>
-                        <small class="form-text text-muted">
-                            Upload the signed contract document. Accepted formats: PDF, JPG, PNG (Max: 5MB)
-                        </small>
+                    <div class="mb-3">
+                        <label for="signed_contract" class="form-label">Upload Signed Contract (PDF/Image)</label>
+                        <input type="file" class="form-control" id="signed_contract" name="signed_contract" accept=".pdf,.jpg,.jpeg,.png" required>
+                        <div id="signedFileName" class="form-text text-muted">Accepted formats: PDF, JPG, PNG (Max: 5MB)</div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">Upload Signed Contract</button>
                 </div>
             </form>
@@ -339,16 +330,14 @@ $current_page = isset($current_page) ? $current_page : 'contract';
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>Are you sure you want to delete contract <strong id="deleteContractNumber"></strong>?</p>
                 <p class="text-danger">This action cannot be undone.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-danger" id="confirmDelete">Delete Contract</button>
             </div>
         </div>
@@ -379,7 +368,8 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     $('#previewContent').html(response.html);
-                    $('#previewModal').modal('show');
+                    const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
+                    previewModal.show();
                 } else {
                     alert('Error: ' + response.message);
                 }
@@ -427,35 +417,37 @@ $(document).ready(function() {
     // Send contract to client
     $('.send-contract').on('click', function(e) {
         e.preventDefault();
-        
+
         const contractId = $(this).data('id');
         const button = $(this);
-        
-        if (confirm('Are you sure you want to send this contract to the client? This will start the signing process.')) {
-            // Show loading state
+
+        if (confirm('Are you sure you want to send this contract to the client? This will lock the contract and start the signing process.')) {
             button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Sending...');
-            
+
             $.ajax({
                 url: '<?= base_url('admin/contracts/send') ?>/' + contractId,
                 type: 'POST',
                 dataType: 'json',
                 data: {
-                    <?= csrf_token() ?>: '<?= csrf_hash() ?>' // Add CSRF protection
+                    '<?= csrf_token() ?>': '<?= csrf_hash() ?>'
                 },
                 success: function(response) {
                     if (response.success) {
-                        // Show success message and reload
-                        alert('Success: ' + response.message);
-                        location.reload();
+                        button.closest('tr').find('.badge').removeClass().addClass('badge badge-info').text('Sent');
+                        button.remove(); // Remove send button since it's now sent
+                        // Brief success notice then reload for fresh state
+                        setTimeout(function() { location.reload(); }, 1200);
                     } else {
                         alert('Error: ' + response.message);
-                        button.prop('disabled', false).html('<i class="fas fa-paper-plane"></i> Send');
+                        button.prop('disabled', false).html('<i class="fas fa-paper-plane"></i>');
                     }
                 },
-                error: function(xhr, status, error) {
-                    console.error('AJAX Error:', error);
-                    alert('Error sending contract. Please check console for details.');
-                    button.prop('disabled', false).html('<i class="fas fa-paper-plane"></i> Send');
+                error: function(xhr) {
+                    const msg = (xhr.responseJSON && xhr.responseJSON.message)
+                        ? xhr.responseJSON.message
+                        : 'Error sending contract. Please try again.';
+                    alert('Error: ' + msg);
+                    button.prop('disabled', false).html('<i class="fas fa-paper-plane"></i>');
                 }
             });
         }
@@ -465,6 +457,9 @@ $(document).ready(function() {
     $('.upload-signed').on('click', function() {
         const contractId = $(this).data('id');
         $('#uploadContractId').val(contractId);
+        // clear previous selection
+        $('#signed_contract').val('');
+        $('#signedFileName').text('Accepted formats: PDF, JPG, PNG (Max: 5MB)');
     });
 
     // Upload signed contract form
@@ -499,7 +494,9 @@ $(document).ready(function() {
         const contractNumber = $(this).data('number');
         
         $('#deleteContractNumber').text(contractNumber);
-        $('#deleteModal').modal('show');
+        const deleteModalEl = document.getElementById('deleteModal');
+        const deleteModal = new bootstrap.Modal(deleteModalEl);
+        deleteModal.show();
         
         $('#confirmDelete').off('click').on('click', function() {
             $.ajax({
@@ -520,13 +517,11 @@ $(document).ready(function() {
         });
     });
 
-    // File input label
-    $('.custom-file-input').on('change', function() {
+    // File input change -> show filename
+    $('#signed_contract').on('change', function() {
         const fileName = $(this).val().split('\\').pop();
-        $(this).next('.custom-file-label').addClass("selected").html(fileName);
+        $('#signedFileName').text(fileName ? fileName : 'Accepted formats: PDF, JPG, PNG (Max: 5MB)');
     });
 });
 </script>
-<?= $this->endSection() ?>
-
 <?= $this->endSection() ?>

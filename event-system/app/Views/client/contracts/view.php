@@ -24,19 +24,15 @@ $title = "Contract - " . $contract['title'] . " | San Isidro Labrador Resort and
                     <!-- Contract Status Alert -->
                     <?php if ($contract['status'] == 'sent'): ?>
                         <div class="alert alert-info">
-                            <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                                 <div>
-                                <?php if ($contract['status'] == 'sent'): ?>
-                                    <div class="alert alert-info">
-                                        <h5><i class="fas fa-file-signature"></i> Contract Sent for Signature</h5>
-                                        <p class="mb-1">Please review and sign this contract.</p>
-                                        <?php if (!empty($contract['expires_at']) && $contract['expires_at'] != '0000-00-00 00:00:00'): ?>
-                                            <p class="mb-0"><strong>Expires on:</strong> <?= date('F j, Y g:i A', strtotime($contract['expires_at'])) ?></p>
-                                        <?php else: ?>
-                                            <p class="mb-0"><strong>No expiration date set.</strong></p>
-                                        <?php endif; ?>
-                                    </div>
-                                <?php endif; ?>
+                                    <h5 class="mb-1"><i class="fas fa-file-signature"></i> Contract Sent for Signature</h5>
+                                    <p class="mb-1">Please review and sign this contract.</p>
+                                    <?php if (!empty($contract['expires_at']) && $contract['expires_at'] != '0000-00-00 00:00:00'): ?>
+                                        <p class="mb-0"><strong>Expires on:</strong> <?= date('F j, Y g:i A', strtotime($contract['expires_at'])) ?></p>
+                                    <?php else: ?>
+                                        <p class="mb-0"><strong>No expiration date set.</strong></p>
+                                    <?php endif; ?>
                                 </div>
                                 <div>
                                     <button type="button" class="btn btn-success btn-lg sign-contract-main"
@@ -214,9 +210,7 @@ $title = "Contract - " . $contract['title'] . " | San Isidro Labrador Resort and
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="signContractModalLabel">Sign Contract</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="alert alert-info">
@@ -231,6 +225,7 @@ $title = "Contract - " . $contract['title'] . " | San Isidro Labrador Resort and
                             <select class="form-control" id="signatureMethod">
                                 <option value="draw">Draw Signature</option>
                                 <option value="type">Type Signature</option>
+                                <option value="upload">Upload Signature Image</option>
                             </select>
                         </div>
 
@@ -252,6 +247,16 @@ $title = "Contract - " . $contract['title'] . " | San Isidro Labrador Resort and
                                 <input type="text" class="form-control" id="typedName" 
                                        placeholder="Enter your full name as signature"
                                        value="<?= $contract['client_name'] ?>">
+                            </div>
+                        </div>
+
+                        <div id="uploadSignatureSection" style="display: none;">
+                            <div class="form-group">
+                                <label for="signatureFile">Upload Signature Image (PNG/JPG)</label>
+                                <input type="file" class="form-control" id="signatureFile" accept="image/*">
+                            </div>
+                            <div class="mb-2 text-center">
+                                <img id="signaturePreview" src="" alt="Signature Preview" style="max-width:100%; max-height:150px; display:none; border:1px solid #ddd;" />
                             </div>
                         </div>
                     </div>
@@ -279,7 +284,7 @@ $title = "Contract - " . $contract['title'] . " | San Isidro Labrador Resort and
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" id="finalizeSignature">
                     <i class="fas fa-signature"></i> Sign and Submit
                 </button>
@@ -293,6 +298,7 @@ $title = "Contract - " . $contract['title'] . " | San Isidro Labrador Resort and
 $(document).ready(function() {
     let signaturePad = null;
     const contractId = <?= $contract['id'] ?>;
+    // Note: bootstrap JS is loaded after this script in the footer, so create modal instances when needed
 
     // Initialize signature pad
     function initializeSignaturePad() {
@@ -323,16 +329,45 @@ $(document).ready(function() {
         if (method === 'draw') {
             $('#drawSignatureSection').show();
             $('#typeSignatureSection').hide();
+            $('#uploadSignatureSection').hide();
             initializeSignaturePad();
         } else {
-            $('#drawSignatureSection').hide();
-            $('#typeSignatureSection').show();
+            if (method === 'type') {
+                $('#drawSignatureSection').hide();
+                $('#typeSignatureSection').show();
+                $('#uploadSignatureSection').hide();
+            } else if (method === 'upload') {
+                $('#drawSignatureSection').hide();
+                $('#typeSignatureSection').hide();
+                $('#uploadSignatureSection').show();
+            }
+        }
+    });
+
+    // Preview uploaded signature image (attach once)
+    $('#signatureFile').on('change', function(e) {
+        const input = this;
+        const preview = document.getElementById('signaturePreview');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                preview.src = evt.target.result;
+                preview.style.display = 'block';
+            }
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.src = '';
+            preview.style.display = 'none';
         }
     });
 
     // Sign contract buttons
     $('.sign-contract-main').on('click', function() {
-        $('#signContractModal').modal('show');
+        const el = document.getElementById('signContractModal');
+        if (el && typeof bootstrap !== 'undefined') {
+            const modalInst = bootstrap.Modal.getOrCreateInstance(el);
+            modalInst.show();
+        }
         $('#signatureMethod').val('draw');
         $('#drawSignatureSection').show();
         $('#typeSignatureSection').hide();
@@ -353,6 +388,57 @@ $(document).ready(function() {
 
         const signatureMethod = $('#signatureMethod').val();
         let signatureData = '';
+
+        // If upload selected, handle file separately
+        if (signatureMethod === 'upload') {
+            const fileInput = document.getElementById('signatureFile');
+            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                alert('Please choose an image file to upload as your signature.');
+                return;
+            }
+            const file = fileInput.files[0];
+
+            // Prepare FormData and send file
+            const formData = new FormData();
+            formData.append('signature_file', file);
+            formData.append('signature_type', 'upload');
+            formData.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
+
+            // Disable button
+            const submitBtn = $(this);
+            submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Signing...');
+
+            $.ajax({
+                url: '<?= base_url('client/contracts/sign') ?>/' + contractId,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                    const el = document.getElementById('signContractModal');
+                    if (el && typeof bootstrap !== 'undefined') {
+                        const inst = bootstrap.Modal.getInstance(el);
+                        if (inst) inst.hide();
+                    }
+                        showSuccessAlert('Contract signed successfully! Refreshing...');
+                        setTimeout(function() { location.reload(); }, 1500);
+                    } else {
+                        alert('Error: ' + response.message);
+                        submitBtn.prop('disabled', false).html('<i class="fas fa-signature"></i> Sign and Submit');
+                    }
+                },
+                error: function(xhr) {
+                    const msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'An error occurred. Please try again.';
+                    alert('Error: ' + msg);
+                    submitBtn.prop('disabled', false).html('<i class="fas fa-signature"></i> Sign and Submit');
+                }
+            });
+
+
+            return; // upload flow handled
+        }
 
         if (signatureMethod === 'draw') {
             if (signaturePad.isEmpty()) {
@@ -378,23 +464,31 @@ $(document).ready(function() {
             type: 'POST',
             data: {
                 signature_data: signatureData,
-                signature_type: signatureMethod
+                signature_type: signatureMethod,
+                '<?= csrf_token() ?>': '<?= csrf_hash() ?>'
             },
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
-                    $('#signContractModal').modal('hide');
-                    showSuccessAlert('Contract signed successfully! Redirecting...');
+                    const el = document.getElementById('signContractModal');
+                    if (el && typeof bootstrap !== 'undefined') {
+                        const inst = bootstrap.Modal.getInstance(el);
+                        if (inst) inst.hide();
+                    }
+                    showSuccessAlert('Contract signed successfully! Refreshing...');
                     setTimeout(function() {
                         location.reload();
-                    }, 2000);
+                    }, 1500);
                 } else {
                     alert('Error: ' + response.message);
                     submitBtn.prop('disabled', false).html('<i class="fas fa-signature"></i> Sign and Submit');
                 }
             },
-            error: function() {
-                alert('Error signing contract. Please try again.');
+            error: function(xhr) {
+                const msg = (xhr.responseJSON && xhr.responseJSON.message)
+                    ? xhr.responseJSON.message
+                    : 'An error occurred. Please try again.';
+                alert('Error: ' + msg);
                 submitBtn.prop('disabled', false).html('<i class="fas fa-signature"></i> Sign and Submit');
             }
         });
@@ -402,8 +496,8 @@ $(document).ready(function() {
 
     function showSuccessAlert(message) {
         const alertHtml = `
-            <div class="alert alert-success alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <div class="alert alert-success alert-dismissible fade show">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 <i class="icon fas fa-check"></i> ${message}
             </div>
         `;

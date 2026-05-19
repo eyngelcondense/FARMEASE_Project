@@ -393,8 +393,19 @@ $title = "My Contracts | San Isidro Labrador Resort and Leisure Farm";
                                 <h5><?= esc($contract['title']) ?></h5>
                                 <div class="contract-ref">Contract #: <?= esc($contract['contract_number']) ?></div>
                             </div>
+                            <?php
+                            $statusIcons = [
+                                'draft'     => 'edit',
+                                'sent'      => 'paper-plane',
+                                'signed'    => 'check-circle',
+                                'expired'   => 'exclamation-triangle',
+                                'cancelled' => 'times-circle',
+                                'rejected'  => 'ban',
+                            ];
+                            $statusIcon = $statusIcons[$contract['status']] ?? 'file-contract';
+                            ?>
                             <span class="contract-status status-<?= $contract['status'] ?>">
-                                <i class="fas fa-<?= getStatusIcon($contract['status']) ?>"></i>
+                                <i class="fas fa-<?= $statusIcon ?>"></i>
                                 <?= ucfirst($contract['status']) ?>
                             </span>
                         </div>
@@ -675,7 +686,8 @@ $(document).ready(function() {
             type: 'POST',
             data: {
                 signature_data: signatureData,
-                signature_type: signatureType
+                signature_type: signatureType,
+                '<?= csrf_token() ?>': '<?= csrf_hash() ?>'
             },
             dataType: 'json',
             success: function(response) {
@@ -690,8 +702,11 @@ $(document).ready(function() {
                     submitBtn.prop('disabled', false).html('<i class="fas fa-signature"></i> Sign Contract');
                 }
             },
-            error: function() {
-                alert('Error signing contract. Please try again.');
+            error: function(xhr) {
+                const msg = (xhr.responseJSON && xhr.responseJSON.message)
+                    ? xhr.responseJSON.message
+                    : 'An error occurred. Please try again.';
+                alert('Error: ' + msg);
                 submitBtn.prop('disabled', false).html('<i class="fas fa-signature"></i> Sign Contract');
             }
         });

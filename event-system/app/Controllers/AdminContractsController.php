@@ -141,14 +141,25 @@ class AdminContractsController extends BaseController
 
     public function send($id)
     {
+        // Send contract to client (AJAX request)
         if ($this->request->isAJAX()) {
             try {
                 $contractModel = new \App\Models\ContractModel();
+                
+                // Prevent re-sending if already sent
+                $existing = $contractModel->find($id);
+                if ($existing && $existing['status'] === 'sent') {
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => 'Contract has already been sent.'
+                    ]);
+                }
                 
                 // Use the new sendContract method that locks and stores final text
                 $sent = $contractModel->sendContract($id);
                 
                 if ($sent) {
+                    // Refresh contract details after send
                     $contract = $this->contractModel->getContractsWithDetails(['contracts.id' => $id])[0] ?? null;
                     if ($contract && !empty($contract['client_id'])) {
                         $client = $this->clientModel->find($contract['client_id']);
@@ -163,25 +174,27 @@ class AdminContractsController extends BaseController
                             );
                         }
                     }
-
+                    
                     return $this->response->setJSON([
-                        'success' => true, 
+                        'success' => true,
                         'message' => 'Contract sent to client successfully. Contract is now locked and cannot be edited.'
                     ]);
                 } else {
                     return $this->response->setJSON([
-                        'success' => false, 
+                        'success' => false,
                         'message' => 'Failed to send contract. Contract may not exist or is already sent.'
                     ]);
                 }
-                
             } catch (\Exception $e) {
                 log_message('error', 'Send contract error: ' . $e->getMessage());
                 return $this->response->setJSON([
-                    'success' => false, 
+                    'success' => false,
                     'message' => 'Error: ' . $e->getMessage()
                 ]);
             }
+        } else {
+            // Fallback for non-AJAX requests
+            return redirect()->back()->with('error', 'Invalid request.');
         }
     }
 
@@ -202,37 +215,36 @@ class AdminContractsController extends BaseController
 
     public function download($id)
     {
-        $clientId = $this->getClientId();
-        
-        $contract = $this->contractModel->getContractForClient($id, $clientId);
-        
+        // Admin can download any contract — no client scoping
+        $contract = $this->contractModel->getContractsWithDetails(['contracts.id' => $id]);
+        $contract = $contract[0] ?? null;
+
         if (!$contract) {
             return redirect()->back()->with('error', 'Contract not found.');
         }
 
         try {
             $dompdf = new \Dompdf\Dompdf();
-            
-            // Get final content (already has placeholders replaced)
+
             $finalContent = $this->contractModel->getFinalContent($id);
-            
+
             if (!$finalContent) {
                 return redirect()->back()->with('error', 'Contract content not available.');
             }
-            
-            $html = view('client/contracts/print', [
+
+            $html = view('admin/contracts/print', [
                 'contract' => $contract,
-                'content' => $finalContent['content'],
-                'terms' => $finalContent['terms_conditions']
+                'content'  => $finalContent['content'],
+                'terms'    => $finalContent['terms_conditions']
             ]);
-            
+
             $dompdf->loadHtml($html);
             $dompdf->setPaper('A4', 'portrait');
             $dompdf->render();
 
             $filename = "contract-{$contract['contract_number']}.pdf";
             return $dompdf->stream($filename, ['Attachment' => true]);
-            
+
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Error generating PDF: ' . $e->getMessage());
         }
@@ -241,28 +253,40 @@ class AdminContractsController extends BaseController
     public function uploadSigned($id)
     {
         $contract = $this->contractModel->find($id);
-        
+
         if (!$contract) {
-            return redirect()->back()->with('error', 'Contract not found.');
+            return $this->response->setJSON(['success' => false, 'message' => 'Contract not found.']);
         }
 
         $file = $this->request->getFile('signed_contract');
-        
+
         if ($file && $file->isValid() && !$file->hasMoved()) {
-            $newName = $file->getRandomName();
+            // Ensure upload directory exists
+            $uploadDir = FCPATH . 'uploads/contracts/signed/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+
+            $newName  = $file->getRandomName();
             $filePath = 'uploads/contracts/signed/' . $newName;
-            
-            if ($file->move(FCPATH . 'public/uploads/contracts/signed/', $newName)) {
+
+            if ($file->move($uploadDir, $newName)) {
                 $this->contractModel->update($id, [
                     'signed_contract_path' => $filePath,
-                    'status' => 'signed',
-                    'signature_date' => date('Y-m-d H:i:s')
+                    'status'               => 'signed',
+                    'signature_date'       => date('Y-m-d H:i:s')
                 ]);
-                
-                return redirect()->back()->with('success', 'Signed contract uploaded successfully.');
+
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Signed contract uploaded successfully.'
+                ]);
             }
         }
 
-        return redirect()->back()->with('error', 'Failed to upload signed contract.');
+        return $this->response->setJSON([
+            'success' => false,
+            'message' => 'Failed to upload signed contract. Please check the file and try again.'
+        ]);
     }
 }

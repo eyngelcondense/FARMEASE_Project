@@ -298,6 +298,11 @@
                 <div class="mb-3">
                     <h3 style="font-size: 18px; font-weight: bold; margin-bottom: 5px;">Availability Calendar</h3>
                     <p style="font-size: 13px; color: #666; margin: 0;">Dark brown dates are already booked</p>
+                <div class="mt-2">
+                  <a href="<?= site_url('studio-gallery') ?>" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-images"></i> Browse Studio Gallery
+                  </a>
+                </div>
                 </div>
                 
                 <div class="calendar-header">

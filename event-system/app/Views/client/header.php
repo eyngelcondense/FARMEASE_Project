@@ -14,6 +14,7 @@
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
  
 <style>
      /* Header */
@@ -216,6 +217,9 @@
         </li>
         <li class="nav-item">
           <a class="nav-link <?= (uri_string() == 'gallery') ? 'active' : '' ?>" href="<?= site_url('gallery') ?>">VENUE GALLERY</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <?= (uri_string() == 'studio-gallery') ? 'active' : '' ?>" href="<?= site_url('studio-gallery') ?>">STUDIO GALLERY</a>
         </li>
       <li class="nav-item"><a class="nav-link <?= (uri_string() == 'bookings') ? 'active' : '' ?>" href="<?= site_url('bookings') ?>">BOOK EVENTS</a>
       </li>

@@ -11,15 +11,13 @@ class StudioModel extends Model
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
-    protected $allowedFields = ['user_id', 'name', 'location', 'capacity', 'cost', 'description', 'is_active'];
+    protected $allowedFields = ['user_id', 'name', 'location', 'capacity', 'cost'];
 
     protected $validationRules = [
         'name'     => 'required|min_length[2]|max_length[255]',
         'location' => 'required|max_length[255]',
         'capacity' => 'required|is_natural_no_zero',
-        'cost'     => 'required|numeric|greater_than_equal_to[0]',
-        'description' => 'permit_empty|string',
-        'is_active' => 'permit_empty|in_list[0,1]'
+        'cost'     => 'required|numeric|greater_than_equal_to[0]'
     ];
 
     protected $validationMessages = [
@@ -75,22 +73,32 @@ class StudioModel extends Model
             $builder->where('s.capacity >=', (int) $guestCount);
         }
 
-        if ($date) {
-            // If both start and end are provided, check time overlaps
-            if ($startTime && $endTime) {
-                $escapedDate  = $this->db->escape($date);
-                $escapedStart = $this->db->escape($startTime);
-                $escapedEnd   = $this->db->escape($endTime);
-
-                // join bookings that conflict; we'll then require sb.id IS NULL
-                $joinCond = "s.id = sb.studio_id AND sb.date = $escapedDate AND NOT (sb.end_time <= $escapedStart OR sb.start_time >= $escapedEnd)";
-                $builder->join('studio_bookings sb', $joinCond, 'left');
-                $builder->where('sb.id IS NULL');
-            } else {
-                // exclude any booking on that date
-                $builder->join('studio_bookings sb', 's.id = sb.studio_id AND sb.date = ' . $this->db->escape($date), 'left');
-                $builder->where('sb.id IS NULL');
-            }
+        if ($date && $startTime && $endTime) {
+            $builder->whereNotIn('s.id', function ($subQuery) use ($date, $startTime, $endTime) {
+                $subQuery->select('sb.studio_id')
+                    ->from('studio_bookings sb')
+                    ->join('bookings b', 'sb.booking_id = b.id')
+                    ->where('b.event_date', $date)
+                    ->whereIn('b.status', ['confirmed', 'approved'])
+                    ->groupStart()
+                        ->groupStart()
+                            ->where('b.start_time <=', $startTime)
+                            ->where('b.end_time >', $startTime)
+                        ->groupEnd()
+                        ->orGroupStart()
+                            ->where('b.start_time <', $endTime)
+                            ->where('b.end_time >=', $endTime)
+                        ->groupEnd()
+                    ->groupEnd();
+            });
+        } elseif ($date) {
+            $builder->whereNotIn('s.id', function ($subQuery) use ($date) {
+                $subQuery->select('sb.studio_id')
+                    ->from('studio_bookings sb')
+                    ->join('bookings b', 'sb.booking_id = b.id')
+                    ->where('b.event_date', $date)
+                    ->whereIn('b.status', ['confirmed', 'approved']);
+            });
         }
 
         return $builder->get()->getResult();

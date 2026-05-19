@@ -33,7 +33,7 @@ class AdminModel extends Model
      */
     public function getAdminByUserId($userId)
     {
-        return $this->select('admins.*, u.username, u.email')
+        return $this->select('admins.*, u.username, u.username as email')
                     ->join('users u', 'admins.user_id = u.id')
                     ->where('admins.user_id', $userId)
                     ->first();
@@ -44,7 +44,7 @@ class AdminModel extends Model
      */
     public function getAllAdminsWithDetails()
     {
-        return $this->select('admins.*, u.username, u.email, u.last_active')
+        return $this->select('admins.*, u.username, u.username as email, u.last_active')
                     ->join('users u', 'admins.user_id = u.id')
                     ->findAll();
     }

@@ -566,29 +566,28 @@ $(document).ready(function() {
         table.search(this.value).draw();
     });
 
-    // View payment details
-    $('.view-payment').on('click', function() {
+    // Delegate events to handle dynamic table rows and DataTables redraws
+    $(document).on('click', '.view-payment', function() {
         var paymentId = $(this).data('payment-id');
         loadPaymentDetails(paymentId);
     });
 
-    // Verify payment
-    $('.verify-payment').on('click', function() {
+    $(document).on('click', '.verify-payment', function() {
         var paymentId = $(this).data('payment-id');
         verifyPayment(paymentId);
     });
 
-    // Reject payment
-    $('.reject-payment').on('click', function() {
+    $(document).on('click', '.reject-payment', function() {
         var paymentId = $(this).data('payment-id');
         rejectPayment(paymentId);
     });
 
-    // View receipt
-    $('.view-receipt').on('click', function() {
+    $(document).on('click', '.view-receipt', function() {
         var receiptUrl = $(this).data('receipt');
         $('#receiptImage').attr('src', receiptUrl);
-        $('#receiptModal').modal('show');
+        var receiptModalEl = document.getElementById('receiptModal');
+        var receiptModal = bootstrap.Modal.getOrCreateInstance(receiptModalEl);
+        receiptModal.show();
     });
 
     // Load payment details via AJAX
@@ -600,7 +599,9 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     $('#paymentDetails').html(response.html);
-                    $('#paymentModal').modal('show');
+                    var paymentModalEl = document.getElementById('paymentModal');
+                    var paymentModal = bootstrap.Modal.getOrCreateInstance(paymentModalEl);
+                    paymentModal.show();
                 } else {
                     alert('Error loading payment details');
                 }

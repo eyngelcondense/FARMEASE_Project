@@ -66,8 +66,31 @@ class StudioModel extends Model
         $builder->select('s.*');
         
         if ($date && $startTime && $endTime) {
-            $builder->join('studio_bookings sb', "s.id = sb.studio_id AND sb.date = '$date' AND ((sb.start_time <= '$startTime' AND sb.end_time > '$startTime') OR (sb.start_time < '$endTime' AND sb.end_time >= '$endTime'))", 'left');
-            $builder->where('sb.id IS NULL');
+            $builder->whereNotIn('s.id', function ($subQuery) use ($date, $startTime, $endTime) {
+                $subQuery->select('sb.studio_id')
+                    ->from('studio_bookings sb')
+                    ->join('bookings b', 'sb.booking_id = b.id')
+                    ->where('b.event_date', $date)
+                    ->whereIn('b.status', ['confirmed', 'approved'])
+                    ->groupStart()
+                        ->groupStart()
+                            ->where('b.start_time <=', $startTime)
+                            ->where('b.end_time >', $startTime)
+                        ->groupEnd()
+                        ->orGroupStart()
+                            ->where('b.start_time <', $endTime)
+                            ->where('b.end_time >=', $endTime)
+                        ->groupEnd()
+                    ->groupEnd();
+            });
+        } elseif ($date) {
+            $builder->whereNotIn('s.id', function ($subQuery) use ($date) {
+                $subQuery->select('sb.studio_id')
+                    ->from('studio_bookings sb')
+                    ->join('bookings b', 'sb.booking_id = b.id')
+                    ->where('b.event_date', $date)
+                    ->whereIn('b.status', ['confirmed', 'approved']);
+            });
         }
         
         return $builder->get()->getResult();

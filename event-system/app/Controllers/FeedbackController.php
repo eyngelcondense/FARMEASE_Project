@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\FeedbackModel;
+use App\Models\StudioModel;
 use CodeIgniter\HTTP\RedirectResponse;
 
 class FeedbackController extends BaseController
@@ -21,6 +22,7 @@ class FeedbackController extends BaseController
         $data['title'] = "Welcome | San Isidro Labrador Resort and Leisure Farm";
 
         $db = \Config\Database::connect();
+        $hasStudioFeedback = $db->fieldExists('studio_id', 'feedback');
         
         // Get testimonials with client information
         $testimonials = $db->table('feedback f')
@@ -33,6 +35,9 @@ class FeedbackController extends BaseController
 
         $recentTestimonials = array_slice($testimonials, 0, 6);
 
+        $studioModel = new StudioModel();
+        $studios = $studioModel->where('is_active', 1)->orderBy('name', 'ASC')->findAll();
+
         // Debug: Check what columns we're getting
         if (!empty($recentTestimonials)) {
             log_message('debug', 'Testimonial columns: ' . implode(', ', array_keys($recentTestimonials[0])));
@@ -41,6 +46,8 @@ class FeedbackController extends BaseController
         return view('client/testimonial', [
             'testimonials' => $testimonials,
             'recentTestimonials' => $recentTestimonials,
+            'studios' => $studios,
+            'hasStudioFeedback' => $hasStudioFeedback,
             'title' => $data['title'],
             'user' => $data['user'],
             'client' => $data['client'],
@@ -56,7 +63,8 @@ class FeedbackController extends BaseController
 
         $rules = [
             'feedback' => 'required|min_length[10]|max_length[1000]',
-            'rating' => 'required|integer|greater_than_equal_to[1]|less_than_equal_to[5]'
+            'rating' => 'required|integer|greater_than_equal_to[1]|less_than_equal_to[5]',
+            'studio_id' => 'permit_empty|integer'
         ];
 
         if (!$this->validate($rules)) {
@@ -83,6 +91,22 @@ class FeedbackController extends BaseController
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
             ];
+
+            $db = \Config\Database::connect();
+            if ($db->fieldExists('studio_id', 'feedback')) {
+                $studioId = (int) ($this->request->getPost('studio_id') ?? 0);
+                if ($studioId > 0) {
+                    $studioModel = new StudioModel();
+                    if (!$studioModel->find($studioId)) {
+                        return redirect()->back()
+                            ->withInput()
+                            ->with('error', 'Selected studio was not found.');
+                    }
+                    $data['studio_id'] = $studioId;
+                } else {
+                    $data['studio_id'] = null;
+                }
+            }
 
             $this->feedbackModel->insert($data);
 

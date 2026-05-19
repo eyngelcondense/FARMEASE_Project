@@ -91,6 +91,9 @@
             <button class="btn btn-primary" onclick="addStaff()">
                 <i class="fas fa-plus"></i> Add Staff
             </button>
+            <button class="btn btn-secondary" onclick="openPromoteModal()">
+                <i class="fas fa-user-plus"></i> Promote Existing User
+            </button>
             <button class="btn btn-outline-primary" onclick="manageAssignments()">
                 <i class="fas fa-tasks"></i> Manage Assignments
             </button>
@@ -176,6 +179,158 @@
         </div>
     </div>
 </div>
+
+<!-- Promote Existing User Modal -->
+<div class="modal fade" id="promoteModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Promote User to Staff/Studio</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="userSearch" class="form-label">Search User</label>
+                    <input type="text" id="userSearch" class="form-control" placeholder="Search by name or email">
+                </div>
+                <div class="mb-3">
+                    <table class="table table-sm" id="userSearchResults">
+                        <thead><tr><th></th><th>Name</th><th>Email</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <hr>
+                <div>
+                    <label class="form-label">Promote As</label>
+                    <select id="promoteType" class="form-select mb-3">
+                        <option value="staff">Staff</option>
+                        <option value="studio">Studio</option>
+                    </select>
+
+                    <div id="promoteFields">
+                        <div class="mb-3">
+                            <label class="form-label">Display Name</label>
+                            <input id="promoteName" class="form-control">
+                        </div>
+                        <div class="mb-3 staff-only">
+                            <label class="form-label">Email</label>
+                            <input id="promoteEmail" type="email" class="form-control" placeholder="staff@example.com">
+                        </div>
+                        <div class="mb-3 staff-only">
+                            <label class="form-label">Phone</label>
+                            <input id="promotePhone" type="tel" class="form-control" placeholder="09xxxxxxxxx">
+                        </div>
+                        <div class="mb-3 staff-only">
+                            <label class="form-label">Role</label>
+                            <input id="promoteRole" class="form-control" placeholder="e.g., front_desk">
+                        </div>
+                        <div class="mb-3 studio-only" style="display:none;">
+                            <label class="form-label">Location</label>
+                            <input id="promoteLocation" class="form-control" placeholder="Studio location">
+                        </div>
+                        <div class="mb-3 studio-only" style="display:none;">
+                            <label class="form-label">Capacity</label>
+                            <input id="promoteCapacity" type="number" class="form-control" value="10">
+                        </div>
+                        <div class="mb-3 studio-only" style="display:none;">
+                            <label class="form-label">Cost</label>
+                            <input id="promoteCost" type="number" step="0.01" class="form-control" value="0">
+                        </div>
+                        <div class="mb-3 studio-only" style="display:none;">
+                            <label class="form-label">Description</label>
+                            <textarea id="promoteDescription" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmPromote">Promote User</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openPromoteModal(){
+    const el = document.getElementById('promoteModal');
+    const inst = bootstrap.Modal.getOrCreateInstance(el);
+    inst.show();
+    loadUserList();
+}
+
+function loadUserList(){
+    fetch('/admin/users/list')
+        .then(r => r.json())
+        .then(users => {
+            const tbody = document.querySelector('#userSearchResults tbody');
+            tbody.innerHTML = '';
+            users.forEach(u => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td><input type="radio" name="selectedUser" value="${u.id}"></td><td>${u.fullname || u.username}</td><td>${u.email}</td>`;
+                tbody.appendChild(tr);
+            });
+        });
+}
+
+document.getElementById('userSearch')?.addEventListener('input', function(){
+    const q = this.value.toLowerCase();
+    Array.from(document.querySelectorAll('#userSearchResults tbody tr')).forEach(tr => {
+        const txt = tr.textContent.toLowerCase();
+        tr.style.display = txt.includes(q) ? '' : 'none';
+    });
+});
+
+document.getElementById('promoteType')?.addEventListener('change', function(){
+    const v = this.value;
+    document.querySelectorAll('.staff-only').forEach(el=>el.style.display = v==='staff' ? '' : 'none');
+    document.querySelectorAll('.studio-only').forEach(el=>el.style.display = v==='studio' ? '' : 'none');
+});
+
+document.getElementById('confirmPromote')?.addEventListener('click', function(){
+    const selected = document.querySelector('input[name="selectedUser"]:checked');
+    if(!selected){ alert('Please select a user'); return; }
+    const userId = selected.value;
+    const type = document.getElementById('promoteType').value;
+    const payload = {
+        user_id: userId,
+        type: type,
+        name: document.getElementById('promoteName').value || ''
+    };
+    if(type==='staff'){
+        payload.email = document.getElementById('promoteEmail').value || '';
+        payload.phone = document.getElementById('promotePhone').value || '';
+        payload.role = document.getElementById('promoteRole').value || 'staff';
+    } else {
+        payload.location = document.getElementById('promoteLocation').value || 'TBD';
+        payload.capacity = document.getElementById('promoteCapacity').value || 10;
+        payload.cost = document.getElementById('promoteCost').value || 0;
+        payload.description = document.getElementById('promoteDescription').value || '';
+    }
+
+    // include CSRF token
+    payload['<?= csrf_token() ?>'] = '<?= csrf_hash() ?>';
+    $.ajax({
+        url: '/admin/users/promote',
+        method: 'POST',
+        data: payload,
+        dataType: 'json',
+        success: function(res) {
+            if(res.success){
+                alert('User promoted successfully');
+                bootstrap.Modal.getInstance(document.getElementById('promoteModal')).hide();
+                loadStaffData();
+            } else {
+                alert('Error: ' + res.message);
+            }
+        },
+        error: function(){
+            alert('Request failed');
+        }
+    });
+});
+</script>
 
 <!-- Add/Edit Staff Modal -->
 <div class="modal fade" id="staffModal" tabindex="-1">

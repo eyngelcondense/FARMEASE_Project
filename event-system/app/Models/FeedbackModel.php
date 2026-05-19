@@ -14,6 +14,7 @@ class FeedbackModel extends Model
     protected $protectFields    = true;
     protected $allowedFields = [
         'client_id',
+        'studio_id',
         'rating',
         'comments',
         'status',
@@ -37,6 +38,7 @@ class FeedbackModel extends Model
     // Validation
     protected $validationRules = [
         'client_id' => 'required|numeric',
+        'studio_id' => 'permit_empty|numeric',
         'rating' => 'required|numeric|greater_than_equal_to[1]|less_than_equal_to[5]',
         'comments' => 'required|max_length[1000]',
         'status' => 'required|in_list[pending,approved,rejected]'

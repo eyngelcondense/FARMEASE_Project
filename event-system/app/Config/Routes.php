@@ -2,7 +2,6 @@
 
 use CodeIgniter\Router\RouteCollection;
 use CodeIgniter\Shield\Authentication\Authentication;
-use CodeIgniter\Shield\Controllers\MagicLinkController;
 
 /**
  * @var RouteCollection $routes
@@ -11,6 +10,14 @@ use CodeIgniter\Shield\Controllers\MagicLinkController;
 //landing page route 
 $routes->get('/', 'ClientController::landing', ['filter' => 'redirectIfAuthenticated']);
 $routes->get('landing', 'ClientController::landing', ['filter' => 'redirectIfAuthenticated']);
+$routes->post('payments/process/(:num)', 'PaymentsController::process/$1');
+$routes->post('payments/create-redirect', 'PaymentsController::createRedirect');
+$routes->get('payments/success', 'PaymentsController::success');
+$routes->post('payments/manual/(:num)', 'PaymentsController::manual/$1');
+$routes->get('payments/modal/(:num)', 'PaymentsController::modal/$1');
+$routes->post('payments/submit', 'PaymentsController::submit');
+$routes->get('payments/failed', 'PaymentsController::failed');
+$routes->get('receipts/(:any)', 'PaymentsController::showReceipt/$1');
 $routes->get('request-data', 'DataRequestController::index');
 $routes->post('data-request/submit', 'DataRequestController::submitRequest');
 
@@ -72,6 +79,7 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:client'
 
     $routes->get('packages', 'ClientController::packages');
     $routes->get('gallery', 'ClientController::gallery');
+    $routes->get('studio-gallery', 'ClientController::studioGallery');
     $routes->get('api/gallery/getVenueImages', 'AdminGalleryController::getVenueImages');
     $routes->get('api/packages/getPackagesWithVenues', 'PackageController::getPackagesWithVenues');
     $routes->get('testimonials', 'FeedbackController::testimonials');
@@ -88,6 +96,7 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:client'
     $routes->post('client/contracts/sign/(:num)', 'ContractsController::sign/$1');
     $routes->get('client/contracts/download/(:num)', 'ContractsController::download/$1');
     $routes->post('client/contracts/agree/(:num)', 'ContractsController::agree/$1');
+    $routes->post('client/contracts/reject/(:num)', 'ContractsController::reject/$1');
     $routes->get('client/contracts/debugContractAccess/(:num)', 'ContractsController::debugContractAccess/$1');
 });
 
@@ -133,6 +142,9 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->post('admin/calendar/update-status', 'CalendarController::updateBookingStatus');   
 
     $routes->get('manage-staff', 'AdminController::manageStaffView');
+    // Alias with admin prefix to match links like site_url('admin/manage-staff')
+    $routes->get('admin/manage-staff', 'AdminController::manageStaffView');
+    $routes->get('admin/staffs', 'AdminController::staffsView');
 
     $routes->get('notifications', 'NotificationsController::index');
     $routes->get('notifications/get', 'NotificationsController::get');
@@ -176,6 +188,8 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->post('admin/users/make-client/(:num)', 'UsersController::makeClient/$1');
     $routes->post('admin/users/update/(:num)', 'UsersController::update/$1');
     $routes->post('admin/users/delete/(:num)', 'UsersController::delete/$1');
+    $routes->get('admin/users/list', 'UsersController::listClients');
+    $routes->post('admin/users/promote', 'UsersController::promote');
 
     $routes->get('admin/client-transactions', 'ClientTransactionsController::index');
     $routes->get('admin/client-transactions/(:num)', 'ClientTransactionsController::show/$1');

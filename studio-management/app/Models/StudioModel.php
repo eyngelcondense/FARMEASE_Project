@@ -11,9 +11,10 @@ class StudioModel extends Model
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
-    protected $allowedFields = ['name', 'location', 'capacity', 'cost'];
+    protected $allowedFields = ['user_id', 'name', 'location', 'capacity', 'cost'];
 
     protected $validationRules = [
+        'user_id'  => 'required|is_natural_no_zero',
         'name'     => 'required|min_length[2]|max_length[255]',
         'location' => 'permit_empty|min_length[2]|max_length[255]',
         'capacity' => 'permit_empty|greater_than[0]',
@@ -21,6 +22,10 @@ class StudioModel extends Model
     ];
 
     protected $validationMessages = [
+        'user_id' => [
+            'required'           => 'User ID is required.',
+            'is_natural_no_zero' => 'Valid User ID required.'
+        ],
         'name' => [
             'required'   => 'Studio name required.',
             'min_length' => 'Name at least 2 chars.',

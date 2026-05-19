@@ -325,6 +325,20 @@ $title = "Testimonials | San Isidro Labrador Resort and Leisure Farm";
                 <?= csrf_field() ?>
                 
                 <div class="feedback-form">
+                    <?php if (!empty($hasStudioFeedback) && !empty($studios)): ?>
+                        <div class="mb-3">
+                            <label class="form-label">Studio (optional)</label>
+                            <select name="studio_id" class="form-select">
+                                <option value="">General feedback (no studio)</option>
+                                <?php foreach ($studios as $studio): ?>
+                                    <option value="<?= (int) $studio['id'] ?>" <?= old('studio_id') == $studio['id'] ? 'selected' : '' ?>>
+                                        <?= esc($studio['name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    <?php endif; ?>
+
                     <div class="rating-stars mb-3">
                         <label class="form-label"></label>
                         <div class="star-rating">

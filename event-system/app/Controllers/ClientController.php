@@ -3,9 +3,9 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\ClientModel;
 use App\Models\FeedbackModel;
+use App\Models\StudioModel;
 use CodeIgniter\HTTP\RedirectResponse;
 
 class ClientController extends BaseController
@@ -28,6 +28,82 @@ class ClientController extends BaseController
         $data = $this->getUserClient();
         $data['title'] = "Welcome | San Isidro Labrador Resort and Leisure Farm";
         return view('client/gallery', $data);
+    }
+
+    public function studioGallery(): string
+    {
+        $data = $this->getUserClient();
+
+        $studioModel = new StudioModel();
+        $db = \Config\Database::connect();
+
+        $studios = $studioModel
+            ->where('is_active', 1)
+            ->orderBy('name', 'ASC')
+            ->findAll();
+
+        $studioIds = array_column($studios, 'id');
+        $imageMap = [];
+
+        if (!empty($studioIds)) {
+            $imageRows = $db->table('studio_images')
+                ->select('studio_id, image_path')
+                ->whereIn('studio_id', $studioIds)
+                ->orderBy('is_primary', 'DESC')
+                ->orderBy('sort_order', 'ASC')
+                ->orderBy('id', 'ASC')
+                ->get()
+                ->getResultArray();
+
+            foreach ($imageRows as $row) {
+                if (!isset($imageMap[$row['studio_id']])) {
+                    $imageMap[$row['studio_id']] = $row['image_path'];
+                }
+            }
+        }
+
+        foreach ($studios as &$studio) {
+            $studio['cover_image'] = $imageMap[$studio['id']] ?? null;
+        }
+        unset($studio);
+
+        $hasStudioFeedback = $db->fieldExists('studio_id', 'feedback');
+        $selectedStudioId = (int) ($this->request->getGet('studio_id') ?? 0);
+        if ($selectedStudioId === 0 && !empty($studios)) {
+            $selectedStudioId = (int) $studios[0]['id'];
+        }
+
+        $selectedStudio = null;
+        if ($selectedStudioId > 0) {
+            foreach ($studios as $studio) {
+                if ((int) $studio['id'] === $selectedStudioId) {
+                    $selectedStudio = $studio;
+                    break;
+                }
+            }
+        }
+
+        $studioReviews = [];
+        if ($hasStudioFeedback && $selectedStudioId > 0) {
+            $studioReviews = $db->table('feedback f')
+                ->select('f.rating, f.comments, f.created_at, c.fullname, c.profile_pic')
+                ->join('clients c', 'c.id = f.client_id', 'left')
+                ->where('f.status', 'approved')
+                ->where('f.studio_id', $selectedStudioId)
+                ->orderBy('f.created_at', 'DESC')
+                ->limit(6)
+                ->get()
+                ->getResultArray();
+        }
+
+        $data['title'] = 'Studio Gallery | San Isidro Labrador Resort and Leisure Farm';
+        $data['studios'] = $studios;
+        $data['studioReviews'] = $studioReviews;
+        $data['selectedStudioId'] = $selectedStudioId;
+        $data['selectedStudio'] = $selectedStudio;
+        $data['hasStudioFeedback'] = $hasStudioFeedback;
+
+        return view('client/studios', $data);
     }
 
 

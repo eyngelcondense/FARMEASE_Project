@@ -33,6 +33,71 @@ class UsersController extends BaseController
         ]);
     }
 
+    /**
+     * Return a JSON list of client users for admin selection
+     */
+    public function listClients()
+    {
+        $clients = $this->getClientUsers();
+        return $this->response->setJSON($clients);
+    }
+
+    /**
+     * Promote an existing user to staff or studio
+     */
+    public function promote()
+    {
+        $userId = (int) $this->request->getPost('user_id');
+        $type = $this->request->getPost('type'); // 'staff' or 'studio'
+
+        if (!$userId || !in_array($type, ['staff', 'studio'])) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid parameters']);
+        }
+
+        $user = $this->userModel->find($userId);
+        if (!$user) {
+            return $this->response->setJSON(['success' => false, 'message' => 'User not found']);
+        }
+
+        try {
+            if ($user->inGroup('client')) {
+                $user->removeGroup('client');
+            }
+
+            // Assign group
+            $user->addGroup($type);
+
+            // Create corresponding records
+            if ($type === 'studio') {
+                $studioModel = new \App\Models\StudioModel();
+                $studioData = [
+                    'user_id' => $userId,
+                    'name'    => $this->request->getPost('name') ?? ($user->username ?? 'Studio'),
+                    'location'=> $this->request->getPost('location') ?? 'TBD',
+                    'capacity'=> (int) ($this->request->getPost('capacity') ?? 10),
+                    'cost'    => (float) ($this->request->getPost('cost') ?? 0),
+                    'description' => $this->request->getPost('description') ?: null,
+                    'is_active' => 1
+                ];
+                $studioModel->insert($studioData);
+            } else {
+                $staffModel = new \App\Models\StaffModel();
+                $staffData = [
+                    'user_id' => $userId,
+                    'name'    => $this->request->getPost('name') ?? ($user->username ?? 'Staff'),
+                    'email'   => $this->request->getPost('email') ?? $user->email,
+                    'phone'   => $this->request->getPost('phone') ?? '',
+                    'role'    => $this->request->getPost('role') ?? 'staff',
+                ];
+                $staffModel->insert($staffData);
+            }
+
+            return $this->response->setJSON(['success' => true, 'message' => 'User promoted successfully']);
+        } catch (\Exception $e) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Error promoting user: ' . $e->getMessage()]);
+        }
+    }
+
     public function show($id)
     {
         $user = $this->userModel->find($id);
