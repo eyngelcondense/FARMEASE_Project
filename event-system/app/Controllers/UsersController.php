@@ -34,12 +34,13 @@ class UsersController extends BaseController
     }
 
     /**
-     * Return a JSON list of client users for admin selection
+     * Return a JSON list of promotable users for admin selection.
+     * Includes users in client/user groups that are not already admin/staff/studio.
      */
     public function listClients()
     {
-        $clients = $this->getClientUsers();
-        return $this->response->setJSON($clients);
+        $users = $this->getPromotableUsers();
+        return $this->response->setJSON($users);
     }
 
     /**
@@ -314,6 +315,48 @@ class UsersController extends BaseController
         }
 
         return $clientUsers;
+    }
+
+    private function getPromotableUsers()
+    {
+        $result = $this->db->table('users u')
+            ->select('u.id, u.username, u.active, ai.secret as email, c.fullname')
+            ->join('auth_identities ai', "ai.user_id = u.id AND ai.type = 'email_password'", 'left')
+            ->join('clients c', 'c.user_id = u.id AND c.is_deleted = 0', 'left')
+            ->where('u.deleted_at', null)
+            ->orderBy('u.id', 'ASC')
+            ->get()
+            ->getResultArray();
+
+        $promotable = [];
+        foreach ($result as $row) {
+            $user = $this->userModel->find($row['id']);
+            if (!$user) {
+                continue;
+            }
+
+            $groups = $user->getGroups();
+            $isBlocked = in_array('admin', $groups, true)
+                || in_array('superadmin', $groups, true)
+                || in_array('staff', $groups, true)
+                || in_array('studio', $groups, true);
+
+            if ($isBlocked) {
+                continue;
+            }
+
+            $email = $row['email'] ?: ($row['username'] ?? '');
+            $promotable[] = [
+                'id' => (int) $row['id'],
+                'username' => $row['username'],
+                'fullname' => $row['fullname'] ?: $row['username'],
+                'email' => $email,
+                'active' => (int) $row['active'],
+                'groups' => $groups,
+            ];
+        }
+
+        return $promotable;
     }
 
     /**

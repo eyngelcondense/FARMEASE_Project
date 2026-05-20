@@ -53,7 +53,7 @@ $assignments = $assignments ?? [];
                             </div>
                             <div class="card-meta">
                                 <span><i class="fas fa-map-marker-alt"></i> <?= esc($assignment['venue_name'] ?? '-') ?></span>
-                                <span><i class="fas fa-clock"></i> <?= date('g:i A', strtotime($assignment['start_time'])) ?> - <?= date('g:i A', strtotime($assignment['end_time'])) ?></span>
+                                <span><i class="fas fa-clock"></i> <?= ($assignment['start_time'] ?? null) ? date('g:i A', strtotime($assignment['start_time'])) . ' - ' . date('g:i A', strtotime($assignment['end_time'])) : '-' ?></span>
                                 <span><i class="fas fa-user"></i> <?= esc($assignment['client_fullname'] ?? '-') ?></span>
                             </div>
                         </div>

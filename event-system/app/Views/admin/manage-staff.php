@@ -358,7 +358,7 @@
 </div>
 
 <script>
-const staffApiBase = 'http://localhost:8082/staff-management/api';
+const staffApiBase = '<?= site_url('staff-management/api') ?>'.replace(/^https?:\/\/[^/]+/i, '');
 
 $(document).ready(function() {
     const preselectedBookingId = new URLSearchParams(window.location.search).get('booking_id');
@@ -378,8 +378,21 @@ function loadAssignments() {
         url: `${staffApiBase}/assignments/list`,
         method: 'GET',
         success: function(response) {
+            console.log('loadAssignments response:', response);
             let tbody = $('#assignmentsTableBody');
             tbody.empty();
+            
+            if (!response || !Array.isArray(response)) {
+                console.warn('Invalid response from loadAssignments:', response);
+                showNotification('Invalid response format from server', 'error');
+                return;
+            }
+            
+            if (response.length === 0) {
+                tbody.append('<tr><td colspan="7" class="text-center text-muted">No assignments found</td></tr>');
+                console.log('No assignments found');
+                return;
+            }
             
             response.forEach(function(assignment) {
                 let statusBadge = getStatusBadge(assignment.status);
@@ -412,9 +425,11 @@ function loadAssignments() {
                     </tr>
                 `);
             });
+            console.log('Loaded ' + response.length + ' assignments');
         },
-        error: function() {
-            showNotification('Error loading assignments', 'error');
+        error: function(xhr, status, error) {
+            console.error('Error loading assignments:', status, error, xhr);
+            showNotification('Error loading assignments: ' + error, 'error');
         }
     });
 }
@@ -425,6 +440,7 @@ function loadStaffList() {
         url: `${staffApiBase}/staff/list`,
         method: 'GET',
         success: function(response) {
+            console.log('loadStaffList response:', response);
             let staffFilter = $('#staffFilter');
             let staffSelect = $('#staffSelect');
             let staffList = $('#staffList');
@@ -432,6 +448,16 @@ function loadStaffList() {
             staffFilter.empty().append('<option value="">All Staff</option>');
             staffSelect.empty().append('<option value="">Select Staff Members</option>');
             staffList.empty();
+            
+            if (!response || !Array.isArray(response)) {
+                console.warn('Invalid staff response:', response);
+                showNotification('Failed to load staff list', 'error');
+                return;
+            }
+            
+            if (response.length === 0) {
+                staffList.append('<div class="alert alert-info">No staff members found</div>');
+            }
             
             response.forEach(function(staff) {
                 staffFilter.append(`<option value="${staff.id}">${staff.name}</option>`);
@@ -444,6 +470,11 @@ function loadStaffList() {
                     </div>
                 `);
             });
+            console.log('Loaded ' + response.length + ' staff members');
+        },
+        error: function(xhr, status, error) {
+            console.error('Error loading staff:', status, error, xhr);
+            showNotification('Error loading staff list: ' + error, 'error');
         }
     });
 }
@@ -454,11 +485,23 @@ function loadUnassignedBookings() {
         url: `${staffApiBase}/bookings/unassigned`,
         method: 'GET',
         success: function(response) {
+            console.log('loadUnassignedBookings response:', response);
             let tbody = $('#unassignedTableBody');
             let bookingSelect = $('#bookingSelect');
             
             tbody.empty();
             bookingSelect.empty().append('<option value="">Select Booking</option>');
+            
+            if (!response || !Array.isArray(response)) {
+                console.warn('Invalid bookings response:', response);
+                tbody.append('<tr><td colspan="6" class="text-center text-muted">No unassigned bookings</td></tr>');
+                return;
+            }
+            
+            if (response.length === 0) {
+                tbody.append('<tr><td colspan="6" class="text-center text-muted">No unassigned bookings</td></tr>');
+                console.log('No unassigned bookings found');
+            }
             
             response.forEach(function(booking) {
                 tbody.append(`
@@ -487,6 +530,15 @@ function loadUnassignedBookings() {
                 window.pendingBookingId = null;
                 addAssignment(pendingBookingId);
             }
+            
+            console.log('Loaded ' + response.length + ' unassigned bookings');
+        },
+        error: function(xhr, status, error) {
+            console.error('Error loading unassigned bookings:', status, error, xhr);
+            let tbody = $('#unassignedTableBody');
+            tbody.empty();
+            tbody.append('<tr><td colspan="6" class="text-center text-danger">Error loading bookings</td></tr>');
+            showNotification('Error loading bookings: ' + error, 'error');
         }
     });
 }
@@ -497,10 +549,19 @@ function loadAssignmentStats() {
         url: `${staffApiBase}/assignments/stats`,
         method: 'GET',
         success: function(response) {
-            $('#totalAssignments').text(response.total_assignments || 0);
-            $('#todayAssignments').text(response.today_assignments || 0);
-            $('#upcomingAssignments').text(response.upcoming_assignments || 0);
-            $('#unassignedBookings').text(response.unassigned_bookings || 0);
+            console.log('loadAssignmentStats response:', response);
+            $('#totalAssignments').text(Number(response.total_assignments || 0));
+            $('#todayAssignments').text(Number(response.today_assignments || 0));
+            $('#upcomingAssignments').text(Number(response.upcoming_assignments || 0));
+            $('#unassignedBookings').text(Number(response.unassigned_bookings || 0));
+        },
+        error: function(xhr, status, error) {
+            console.error('Error loading stats:', status, error, xhr);
+            $('#totalAssignments').text(0);
+            $('#todayAssignments').text(0);
+            $('#upcomingAssignments').text(0);
+            $('#unassignedBookings').text(0);
+            showNotification('Error loading assignment statistics: ' + error, 'error');
         }
     });
 }
@@ -682,6 +743,29 @@ function resetFilters() {
 
 function showNotification(message, type) {
     console.log(`${type}: ${message}`);
+    
+    // Create alert element
+    const alertClass = type === 'error' ? 'alert-danger' : (type === 'success' ? 'alert-success' : 'alert-info');
+    const alertHtml = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            <strong>${type.charAt(0).toUpperCase() + type.slice(1)}:</strong> ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `;
+    
+    // Insert at top of page
+    const container = document.querySelector('.container-fluid') || document.body;
+    const alertElement = document.createElement('div');
+    alertElement.innerHTML = alertHtml;
+    container.insertBefore(alertElement.firstElementChild, container.firstChild);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        const alert = document.querySelector('.alert:first-of-type');
+        if (alert) {
+            alert.remove();
+        }
+    }, 5000);
 }
 </script>
 <?= $this->endSection() ?>

@@ -88,9 +88,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="section-title mb-0">Staff Management</h2>
         <div>
-            <button class="btn btn-primary" onclick="addStaff()">
-                <i class="fas fa-plus"></i> Add Staff
-            </button>
+            <!-- 'Add Staff' removed per admin requirements; staff are managed via Promote/Import workflows -->
             <button class="btn btn-secondary" onclick="openPromoteModal()">
                 <i class="fas fa-user-plus"></i> Promote Existing User
             </button>
@@ -223,7 +221,11 @@
                         </div>
                         <div class="mb-3 staff-only">
                             <label class="form-label">Role</label>
-                            <input id="promoteRole" class="form-control" placeholder="e.g., front_desk">
+                            <select id="promoteRole" class="form-select">
+                                <option value="event_coordinator">Event Coordinator</option>
+                                <option value="front_desk">Front Desk</option>
+                                <option value="customer_service">Customer Service</option>
+                            </select>
                         </div>
                         <div class="mb-3 studio-only" style="display:none;">
                             <label class="form-label">Location</label>
@@ -253,6 +255,8 @@
 </div>
 
 <script>
+const userApiBase = '<?= site_url('admin/users') ?>'.replace(/^https?:\/\/[^/]+/i, '');
+
 function openPromoteModal(){
     const el = document.getElementById('promoteModal');
     const inst = bootstrap.Modal.getOrCreateInstance(el);
@@ -261,7 +265,7 @@ function openPromoteModal(){
 }
 
 function loadUserList(){
-    fetch('/admin/users/list')
+    fetch(`${userApiBase}/list`)
         .then(r => r.json())
         .then(users => {
             const tbody = document.querySelector('#userSearchResults tbody');
@@ -312,7 +316,7 @@ document.getElementById('confirmPromote')?.addEventListener('click', function(){
     // include CSRF token
     payload['<?= csrf_token() ?>'] = '<?= csrf_hash() ?>';
     $.ajax({
-        url: '/admin/users/promote',
+        url: `${userApiBase}/promote`,
         method: 'POST',
         data: payload,
         dataType: 'json',
@@ -368,14 +372,15 @@ document.getElementById('confirmPromote')?.addEventListener('click', function(){
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="saveStaff()">Save Staff</button>
+                <button type="button" id="saveStaffBtn" class="btn btn-primary" onclick="saveStaff()">Save Staff</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-const staffApiBase = 'http://localhost:8082/staff-management/api';
+// API routes are integrated through AdminIntegrationController at staff-management/api/
+const staffApiBase = '<?= site_url('staff-management/api') ?>'.replace(/^https?:\/\/[^/]+/i, '');
 
 // Load staff data on page load
 $(document).ready(function() {
@@ -385,14 +390,29 @@ $(document).ready(function() {
 
 // Load staff data via AJAX
 function loadStaffData() {
+    console.log('Loading staff from', `${staffApiBase}/staff/list`);
     $.ajax({
         url: `${staffApiBase}/staff/list`,
         method: 'GET',
+        xhrFields: { withCredentials: true },
         success: function(response) {
             let tbody = $('#staffTableBody');
             tbody.empty();
-            
-            response.forEach(function(staff) {
+            console.log('Staff list response', response);
+                // Support both direct array responses and debug wrapper { data: [...] }
+                let staffList = [];
+                if (Array.isArray(response)) {
+                    staffList = response;
+                } else if (response && Array.isArray(response.data)) {
+                    staffList = response.data;
+                    console.info('Staff list count:', response.count, 'db_count:', response.db_count);
+                } else {
+                    showNotification('Unexpected staff response from server', 'error');
+                    console.error('Unexpected staff response', response);
+                    return;
+                }
+
+                staffList.forEach(function(staff) {
                 let roleBadge = getRoleBadge(staff.role);
                 let statusBadge = getStatusBadge(staff.status || 'available');
                 
@@ -422,8 +442,15 @@ function loadStaffData() {
                 `);
             });
         },
-        error: function() {
-            showNotification('Error loading staff data', 'error');
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error('Failed to load staff', jqXHR.status, textStatus, errorThrown, jqXHR.responseText);
+            if (jqXHR.status === 0) {
+                showNotification('Unable to contact staff API (network error)', 'error');
+            } else if (jqXHR.status === 401 || jqXHR.status === 302) {
+                showNotification('Not authenticated — please login', 'error');
+            } else {
+                showNotification('Error loading staff data', 'error');
+            }
         }
     });
 }
@@ -434,9 +461,15 @@ function loadStaffStats() {
         url: `${staffApiBase}/staff/stats`,
         method: 'GET',
         success: function(response) {
-            $('#totalStaff').text(response.total_staff || 0);
-            $('#activeAssignments').text(response.active_assignments || 0);
-            $('#upcomingEvents').text(response.upcoming_events || 0);
+            $('#totalStaff').text(Number(response.total_staff || 0));
+            $('#activeAssignments').text(Number(response.active_assignments || 0));
+            $('#upcomingEvents').text(Number(response.upcoming_events || 0));
+        },
+        error: function() {
+            $('#totalStaff').text(0);
+            $('#activeAssignments').text(0);
+            $('#upcomingEvents').text(0);
+            showNotification('Error loading staff statistics', 'error');
         }
     });
 }
@@ -486,6 +519,7 @@ function editStaff(id) {
 }
 
 function saveStaff() {
+    console.log('saveStaff called');
     const staffId = $('#staffId').val();
     const staffData = {
         name: $('#staffName').val(),
@@ -496,26 +530,46 @@ function saveStaff() {
 
     const url = staffId ? `${staffApiBase}/staff/${staffId}` : `${staffApiBase}/staff`;
     const method = staffId ? 'PUT' : 'POST';
+    // Some environments/proxies don't forward PUT; use POST with method override as fallback
+    const ajaxType = method === 'PUT' ? 'POST' : method;
 
+    $('#saveStaffBtn').prop('disabled', true);
     $.ajax({
         url: url,
-        method: method,
+        type: ajaxType,
         data: JSON.stringify(staffData),
         contentType: 'application/json',
+        headers: Object.assign({}, method === 'PUT' ? { 'X-HTTP-Method-Override': 'PUT' } : {}, { '<?= csrf_header() ?>': '<?= csrf_hash() ?>' }),
         success: function() {
             bootstrap.Modal.getInstance(document.getElementById('staffModal')).hide();
             loadStaffData();
             loadStaffStats();
             showNotification('Staff saved successfully', 'success');
+            console.log('Staff save success');
+            $('#saveStaffBtn').prop('disabled', false);
         },
-        error: function() {
-            showNotification('Error saving staff', 'error');
+        error: function(jqXHR) {
+            let msg = 'Error saving staff';
+            try {
+                const body = jqXHR.responseJSON || JSON.parse(jqXHR.responseText || '{}');
+                if (body && body.messages) {
+                    msg = Object.values(body.messages).flat().join('; ');
+                } else if (body && body.error) {
+                    msg = body.error;
+                } else if (body && body.errors) {
+                    msg = Array.isArray(body.errors) ? body.errors.join('; ') : JSON.stringify(body.errors);
+                }
+            } catch (e) {}
+            showNotification(msg, 'error');
+            console.error('Staff save error', jqXHR);
+            $('#saveStaffBtn').prop('disabled', false);
         }
     });
 }
 
 function viewSchedule(staffId) {
-    window.location.href = `/staff-management/schedule/${staffId}`;
+    // Redirect to the staff-management show page (uses staffs.id)
+    window.location.href = `/staff-management/${staffId}`;
 }
 
 function assignToBooking(staffId) {

@@ -206,7 +206,8 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->post('admin/contracts/send_debug/(:num)', 'AdminContractsController::send_debug/$1');
 
     // Studio management routes
-    $routes->get('admin/studios', 'AdminStudiosController::index');
+    $routes->get('admin/studios', 'AdminController::studiosView');
+    $routes->get('admin/studios/dashboard', 'AdminStudiosController::index');
     $routes->get('admin/studios/data', 'AdminStudiosController::getStudiosAjax');
     $routes->get('admin/studios/create', 'AdminStudiosController::create');
     $routes->post('admin/studios/store', 'AdminStudiosController::store');
@@ -217,5 +218,30 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->delete('admin/studios/(:num)', 'AdminStudiosController::delete/$1');
     $routes->get('admin/studios/availability', 'AdminStudiosController::availability');
     $routes->get('admin/studios/statistics', 'AdminStudiosController::getStatistics');
+
+    // Local integration APIs for staff/studio management pages
+    $routes->get('staff-management/api/staff/list', 'AdminIntegrationController::listStaff');
+    $routes->get('staff-management/api/staff/stats', 'AdminIntegrationController::staffStats');
+    $routes->get('staff-management/api/staff/(:num)', 'AdminIntegrationController::getStaff/$1');
+    $routes->post('staff-management/api/staff', 'AdminIntegrationController::saveStaff');
+    $routes->put('staff-management/api/staff/(:num)', 'AdminIntegrationController::saveStaff/$1');
+
+    $routes->get('staff-management/api/assignments/list', 'AdminIntegrationController::listAssignments');
+    $routes->get('staff-management/api/assignments/stats', 'AdminIntegrationController::assignmentStats');
+    $routes->get('staff-management/api/assignments/(:num)', 'AdminIntegrationController::getAssignment/$1');
+    $routes->post('staff-management/api/assignments', 'AdminIntegrationController::saveAssignment');
+    $routes->put('staff-management/api/assignments/(:num)', 'AdminIntegrationController::updateAssignment/$1');
+    $routes->delete('staff-management/api/assignments/(:num)', 'AdminIntegrationController::deleteAssignment/$1');
+    $routes->get('staff-management/api/staff/(:num)/assignments', 'AdminIntegrationController::staffAssignments/$1');
+    $routes->get('staff-management/api/bookings/unassigned', 'AdminIntegrationController::unassignedBookings');
+    $routes->get('staff-management/api/bookings/(:num)', 'AdminIntegrationController::bookingDetails/$1');
+
+    $routes->get('studio-management/api/studio/list', 'AdminIntegrationController::listStudios');
+    $routes->get('studio-management/api/stats', 'AdminIntegrationController::studioStats');
+    $routes->get('studio-management/api/studio/(:num)', 'AdminIntegrationController::getStudio/$1');
+    $routes->post('studio-management/api/studio', 'AdminIntegrationController::saveStudio');
+    $routes->put('studio-management/api/studio/(:num)', 'AdminIntegrationController::saveStudio/$1');
+    $routes->delete('studio-management/api/studio/(:num)', 'AdminIntegrationController::deleteStudio/$1');
+    $routes->get('studio-management/api/booking/studio/(:num)', 'AdminIntegrationController::studioBookings/$1');
     
 });

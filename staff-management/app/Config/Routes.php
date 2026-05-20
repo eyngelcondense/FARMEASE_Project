@@ -13,6 +13,14 @@ $routes->get('staff/logout', 'StaffController::logout');
 
 // Staff portal — auth required
 $routes->group('staff', ['filter' => 'authcheck'], function($routes) {
+    $routes->get('/',            'StaffController::index');
+    $routes->get('create',       'StaffController::create');
+    $routes->post('store',       'StaffController::store');
+    $routes->get('show/(:num)',  'StaffController::show/$1');
+    $routes->get('edit/(:num)',  'StaffController::edit/$1');
+    $routes->post('update/(:num)','StaffController::update/$1');
+    $routes->get('delete/(:num)','StaffController::delete/$1');
+    $routes->get('my-assignments','StaffController::myAssignments');
     $routes->get('dashboard',      'StaffController::dashboard');
     $routes->get('profile',        'StaffController::profile');
     $routes->get('assignments',    'StaffController::assignments');
@@ -48,6 +56,8 @@ $routes->group('api', ['filter' => 'cors'], function($routes) {
     $routes->get('staff/(:num)', 'ApiController::getStaff/$1');
     $routes->post('staff', 'ApiController::createStaff');
     $routes->put('staff/(:num)', 'ApiController::updateStaff/$1');
+    // Accept POST for updates as well to support clients that cannot send PUT
+    $routes->post('staff/(:num)', 'ApiController::updateStaff/$1');
     $routes->delete('staff/(:num)', 'ApiController::deleteStaff/$1');
     $routes->get('staff/stats', 'ApiController::getStaffStats');
     $routes->get('staff/(:num)/assignments', 'ApiController::getStaffAssignments/$1');

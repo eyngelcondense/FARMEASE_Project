@@ -18,6 +18,8 @@
     <link rel="stylesheet" href="<?= base_url('assets/plugins/select2/css/select2.min.css') ?>">
 <link rel="stylesheet" href="<?= base_url('assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') ?>">
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
     
 </head>
 <?= $this->include('admin/style')?>
@@ -36,7 +38,6 @@
     </div>
 
     <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
@@ -90,6 +91,10 @@
             const notificationBtn = document.getElementById('notificationBtn');
             const notificationMenu = document.getElementById('notificationMenu');
             const notificationBadge = document.getElementById('notificationBadge');
+
+            if (!notificationBtn || !notificationMenu || !notificationBadge) {
+                return;
+            }
 
             // Toggle notification menu
             notificationBtn.addEventListener('click', (e) => {

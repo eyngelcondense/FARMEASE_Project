@@ -351,6 +351,8 @@
 </div>
 
 <script>
+const studioApiBase = '<?= site_url('studio-management/api') ?>'.replace(/^https?:\/\/[^/]+/i, '');
+
 $(document).ready(function() {
     loadStudios();
     loadStudioStats();
@@ -359,7 +361,7 @@ $(document).ready(function() {
 // Load studio data
 function loadStudios() {
     $.ajax({
-        url: '/studio-management/api/studio/list',
+        url: `${studioApiBase}/studio/list`,
         method: 'GET',
         success: function(response) {
             renderStudioGrid(response);
@@ -374,13 +376,25 @@ function loadStudios() {
 // Load studio statistics
 function loadStudioStats() {
     $.ajax({
-        url: '/studio-management/api/stats',
+        url: `${studioApiBase}/stats`,
         method: 'GET',
         success: function(response) {
-            $('#totalStudios').text(response.total_studios || 0);
-            $('#totalBookings').text(response.total_bookings || 0);
-            $('#todayBookings').text(response.today_bookings || 0);
-            $('#totalRevenue').text('₱' + (response.total_revenue || 0).toFixed(2));
+            const totalStudios = Number(response.total_studios || 0);
+            const totalBookings = Number(response.total_bookings || 0);
+            const todayBookings = Number(response.today_bookings || 0);
+            const totalRevenue = Number(response.total_revenue || 0);
+
+            $('#totalStudios').text(totalStudios);
+            $('#totalBookings').text(totalBookings);
+            $('#todayBookings').text(todayBookings);
+            $('#totalRevenue').text('₱' + totalRevenue.toFixed(2));
+        },
+        error: function() {
+            $('#totalStudios').text(0);
+            $('#totalBookings').text(0);
+            $('#todayBookings').text(0);
+            $('#totalRevenue').text('₱0.00');
+            showNotification('Error loading studio statistics', 'error');
         }
     });
 }
@@ -505,7 +519,7 @@ function addStudio() {
 
 function editStudio(id) {
     $.ajax({
-        url: `/studio-management/api/studio/${id}`,
+        url: `${studioApiBase}/studio/${id}`,
         method: 'GET',
         success: function(studio) {
             $('#studioModalTitle').text('Edit Studio');
@@ -530,7 +544,7 @@ function saveStudio() {
         user_id: $('#studioUser').val()
     };
 
-    const url = studioId ? `/studio-management/api/studio/${studioId}` : '/studio-management/api/studio';
+    const url = studioId ? `${studioApiBase}/studio/${studioId}` : `${studioApiBase}/studio`;
     const method = studioId ? 'PUT' : 'POST';
 
     $.ajax({
@@ -552,7 +566,7 @@ function saveStudio() {
 
 function viewStudioDetails(id) {
     $.ajax({
-        url: `/studio-management/api/studio/${id}`,
+        url: `${studioApiBase}/studio/${id}`,
         method: 'GET',
         success: function(studio) {
             let content = `
@@ -591,7 +605,7 @@ function viewStudioDetails(id) {
 
 function loadUpcomingBookings(studioId) {
     $.ajax({
-        url: `/studio-management/api/booking/studio/${studioId}`,
+        url: `${studioApiBase}/booking/studio/${studioId}`,
         method: 'GET',
         success: function(bookings) {
             let container = $('#upcomingBookings');
@@ -625,7 +639,7 @@ function viewBookings(id) {
 function deleteStudio(id) {
     if (confirm('Are you sure you want to delete this studio? This action cannot be undone.')) {
         $.ajax({
-            url: `/studio-management/api/studio/${id}`,
+            url: `${studioApiBase}/studio/${id}`,
             method: 'DELETE',
             success: function() {
                 loadStudios();

@@ -119,7 +119,8 @@ class Filters extends BaseFilters
         ]],
         'ssoAuth' => [
             'before' => ['*'],
-            'except' => ['sso/authenticate'],
+            // Exclude API routes so external admin integrations can call them without SSO redirect
+            'except' => ['sso/authenticate', 'api/*', 'api'],
         ],
     ];
 }

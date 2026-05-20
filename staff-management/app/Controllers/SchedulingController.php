@@ -4,9 +4,10 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Libraries\SsoToken;
+use App\Models\StaffAssignmentModel;
 use App\Models\StaffModel;
 
-class SsoController extends BaseController
+class SchedulingController extends BaseController
 {
     // ========================================================================
     // AUTHENTICATE — receives token from event-system, sets session, redirects
@@ -30,7 +31,6 @@ class SsoController extends BaseController
                 ->with('error', 'Session expired. Please login again.');
         }
 
-        // Set base SSO session
         session()->set([
             'sso_user_id' => $payload['uid'],
             'sso_email'   => $payload['email'],
@@ -39,7 +39,6 @@ class SsoController extends BaseController
             'isLoggedIn'  => true,
         ]);
 
-        // Look up staff record and set staff session data
         if ($payload['group'] === 'staff') {
             $staffModel = model(StaffModel::class);
             $staff      = $staffModel->where('user_id', $payload['uid'])->first();
@@ -52,10 +51,8 @@ class SsoController extends BaseController
                     'staff_photo' => $staff['profile_photo'] ?? null,
                 ]);
             } else {
-                // Log to CI logger
                 log_message('warning', 'No staff record found for user_id: ' . $payload['uid']);
 
-                // Also append to a writable debug log for easy inspection
                 $logDir = defined('WRITEPATH') ? WRITEPATH . 'logs/' : APPPATH . '../writable/logs/';
                 if (! is_dir($logDir)) {
                     @mkdir($logDir, 0755, true);
@@ -67,7 +64,7 @@ class SsoController extends BaseController
                     'email'   => $payload['email'] ?? null,
                     'group'   => $payload['group'] ?? null,
                     'session' => session()->get(),
-                    'note'    => 'No staff profile found (scheduling controller)',
+                    'note'    => 'No staff profile found',
                 ];
 
                 @file_put_contents($logDir . 'sso_debug.log', json_encode($debugData, JSON_UNESCAPED_SLASHES) . PHP_EOL, FILE_APPEND | LOCK_EX);
@@ -77,7 +74,6 @@ class SsoController extends BaseController
             }
         }
 
-        // Redirect to appropriate system based on group
         $landingRoutes = [
             'staff'  => 'http://localhost:8082/staff/dashboard',
             'studio' => 'http://localhost:8083/studio/dashboard',
@@ -95,10 +91,6 @@ class SsoController extends BaseController
 
     public function callback()
     {
-        // If using a simple token-based SSO (like SsoToken::verify),
-        // this route may not be needed — authenticate() handles everything.
-        // Add OAuth callback logic here if your SSO provider requires it.
-
         $token = $this->request->getGet('token');
 
         if ($token) {
@@ -107,5 +99,41 @@ class SsoController extends BaseController
 
         return redirect()->to('http://localhost:8080/logout')
             ->with('error', 'Invalid SSO callback.');
+    }
+
+    public function index()
+    {
+        if ($r = $this->requireLogin()) return $r;
+
+        $staffId = (int) session()->get('staff_id');
+        $staffModel = model(StaffModel::class);
+        $assignmentModel = model(StaffAssignmentModel::class);
+
+        return view('staff/schedule', [
+            'title'    => 'Schedule',
+            'staff'    => $staffModel->find($staffId),
+            'bookings' => $assignmentModel->getAllBookingsWithAssignedFlag($staffId),
+        ]);
+    }
+
+    public function upcoming()
+    {
+        if ($r = $this->requireLogin()) return $r;
+
+        $staffId = (int) session()->get('staff_id');
+        $staffModel = model(StaffModel::class);
+        $assignmentModel = model(StaffAssignmentModel::class);
+
+        $bookings = array_values(array_filter(
+            $assignmentModel->getAllBookingsWithAssignedFlag($staffId),
+            static fn (array $booking): bool => $booking['event_date'] >= date('Y-m-d')
+                && in_array($booking['status'] ?? null, ['confirmed', 'approved'], true)
+        ));
+
+        return view('staff/schedule', [
+            'title'    => 'Upcoming Schedule',
+            'staff'    => $staffModel->find($staffId),
+            'bookings' => $bookings,
+        ]);
     }
 }

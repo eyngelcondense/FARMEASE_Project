@@ -155,7 +155,7 @@ class StaffController extends BaseController
 
     public function myAssignments()
     {
-        if ($r = $this->requireStaffLogin()) return $r;
+        if ($r = $this->requireLogin()) return $r;
 
         $staffId = (int) session()->get('staff_id');
 

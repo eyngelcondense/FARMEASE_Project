@@ -31,14 +31,30 @@ class ApiController extends BaseController
     public function getStaffList()
     {
         $staff = $this->staffModel->findAll();
-        
+
         // Add upcoming assignments count for each staff
         foreach ($staff as &$member) {
             $member['upcoming_assignments'] = $this->assignmentModel->countUpcoming($member['id']);
             $member['status'] = $this->getStaffStatus($member['id']);
         }
-        
-        return $this->respond($staff);
+
+        // Debug: log and return count to help diagnose empty responses
+        $count = count($staff);
+        log_message('debug', "ApiController::getStaffList returned {$count} staff records");
+
+        // If no staff found, try a lightweight DB count to see if the table has rows
+        $dbCount = 0;
+        if ($count === 0) {
+            try {
+                $db = \Config\Database::connect();
+                $dbCount = (int) $db->table('staffs')->countAllResults();
+                log_message('debug', "ApiController::getStaffList DB count: {$dbCount}");
+            } catch (\Exception $e) {
+                log_message('error', 'ApiController::getStaffList DB check failed: ' . $e->getMessage());
+            }
+        }
+
+        return $this->respond(['count' => $count, 'db_count' => $dbCount, 'data' => $staff]);
     }
 
     /**
@@ -78,9 +94,21 @@ class ApiController extends BaseController
     public function updateStaff($id)
     {
         $data = $this->request->getJSON();
-        $data['id'] = $id;
-        
-        if (!$this->staffModel->save((array) $data)) {
+        // Ensure we have an array so we can set the id reliably.
+        $dataArr = (array) $data;
+        $dataArr['id'] = $id;
+
+        // For updates, require validation for editable fields but allow omitting user_id.
+        $updateRules = [
+            'name'  => 'required|min_length[2]|max_length[255]',
+            'email' => 'required|valid_email|is_unique[staffs.email,id,' . (int) $id . ']',
+            'phone' => 'required|min_length[10]|max_length[20]',
+            // Allow any short role string on update to accommodate legacy values
+            'role'  => 'required|max_length[50]',
+        ];
+        $this->staffModel->setValidationRules($updateRules);
+
+        if (!$this->staffModel->save($dataArr)) {
             return $this->fail($this->staffModel->errors());
         }
         

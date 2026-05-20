@@ -115,10 +115,12 @@ class StaffAssignmentModel extends Model
         return $this->db->table('staff_assignments sa')
             ->select('sa.*, s.name as staff_name, s.role as staff_role,
                       b.booking_reference, b.event_type, b.event_date,
-                      b.status, v.name as venue_name')
+                      b.start_time, b.end_time, b.status, v.name as venue_name,
+                      c.fullname as client_fullname')
             ->join('staffs s',   's.id = sa.staff_id',   'left')
             ->join('bookings b', 'b.id = sa.booking_id', 'left')
             ->join('venues v',   'v.id = b.venue_id',    'left')
+            ->join('clients c',  'c.id = b.client_id',   'left')
             ->orderBy('b.event_date', 'DESC')
             ->get()
             ->getResultArray();
