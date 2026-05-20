@@ -101,7 +101,7 @@ class AdminContractsController extends BaseController
     
     public function preview($id)
     {
-        $contract = $this->contractModel->getContractsWithDetails(['contracts.id' => $id])[0] ?? null;
+        $contract = $this->contractModel->getContractsWithDetails(['c.id' => $id])[0] ?? null;
         
         if (!$contract) {
             return $this->response->setJSON(['success' => false, 'message' => 'Contract not found.']);
@@ -157,7 +157,7 @@ class AdminContractsController extends BaseController
                 
                 if ($sent) {
                     // Refresh contract details after send
-                    $contract = $this->contractModel->getContractsWithDetails(['contracts.id' => $id])[0] ?? null;
+                    $contract = $this->contractModel->getContractsWithDetails(['c.id' => $id])[0] ?? null;
                     // Ensure final content exists; if not, store current content as final (safety)
                     $final = $this->contractModel->getFinalContent($id);
                     if ($final === null || empty($final['content'])) {
@@ -225,7 +225,7 @@ class AdminContractsController extends BaseController
     public function download($id)
     {
         // Admin can download any contract — no client scoping
-        $contract = $this->contractModel->getContractsWithDetails(['contracts.id' => $id]);
+        $contract = $this->contractModel->getContractsWithDetails(['c.id' => $id]);
         $contract = $contract[0] ?? null;
 
         if (!$contract) {
