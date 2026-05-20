@@ -107,8 +107,21 @@ class ContractModel extends Model
     public function sendContract($contractId)
     {
         $contract = $this->find($contractId);
-        
-        if (!$contract || $contract['status'] !== 'draft') {
+
+        if (!$contract) {
+            return false;
+        }
+
+        // Allow send when contract is draft, or when contract was marked sent
+        // externally but final content/terms are missing (make idempotent/robust).
+        $canProceed = false;
+        if ($contract['status'] === 'draft') {
+            $canProceed = true;
+        } elseif ($contract['status'] === 'sent' && (empty($contract['final_content']) || empty($contract['final_terms_conditions']))) {
+            $canProceed = true;
+        }
+
+        if (!$canProceed) {
             return false;
         }
         

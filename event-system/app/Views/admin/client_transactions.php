@@ -187,7 +187,8 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     $('#transactionsDetails').html(response.html);
-                    $('#transactionsModal').modal('show');
+                    const transactionsModal = new bootstrap.Modal(document.getElementById('transactionsModal'));
+                    transactionsModal.show();
                 } else {
                     alert('Error loading transaction history');
                 }

@@ -408,7 +408,8 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     $('#userDetails').html(response.html);
-                    $('#userModal').modal('show');
+                    const userModal = new bootstrap.Modal(document.getElementById('userModal'));
+                    userModal.show();
                 } else {
                     alert('Error loading user details');
                 }
@@ -433,7 +434,8 @@ $(document).ready(function() {
             $('#fullnameField').hide();
         }
         
-        $('#editUserModal').modal('show');
+        const editUserModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+        editUserModal.show();
     }
 
     // Toggle user status
@@ -547,7 +549,9 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     alert(response.message);
-                    $('#editUserModal').modal('hide');
+                    const editModalEl = document.getElementById('editUserModal');
+                    const editUserModal = bootstrap.Modal.getOrCreateInstance(editModalEl);
+                    editUserModal.hide();
                     location.reload();
                 } else {
                     alert('Error: ' + response.message);

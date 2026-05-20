@@ -26,6 +26,7 @@ class BookingModel extends Model
         'base_amount',
         'addons_amount',
         'overtime_amount',
+        'studio_amount',
         'total_amount',
         'special_requests',
         'status',

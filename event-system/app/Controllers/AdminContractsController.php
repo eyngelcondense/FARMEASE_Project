@@ -124,14 +124,11 @@ class AdminContractsController extends BaseController
             echo "Current Status: " . $contract['status'] . "<br>";
         }
         
-        // Try to update
-        $updated = $contractModel->update($id, [
-            'status' => 'sent',
-            'sent_at' => date('Y-m-d H:i:s')
-        ]);
-        
-        echo "Update Successful: " . ($updated ? 'YES' : 'NO') . "<br>";
-        
+        // Try to send using sendContract (ensures final content is stored and contract locked)
+        $sent = $contractModel->sendContract($id);
+
+        echo "sendContract() returned: " . ($sent ? 'YES' : 'NO') . "<br>";
+
         // Check updated contract
         $updatedContract = $contractModel->find($id);
         echo "New Status: " . ($updatedContract['status'] ?? 'NOT FOUND') . "<br>";
@@ -161,6 +158,18 @@ class AdminContractsController extends BaseController
                 if ($sent) {
                     // Refresh contract details after send
                     $contract = $this->contractModel->getContractsWithDetails(['contracts.id' => $id])[0] ?? null;
+                    // Ensure final content exists; if not, store current content as final (safety)
+                    $final = $this->contractModel->getFinalContent($id);
+                    if ($final === null || empty($final['content'])) {
+                        log_message('warning', 'Contract sent but final content empty for contract id: ' . $id);
+                        $existing = $this->contractModel->find($id);
+                        if ($existing) {
+                            $this->contractModel->update($id, [
+                                'final_content' => $existing['content'] ?? '',
+                                'final_terms_conditions' => $existing['terms_conditions'] ?? ''
+                            ]);
+                        }
+                    }
                     if ($contract && !empty($contract['client_id'])) {
                         $client = $this->clientModel->find($contract['client_id']);
                         if ($client && !empty($client['user_id'])) {

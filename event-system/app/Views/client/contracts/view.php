@@ -114,13 +114,15 @@ $title = "Contract - " . $contract['title'] . " | San Isidro Labrador Resort and
                         <hr>
 
                         <div class="contract-content mb-4 p-3">
-                            <?= nl2br(htmlspecialchars($contract['content'])) ?>
+                            <?php $displayContent = !empty($contract['final_content']) ? $contract['final_content'] : $contract['content']; ?>
+                            <?= nl2br(htmlspecialchars($displayContent)) ?>
                         </div>
 
                         <div class="terms-conditions mb-4 p-3 bg-warning bg-opacity-10 rounded">
                             <h5 class="text-warning"><i class="fas fa-exclamation-triangle"></i> Terms & Conditions</h5>
                             <div class="terms-content">
-                                <?= nl2br(htmlspecialchars($contract['terms_conditions'])) ?>
+                                <?php $displayTerms = !empty($contract['final_terms_conditions']) ? $contract['final_terms_conditions'] : $contract['terms_conditions']; ?>
+                                <?= nl2br(htmlspecialchars($displayTerms)) ?>
                             </div>
                         </div>
 

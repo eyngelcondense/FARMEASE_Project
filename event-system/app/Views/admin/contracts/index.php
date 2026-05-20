@@ -307,6 +307,7 @@ $current_page = isset($current_page) ? $current_page : 'contract';
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="uploadSignedForm" method="post" enctype="multipart/form-data">
+                <?= csrf_field() ?>
                 <div class="modal-body">
                     <input type="hidden" name="contract_id" id="uploadContractId">
                     <div class="mb-3">
@@ -498,10 +499,13 @@ $(document).ready(function() {
         const deleteModal = new bootstrap.Modal(deleteModalEl);
         deleteModal.show();
         
-        $('#confirmDelete').off('click').on('click', function() {
+            $('#confirmDelete').off('click').on('click', function() {
             $.ajax({
                 url: '<?= base_url('admin/contracts/delete') ?>/' + contractId,
                 type: 'POST',
+                data: {
+                    '<?= csrf_token() ?>': '<?= csrf_hash() ?>'
+                },
                 dataType: 'json',
                 success: function(response) {
                     if (response.success) {
@@ -524,4 +528,6 @@ $(document).ready(function() {
     });
 });
 </script>
+<?= $this->endSection() ?>
+
 <?= $this->endSection() ?>

@@ -743,7 +743,8 @@ if (booking.event_type === 'Others' && booking.other_event_type) {
         
         // Show in modal
         $('#bookingDetailsContent').html(detailsHtml);
-        $('#bookingDetailsModal').modal('show');
+        const bookingDetailsModal = new bootstrap.Modal(document.getElementById('bookingDetailsModal'));
+        bookingDetailsModal.show();
         
     } catch (error) {
         console.error('Error displaying booking details:', error);
@@ -754,7 +755,8 @@ if (booking.event_type === 'Others' && booking.other_event_type) {
                 <small class="text-muted">Technical details: ${error.message}</small>
             </div>
         `);
-        $('#bookingDetailsModal').modal('show');
+        const bookingDetailsModal = new bootstrap.Modal(document.getElementById('bookingDetailsModal'));
+        bookingDetailsModal.show();
     }
 }
 
@@ -813,7 +815,8 @@ function showConflictWarning(bookingId, conflicts) {
     conflictMessage += `<br>Approving this booking will automatically reject the conflicting booking${conflicts.length === 1 ? '' : 's'}.`;
     
     $('#conflictMessage').html(conflictMessage);
-    $('#conflictModal').modal('show');
+    const conflictModal = new bootstrap.Modal(document.getElementById('conflictModal'));
+    conflictModal.show();
 }
 
 // Finalize approval (with or without conflicts)
@@ -863,7 +866,9 @@ function approveWithConflicts() {
             if (response.success) {
                 showToast(response.message, 'success');
                 refreshBookings();
-                $('#conflictModal').modal('hide');
+                const conflictModalEl = document.getElementById('conflictModal');
+                const conflictModal = bootstrap.Modal.getOrCreateInstance(conflictModalEl);
+                conflictModal.hide();
             } else {
                 showToast(response.message, 'error');
             }
@@ -891,7 +896,8 @@ function rejectBooking(id) {
                 $('#rejectBookingId').text(booking.booking_reference);
                 $('#rejectionReason').val('');
                 $('#rejectionModalLabel').text(action === 'revoke' ? 'Revoke Booking Approval' : 'Reject Booking');
-                $('#rejectionModal').modal('show');
+                const rejectionModal = new bootstrap.Modal(document.getElementById('rejectionModal'));
+                rejectionModal.show();
             } else {
                 showToast(response.message, 'error');
             }
@@ -922,7 +928,9 @@ function confirmRejection() {
             if (response.success) {
                 showToast(response.message, 'success');
                 refreshBookings();
-                $('#rejectionModal').modal('hide');
+                const rejectionModalEl = document.getElementById('rejectionModal');
+                const rejectionModal = bootstrap.Modal.getOrCreateInstance(rejectionModalEl);
+                rejectionModal.hide();
             } else {
                 showToast(response.message, 'error');
             }

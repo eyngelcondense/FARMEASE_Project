@@ -174,9 +174,7 @@ if (!isset($current_page)) {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Add Quick Event</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form action="<?= site_url('admin/calendar/add_event') ?>" method="post">
@@ -208,6 +206,7 @@ if (!isset($current_page)) {
 <script>
 // Open modal
 function openQuickEventModal() {
-    $('#quickEventModal').modal('show');
+    const quickEventModal = new bootstrap.Modal(document.getElementById('quickEventModal'));
+    quickEventModal.show();
 }
 </script>
