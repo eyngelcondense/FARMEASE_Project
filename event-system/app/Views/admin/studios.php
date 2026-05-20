@@ -655,7 +655,7 @@ function deleteStudio(id) {
 
 function viewCalendar() {
     // This could open a calendar view showing all studio bookings
-    window.location.href = `/studio-management/calendar`;
+    window.location.href = '/admin/calendar';
 }
 
 function applyFilters() {

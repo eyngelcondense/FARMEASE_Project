@@ -25,7 +25,7 @@ class AdminIntegrationController extends BaseController
     {
         $this->ensureStaffProfiles();
         $result = $this->buildStaffList();
-        log_message('log', 'listStaff: Returning ' . count($result) . ' staff members');
+        log_message('debug', 'listStaff: Returning ' . count($result) . ' staff members');
         return $this->response->setJSON($result);
     }
 
@@ -77,33 +77,55 @@ class AdminIntegrationController extends BaseController
     public function saveStaff($id = null)
     {
         $payload = $this->getJsonOrPost();
+        $staffId = (int) ($id ?? 0);
+        $hasId = $staffId > 0;
 
         $staffData = [
-            'user_id' => $payload['user_id'] ?? null,
             'name' => trim((string) ($payload['name'] ?? '')),
             'email' => trim((string) ($payload['email'] ?? '')),
             'phone' => trim((string) ($payload['phone'] ?? '')),
             'role' => trim((string) ($payload['role'] ?? 'staff')),
         ];
 
+        log_message('debug', 'saveStaff: method={method}, id={id}, hasId={hasId}, user_id={userId}', [
+            'method' => strtoupper($this->request->getMethod()),
+            'id' => $staffId,
+            'hasId' => $hasId,
+            'userId' => $payload['user_id'] ?? null,
+        ]);
+
         if ($staffData['name'] === '' || $staffData['email'] === '') {
             return $this->failValidationErrors('Name and email are required.');
         }
 
-        if ($this->request->getMethod() === 'put') {
-            $id = (int) ($id ?? 0);
-            if ($id <= 0) {
+        if ($hasId) {
+            if ($staffId <= 0) {
                 return $this->failValidationErrors('Invalid staff ID.');
             }
 
-            $updated = $this->staffModel->update($id, $staffData);
+            // When updating, preserve existing user_id unless a new one is explicitly provided
+            $existing = $this->staffModel->find($staffId);
+            if (!$existing) {
+                return $this->failNotFound('Staff not found');
+            }
+
+            $staffData['user_id'] = !empty($payload['user_id']) ? (int) $payload['user_id'] : $existing['user_id'];
+
+            $updated = $this->staffModel->update($staffId, $staffData);
             if (!$updated) {
+                log_message('error', 'saveStaff: update failed for staff id {id}. Errors: {errors}', [
+                    'id' => $staffId,
+                    'errors' => json_encode($this->staffModel->errors()),
+                ]);
                 return $this->failServerError('Failed to update staff profile.');
             }
 
             return $this->respond(['success' => true, 'message' => 'Staff profile updated.']);
         }
 
+        // When creating, use provided user_id or null
+        $staffData['user_id'] = !empty($payload['user_id']) ? (int) $payload['user_id'] : null;
+        
         $inserted = $this->staffModel->insert($staffData);
         if (!$inserted) {
             return $this->failServerError('Failed to create staff profile.');

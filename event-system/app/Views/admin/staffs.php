@@ -347,6 +347,7 @@ document.getElementById('confirmPromote')?.addEventListener('click', function(){
             <div class="modal-body">
                 <form id="staffForm">
                     <input type="hidden" id="staffId">
+                    <input type="hidden" id="staffUserId">
                     <div class="mb-3">
                         <label for="staffName" class="form-label">Full Name *</label>
                         <input type="text" class="form-control" id="staffName" required>
@@ -503,17 +504,25 @@ function addStaff() {
 
 function editStaff(id) {
     // Load staff data and show modal
+    console.log('editStaff called with id:', id);
     $.ajax({
         url: `${staffApiBase}/staff/${id}`,
         method: 'GET',
         success: function(staff) {
+            console.log('Staff data loaded:', staff);
             $('#staffModalTitle').text('Edit Staff');
             $('#staffId').val(staff.id);
+            $('#staffUserId').val(staff.user_id || '');
             $('#staffName').val(staff.name);
             $('#staffEmail').val(staff.email);
             $('#staffPhone').val(staff.phone);
             $('#staffRole').val(staff.role);
+            console.log('Form populated, staffId set to:', $('#staffId').val());
             new bootstrap.Modal(document.getElementById('staffModal')).show();
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error('Failed to load staff:', jqXHR.status, textStatus, errorThrown);
+            showNotification('Error loading staff data', 'error');
         }
     });
 }
@@ -521,17 +530,26 @@ function editStaff(id) {
 function saveStaff() {
     console.log('saveStaff called');
     const staffId = $('#staffId').val();
+    console.log('staffId value:', staffId, 'Type:', typeof staffId, 'Truthy:', !!staffId);
+    
     const staffData = {
         name: $('#staffName').val(),
         email: $('#staffEmail').val(),
         phone: $('#staffPhone').val(),
-        role: $('#staffRole').val()
+        role: $('#staffRole').val(),
+        user_id: $('#staffUserId').val() || null
     };
+    
+    console.log('Staff data:', staffData);
 
-    const url = staffId ? `${staffApiBase}/staff/${staffId}` : `${staffApiBase}/staff`;
-    const method = staffId ? 'PUT' : 'POST';
+    // Check if this is an update or create - use explicit check for numeric string
+    const isUpdate = staffId && staffId !== '';
+    const url = isUpdate ? `${staffApiBase}/staff/${staffId}` : `${staffApiBase}/staff`;
+    const method = isUpdate ? 'PUT' : 'POST';
     // Some environments/proxies don't forward PUT; use POST with method override as fallback
     const ajaxType = method === 'PUT' ? 'POST' : method;
+    
+    console.log('Request:', method, url, 'ajaxType:', ajaxType);
 
     $('#saveStaffBtn').prop('disabled', true);
     $.ajax({
@@ -540,7 +558,8 @@ function saveStaff() {
         data: JSON.stringify(staffData),
         contentType: 'application/json',
         headers: Object.assign({}, method === 'PUT' ? { 'X-HTTP-Method-Override': 'PUT' } : {}, { '<?= csrf_header() ?>': '<?= csrf_hash() ?>' }),
-        success: function() {
+        success: function(response) {
+            console.log('Staff save response:', response, 'Status: ', method === 'PUT' ? 'UPDATE' : 'CREATE');
             bootstrap.Modal.getInstance(document.getElementById('staffModal')).hide();
             loadStaffData();
             loadStaffStats();

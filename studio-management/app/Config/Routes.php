@@ -15,6 +15,7 @@ $routes->group('studio', ['filter' => 'authcheck'], function($routes) {
     $routes->get('', 'StudioController::index');
     $routes->get('dashboard', 'StudioController::dashboard');
     $routes->get('bookings', 'StudioController::bookings');
+    $routes->get('(:num)/bookings', 'StudioController::bookings/$1');
     $routes->get('info', 'StudioController::info');
     $routes->get('profile', 'StudioController::info');
     $routes->post('update-info', 'StudioController::updateInfo');

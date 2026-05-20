@@ -224,12 +224,14 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->get('staff-management/api/staff/stats', 'AdminIntegrationController::staffStats');
     $routes->get('staff-management/api/staff/(:num)', 'AdminIntegrationController::getStaff/$1');
     $routes->post('staff-management/api/staff', 'AdminIntegrationController::saveStaff');
+    $routes->post('staff-management/api/staff/(:num)', 'AdminIntegrationController::saveStaff/$1');
     $routes->put('staff-management/api/staff/(:num)', 'AdminIntegrationController::saveStaff/$1');
 
     $routes->get('staff-management/api/assignments/list', 'AdminIntegrationController::listAssignments');
     $routes->get('staff-management/api/assignments/stats', 'AdminIntegrationController::assignmentStats');
     $routes->get('staff-management/api/assignments/(:num)', 'AdminIntegrationController::getAssignment/$1');
     $routes->post('staff-management/api/assignments', 'AdminIntegrationController::saveAssignment');
+    $routes->post('staff-management/api/assignments/(:num)', 'AdminIntegrationController::updateAssignment/$1');
     $routes->put('staff-management/api/assignments/(:num)', 'AdminIntegrationController::updateAssignment/$1');
     $routes->delete('staff-management/api/assignments/(:num)', 'AdminIntegrationController::deleteAssignment/$1');
     $routes->get('staff-management/api/staff/(:num)/assignments', 'AdminIntegrationController::staffAssignments/$1');
@@ -240,6 +242,7 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->get('studio-management/api/stats', 'AdminIntegrationController::studioStats');
     $routes->get('studio-management/api/studio/(:num)', 'AdminIntegrationController::getStudio/$1');
     $routes->post('studio-management/api/studio', 'AdminIntegrationController::saveStudio');
+    $routes->post('studio-management/api/studio/(:num)', 'AdminIntegrationController::saveStudio/$1');
     $routes->put('studio-management/api/studio/(:num)', 'AdminIntegrationController::saveStudio/$1');
     $routes->delete('studio-management/api/studio/(:num)', 'AdminIntegrationController::deleteStudio/$1');
     $routes->get('studio-management/api/booking/studio/(:num)', 'AdminIntegrationController::studioBookings/$1');

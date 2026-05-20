@@ -174,14 +174,17 @@ class StudioController extends BaseController
         return view('studio/dashboard', $data);
     }
     
-    public function bookings()
+    public function bookings($studioId = null)
     {
         log_message('debug', 'StudioController: bookings() called');
         
         $data['title'] = 'My Bookings';
         
-        // For now, assume studio ID 1 - in real implementation, this should be based on logged-in user
-        $studioId = 1; // TODO: Get from session/user authentication
+        // Support both /studio/bookings?studio_id=1 and /studio/1/bookings.
+        $studioId = (int) ($studioId ?? $this->request->getGet('studio_id') ?? 1);
+        if ($studioId <= 0) {
+            $studioId = 1;
+        }
         
         if ($this->bookingModel) {
             log_message('debug', 'StudioController: getting bookings for studio ' . $studioId);
