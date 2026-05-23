@@ -42,6 +42,7 @@ $routes->get('studio/sso/authenticate', 'SsoController::authenticate');
 // Logout route — accessible without auth filter
 $routes->get('studio/logout', 'StudioController::logout');
 $routes->get('availability', 'AvailabilityController::index', ['filter' => 'authcheck']);
+$routes->get('availability/calendar', 'AvailabilityController::calendar', ['filter' => 'authcheck']);
 $routes->get('assignment', 'AssignmentController::index', ['filter' => 'authcheck']);
 $routes->get('staff-management', 'StaffManagementController::index', ['filter' => 'authcheck']);
 $routes->get('scheduling', 'SchedulingController::index', ['filter' => 'authcheck']);

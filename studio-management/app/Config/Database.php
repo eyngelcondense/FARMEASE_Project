@@ -24,12 +24,14 @@ class Database extends Config
      *
      * @var array<string, mixed>
      */
+
+
     public array $default = [
         'DSN'          => '',
-        'hostname'     => 'localhost',
-        'username'     => '',
-        'password'     => '',
-        'database'     => '',
+        'hostname'     => 'farmease-db',
+        'username'     => 'docker-user',
+        'password'     => 'farmease-pass',
+        'database'     => 'farmease_vrbms',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
         'pConnect'     => false,
@@ -41,7 +43,7 @@ class Database extends Config
         'compress'     => false,
         'strictOn'     => false,
         'failover'     => [],
-        'port'         => 3306,
+        'port' => 3306,
         'numberNative' => false,
         'foundRows'    => false,
         'dateFormat'   => [
@@ -50,7 +52,6 @@ class Database extends Config
             'time'     => 'H:i:s',
         ],
     ];
-
     //    /**
     //     * Sample database connection for SQLite3.
     //     *
@@ -193,6 +194,16 @@ class Database extends Config
     public function __construct()
     {
         parent::__construct();
+
+        $this->default['hostname'] = env('database.default.hostname', $this->default['hostname']);
+        $this->default['username'] = env('database.default.username', $this->default['username']);
+        $this->default['password'] = env('database.default.password', $this->default['password']);
+        $this->default['database'] = env('database.default.database', $this->default['database']);
+        $this->default['DBDriver'] = env('database.default.DBDriver', $this->default['DBDriver']);
+        $this->default['DBDebug'] = env('database.default.DBDebug', $this->default['DBDebug']);
+        $this->default['charset'] = env('database.default.charset', $this->default['charset']);
+        $this->default['DBCollat'] = env('database.default.DBCollat', $this->default['DBCollat']);
+        $this->default['port'] = (int) env('database.default.port', $this->default['port']);
 
         // Ensure that we always set the database group to 'tests' if
         // we are currently running an automated test suite, so that

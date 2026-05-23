@@ -15,41 +15,19 @@ class StudioController extends BaseController
 
     public function __construct()
     {
-        log_message('debug', 'StudioController: __construct() called');
-        
         $this->studioModel = model(StudioModel::class);
-        log_message('debug', 'StudioController: studioModel initialized');
-        
         $this->bookingModel = model(StudioBookingModel::class);
-        log_message('debug', 'StudioController: bookingModel initialized');
-
         $this->imageModel = model(StudioImageModel::class);
-        log_message('debug', 'StudioController: imageModel initialized');
 
         helper('form');
-        
-        // Verify models are not null
-        log_message('debug', 'StudioController: studioModel is ' . ($this->studioModel ? 'NOT null' : 'NULL'));
-        log_message('debug', 'StudioController: bookingModel is ' . ($this->bookingModel ? 'NOT null' : 'NULL'));
     }
 
     public function index()
     {
-        log_message('debug', 'StudioController: index() method called');
-        
         if ($this->studioModel) {
             $studios = $this->studioModel->findAll();
-            log_message('debug', 'StudioController: findAll() returned ' . gettype($studios));
-            log_message('debug', 'StudioController: studios count = ' . count($studios));
-            
-            if (!empty($studios)) {
-                $firstStudio = $studios[0];
-                log_message('debug', 'StudioController: first studio type = ' . gettype($firstStudio));
-                log_message('debug', 'StudioController: first studio = ' . json_encode($firstStudio));
-            }
         } else {
             $studios = [];
-            log_message('error', 'StudioController: studioModel is null');
         }
         
         $data = [
@@ -58,7 +36,6 @@ class StudioController extends BaseController
             'pager'  => null // Using built-in findAll instead of paginate for now
         ];
         
-        log_message('debug', 'StudioController: preparing to render view with ' . count($studios) . ' studios');
         return view('studio/index', $data);
     }
 
@@ -128,70 +105,75 @@ class StudioController extends BaseController
 
     public function available()
     {
-        log_message('debug', 'StudioController: available() method called');
-        
         $capacity = $this->request->getGet('capacity');
         $data['title'] = 'Available Studios';
         
-        log_message('debug', 'StudioController: capacity parameter = ' . $capacity);
-        
         // Check if studio model is properly initialized
         if ($this->studioModel) {
-            log_message('debug', 'StudioController: calling getAvailableStudios');
             $studios = $this->studioModel->getAvailableStudios(null, $capacity);
-            log_message('debug', 'StudioController: getAvailableStudios returned ' . gettype($studios));
-            log_message('debug', 'StudioController: studios count = ' . count($studios));
             $data['studios'] = $studios;
         } else {
             $data['studios'] = [];
-            log_message('error', 'StudioModel not initialized in StudioController');
         }
         
-        log_message('debug', 'StudioController: preparing to render available view with ' . count($data['studios']) . ' studios');
         return view('studio/available', $data);
     }
 
     public function dashboard()
     {
-        log_message('debug', 'StudioController: dashboard() called');
-        
         $data['title'] = 'Studio Dashboard';
-        
-        // For now, assume studio ID 1 - in real implementation, this should be based on logged-in user
-        $studioId = 1; // TODO: Get from session/user authentication
+
+        $studioId = $this->resolveStudioSessionContext('dashboard');
+        if ($studioId instanceof \CodeIgniter\HTTP\RedirectResponse) {
+            return $studioId;
+        }
         
         // Check if booking model is properly initialized
         if ($this->bookingModel) {
-            log_message('debug', 'StudioController: getting bookings for studio ' . $studioId);
+            if (ENVIRONMENT === 'development') {
+                log_message('debug', 'StudioController: dashboard loading bookings for studio_id=' . $studioId);
+            }
+
             $data['bookings'] = $this->bookingModel->getBookingsForStudio($studioId);
-            log_message('debug', 'StudioController: got ' . count($data['bookings']) . ' bookings for studio');
         } else {
-            log_message('error', 'StudioController: bookingModel is NULL in dashboard method');
             $data['bookings'] = [];
         }
         
-        log_message('debug', 'StudioController: preparing to render studio/dashboard view');
         return view('studio/dashboard', $data);
+    }
+
+    private function resolveStudioSessionContext(string $context)
+    {
+        $studioId = session()->get('studio_id');
+
+        if (is_numeric($studioId) && (int) $studioId > 0) {
+            if (ENVIRONMENT === 'development') {
+                log_message('debug', 'StudioController: resolved studio_id=' . (int) $studioId . ' for ' . $context);
+            }
+
+            return (int) $studioId;
+        }
+
+        log_message('error', 'StudioController: missing or invalid studio_id session for ' . $context . '. Redirecting to SSO login.');
+
+        $config = new \Config\SsoConfig();
+        return redirect()->to($config->loginUrl)->with('error', 'Session expired. Please log in again.');
     }
     
     public function bookings($studioId = null)
     {
-        log_message('debug', 'StudioController: bookings() called');
-        
         $data['title'] = 'My Bookings';
         
         // Support both /studio/bookings?studio_id=1 and /studio/1/bookings.
-        $studioId = (int) ($studioId ?? $this->request->getGet('studio_id') ?? 1);
+        $studioId = (int) ($studioId ?? $this->request->getGet('studio_id') ?? session()->get('studio_id'));
         if ($studioId <= 0) {
-            $studioId = 1;
+            $config = new \Config\SsoConfig();
+            return redirect()->to($config->loginUrl)->with('error', 'Session expired. Please log in again.');
         }
         
         if ($this->bookingModel) {
-            log_message('debug', 'StudioController: getting bookings for studio ' . $studioId);
             $data['bookings'] = $this->bookingModel->getBookingsForStudio($studioId);
-            log_message('debug', 'StudioController: got ' . count($data['bookings']) . ' bookings for studio');
         } else {
-            log_message('error', 'StudioController: bookingModel is NULL in bookings method');
             $data['bookings'] = [];
         }
         
@@ -200,19 +182,16 @@ class StudioController extends BaseController
     
     public function info()
     {
-        log_message('debug', 'StudioController: info() called');
-        
         $data['title'] = 'Studio Information';
         
-        // For now, assume studio ID 1 - in real implementation, this should be based on logged-in user
-        $studioId = 1; // TODO: Get from session/user authentication
+        $studioId = $this->resolveStudioSessionContext('info');
+        if ($studioId instanceof \CodeIgniter\HTTP\RedirectResponse) {
+            return $studioId;
+        }
         
         if ($this->studioModel) {
-            log_message('debug', 'StudioController: getting studio info for ' . $studioId);
             $data['studio'] = $this->studioModel->find($studioId);
-            log_message('debug', 'StudioController: studio info loaded');
         } else {
-            log_message('error', 'StudioController: studioModel is NULL in info method');
             $data['studio'] = null;
         }
         
@@ -221,20 +200,17 @@ class StudioController extends BaseController
     
     public function gallery()
     {
-        log_message('debug', 'StudioController: gallery() called');
-        
         $data['title'] = 'Studio Gallery';
         
-        // For now, assume studio ID 1 - in real implementation, this should be based on logged-in user
-        $studioId = 1; // TODO: Get from session/user authentication
+        $studioId = $this->resolveStudioSessionContext('gallery');
+        if ($studioId instanceof \CodeIgniter\HTTP\RedirectResponse) {
+            return $studioId;
+        }
         
         if ($this->studioModel) {
-            log_message('debug', 'StudioController: getting gallery for studio ' . $studioId);
             $data['studio'] = $this->studioModel->find($studioId);
             $data['images'] = $this->imageModel ? $this->imageModel->getStudioImages($studioId) : [];
-            log_message('debug', 'StudioController: gallery loaded');
         } else {
-            log_message('error', 'StudioController: studioModel is NULL in gallery method');
             $data['studio'] = null;
             $data['images'] = [];
         }
@@ -244,19 +220,16 @@ class StudioController extends BaseController
     
     public function schedule()
     {
-        log_message('debug', 'StudioController: schedule() called');
-        
         $data['title'] = 'Studio Schedule';
         
-        // For now, assume studio ID 1 - in real implementation, this should be based on logged-in user
-        $studioId = 1; // TODO: Get from session/user authentication
+        $studioId = $this->resolveStudioSessionContext('schedule');
+        if ($studioId instanceof \CodeIgniter\HTTP\RedirectResponse) {
+            return $studioId;
+        }
         
         if ($this->bookingModel) {
-            log_message('debug', 'StudioController: getting schedule for studio ' . $studioId);
             $data['bookings'] = $this->bookingModel->getBookingsForStudio($studioId);
-            log_message('debug', 'StudioController: schedule loaded with ' . count($data['bookings']) . ' bookings');
         } else {
-            log_message('error', 'StudioController: bookingModel is NULL in schedule method');
             $data['bookings'] = [];
         }
         
@@ -265,8 +238,6 @@ class StudioController extends BaseController
 
     public function feedback()
     {
-        log_message('debug', 'StudioController: feedback() called');
-
         $data['title'] = 'Studio Feedback';
 
         // Attempt to load a Feedback model if available in the project
@@ -275,12 +246,8 @@ class StudioController extends BaseController
             if (class_exists(\App\Models\FeedbackModel::class)) {
                 $feedbackModel = model(\App\Models\FeedbackModel::class);
                 $data['feedbacks'] = $feedbackModel->orderBy('created_at', 'DESC')->findAll();
-                log_message('debug', 'StudioController: loaded ' . count($data['feedbacks']) . ' feedback items');
-            } else {
-                log_message('debug', 'StudioController: FeedbackModel not found; rendering empty feedback list');
             }
         } catch (\Exception $e) {
-            log_message('error', 'StudioController: error loading feedbacks - ' . $e->getMessage());
             $data['feedbacks'] = [];
         }
 
@@ -289,25 +256,20 @@ class StudioController extends BaseController
     
     public function updateInfo()
     {
-        log_message('debug', 'StudioController: updateInfo() called');
-        
         $data = $this->request->getPost();
         
-        // For now, assume studio ID 1 - in real implementation, this should be based on logged-in user
-        $studioId = 1; // TODO: Get from session/user authentication
+        $studioId = $this->resolveStudioSessionContext('updateInfo');
+        if ($studioId instanceof \CodeIgniter\HTTP\RedirectResponse) {
+            return $studioId;
+        }
         
         if ($this->studioModel) {
-            log_message('debug', 'StudioController: updating studio ' . $studioId);
-            
             if ($this->studioModel->update($studioId, $data)) {
-                log_message('debug', 'StudioController: studio updated successfully');
                 return redirect()->to('studio/info')->with('success', 'Studio information updated successfully!');
             } else {
-                log_message('error', 'StudioController: failed to update studio');
                 return redirect()->back()->with('error', 'Failed to update studio information.');
             }
         } else {
-            log_message('error', 'StudioController: studioModel is NULL in updateInfo method');
             return redirect()->back()->with('error', 'Studio model not available.');
         }
     }
@@ -323,7 +285,11 @@ class StudioController extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'Please select at least one photo.']);
         }
 
-        $studioId = 1;
+        $studioId = $this->resolveStudioSessionContext('uploadImages');
+        if ($studioId instanceof \CodeIgniter\HTTP\RedirectResponse) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Session expired. Please log in again.']);
+        }
+
         $uploadDir = FCPATH . 'uploads/studios/gallery/';
         if (! is_dir($uploadDir)) {
             mkdir($uploadDir, 0775, true);
