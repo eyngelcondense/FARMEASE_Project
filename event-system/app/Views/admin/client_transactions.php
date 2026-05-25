@@ -1,3 +1,4 @@
+<?php $current_page = $current_page ?? 'transactions'; ?>
 <?= $this->extend('admin/layout') ?>
 
 <?php $title = "Client Transactions - San Isidro Labrador Resort"; ?>

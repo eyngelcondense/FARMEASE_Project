@@ -1,3 +1,4 @@
+<?php $current_page = $current_page ?? 'users'; ?>
 <?= $this->extend('admin/layout') ?>
 
 <?php $title = "User Management - San Isidro Labrador Resort"; ?>

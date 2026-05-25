@@ -1,3 +1,4 @@
+<?php $current_page = $current_page ?? 'studios'; ?>
 <?= $this->extend('admin/layout') ?>
 
 <?php $title = "Studio Management - San Isidro Labrador Resort"; ?>

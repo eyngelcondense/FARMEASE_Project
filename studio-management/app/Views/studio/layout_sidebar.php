@@ -45,7 +45,7 @@ $page_title = $page_title ?? 'Studio Management - San Isidro Labrador Resort';
     <?= $this->include('studio/style') ?>
 </head>
 <body>
-    <?= $this->include('studio/sidebar') ?>
+    <?= $this->include('studio/sidebar', ['current_page' => $current_page]) ?>
 
     <button class="mobile-menu-toggle" type="button" onclick="toggleSidebar()">
         <i class="fas fa-bars"></i>

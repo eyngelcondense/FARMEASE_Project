@@ -1,3 +1,4 @@
+<?php $current_page = $current_page ?? 'bookings'; ?>
 <?= $this->extend('admin/layout') ?>
 
 <?php 

@@ -1,3 +1,4 @@
+<?php $current_page = $current_page ?? 'manage_staff'; ?>
 <?= $this->extend('admin/layout') ?>
 
 <?php $title = "Manage Staff Assignments - San Isidro Labrador Resort"; ?>

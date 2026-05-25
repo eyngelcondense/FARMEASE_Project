@@ -1,3 +1,4 @@
+<?php $current_page = $current_page ?? 'staffs'; ?>
 <?= $this->extend('admin/layout') ?>
 
 <?php $title = "Staff Management - San Isidro Labrador Resort"; ?>

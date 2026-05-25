@@ -44,7 +44,7 @@ $page_title = $page_title ?? 'Staff Portal';
     <?= $this->include('staff/style') ?>
 </head>
 <body>
-    <?= $this->include('staff/sidebar') ?>
+    <?= $this->include('staff/sidebar', ['current_page' => $current_page]) ?>
     <button class="mobile-menu-toggle" type="button" onclick="toggleSidebar()">
         <i class="fas fa-bars"></i>
     </button>
