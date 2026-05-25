@@ -185,14 +185,14 @@ $page_title    = 'My Assignments - San Isidro Labrador Resort';
             $dt          = new DateTime($a['event_date']);
             $start       = date('g:i A', strtotime($a['start_time']));
             $end         = date('g:i A', strtotime($a['end_time']));
-            $statusClass = 'status-' . $a['status'];
+            $statusClass = '';
             $ppClass     = 'pp-'     . $a['payment_status'];
             $isToday     = $a['event_date'] === date('Y-m-d');
             $isUpcoming  = $a['event_date'] >= date('Y-m-d') && in_array($a['status'], ['approved','confirmed']);
             $dataFilter  = $a['status'] === 'completed' ? 'completed' : ($isUpcoming ? 'upcoming' : 'all');
             if ($isToday) $dataFilter .= ' today';
         ?>
-        <div class="asgn-card <?= $statusClass ?>"
+        <div class="asgn-card"
              data-filter="<?= $dataFilter ?> all"
              data-search="<?= strtolower(esc($a['client_fullname'] . ' ' . $a['event_type'] . ' ' . $a['venue_name'] . ' ' . $a['booking_reference'])) ?>">
 
@@ -210,7 +210,6 @@ $page_title    = 'My Assignments - San Isidro Labrador Resort';
                             <div class="card-ref"><?= esc($a['booking_reference']) ?></div>
                         </div>
                         <div class="card-badges">
-                            <span class="assignment-status status-<?= $a['status'] ?>"><?= ucfirst($a['status']) ?></span>
                             <span class="pay-pill <?= $ppClass ?>"><?= ucfirst($a['payment_status']) ?></span>
                             <?php if ($isToday): ?>
                                 <span class="assignment-status" style="background:#f0ece4;color:#c19a6b;border:1px solid rgba(193,154,107,0.35);">Today</span>

@@ -684,19 +684,11 @@ class AdminIntegrationController extends BaseController
     {
         $normalized = strtolower(trim($status));
 
-        if ($normalized === 'assigned') {
-            return 'pending';
-        }
-
-        if ($normalized === 'accepted') {
-            return 'confirmed';
-        }
-
-        if (in_array($normalized, ['completed', 'cancelled', 'pending', 'confirmed', 'approved'], true)) {
+        if (in_array($normalized, ['assigned', 'accepted', 'completed', 'cancelled', 'pending', 'confirmed', 'approved'], true)) {
             return $normalized;
         }
 
-        return 'pending';
+        return 'assigned';
     }
 
     private function getJsonOrPost(): array

@@ -395,10 +395,10 @@ The total contract amount is ₱{total_amount}. Payment schedule:
 - 50% 30 days before the event
 
 ARTICLE 3: CANCELLATION POLICY
-- Cancellation 90+ days before: 80% refund
-- Cancellation 60-89 days before: 50% refund
-- Cancellation 30-59 days before: 25% refund
-- Cancellation less than 30 days: No refund`,
+- Cancellation 90+ days before: 100% refund
+- Cancellation 60-89 days before: 85% refund
+- Cancellation 30-59 days before: 75% refund
+- Cancellation less than 30 days: 65% refund`,
             'terms': `1. Client is responsible for any damages to venue property
 2. Service Provider is not liable for force majeure events
 3. Event must conclude by agreed end time

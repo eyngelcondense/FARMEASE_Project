@@ -245,7 +245,7 @@ $title = "Bookings - San Isidro Labrador Resort";
                     <div class="d-flex justify-content-between">
                         <div>
                             <h5 class="card-title">Total</h5>
-                            <h2 id="totalBookings" class="text-primary">0</h2>
+                            <h2 id="totalBookings" class="text-primary"><?= esc($bookingCounts['total'] ?? 0) ?></h2>
                         </div>
                         <div class="align-self-center">
                             <i class="fas fa-calendar-alt fa-2x text-primary"></i>
@@ -260,7 +260,7 @@ $title = "Bookings - San Isidro Labrador Resort";
                     <div class="d-flex justify-content-between">
                         <div>
                             <h5 class="card-title">Pending</h5>
-                            <h2 id="pendingBookings" class="text-warning">0</h2>
+                            <h2 id="pendingBookings" class="text-warning"><?= esc($bookingCounts['pending'] ?? 0) ?></h2>
                         </div>
                         <div class="align-self-center">
                             <i class="fas fa-clock fa-2x text-warning"></i>
@@ -275,7 +275,7 @@ $title = "Bookings - San Isidro Labrador Resort";
                     <div class="d-flex justify-content-between">
                         <div>
                             <h5 class="card-title">Approved</h5>
-                            <h2 id="approvedBookings" class="text-success">0</h2>
+                            <h2 id="approvedBookings" class="text-success"><?= esc($bookingCounts['approved'] ?? 0) ?></h2>
                         </div>
                         <div class="align-self-center">
                             <i class="fas fa-check-circle fa-2x text-success"></i>
@@ -290,7 +290,7 @@ $title = "Bookings - San Isidro Labrador Resort";
                     <div class="d-flex justify-content-between">
                         <div>
                             <h5 class="card-title">Rejected</h5>
-                            <h2 id="rejectedBookings" class="text-danger">0</h2>
+                            <h2 id="rejectedBookings" class="text-danger"><?= esc($bookingCounts['rejected'] ?? 0) ?></h2>
                         </div>
                         <div class="align-self-center">
                             <i class="fas fa-times-circle fa-2x text-danger"></i>
@@ -347,24 +347,134 @@ $title = "Bookings - San Isidro Labrador Resort";
         <button class="btn btn-brown" onclick="refreshBookings()">
             <i class="fas fa-sync-alt"></i> Refresh
         </button>
+
+        <button class="btn btn-secondary" onclick="expireDueBookings()">
+            <i class="fas fa-hourglass-end"></i> Expire Due
+        </button>
     </div>
 
     <div class="table-card">
-        <table class="table table-striped table-bordered" id="bookingsTable" style="width:100%">
-            <thead>
-                <tr>
-                    <th>Booking ID</th>
-                    <th>Client</th>
-                    <th>Package</th>
-                    <th>Date & Time</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Data will be loaded dynamically via AJAX -->
-            </tbody>
-        </table>
+        <ul class="nav nav-tabs mb-3" id="bookingTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="all-bookings-tab" data-bs-toggle="tab" data-bs-target="#all-bookings-pane" type="button" role="tab" aria-controls="all-bookings-pane" aria-selected="true">All Bookings</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="terminal-bookings-tab" data-bs-toggle="tab" data-bs-target="#terminal-bookings-pane" type="button" role="tab" aria-controls="terminal-bookings-pane" aria-selected="false">Cancelled / Expired</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="refund-bookings-tab" data-bs-toggle="tab" data-bs-target="#refund-bookings-pane" type="button" role="tab" aria-controls="refund-bookings-pane" aria-selected="false">Refunds</button>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="all-bookings-pane" role="tabpanel" aria-labelledby="all-bookings-tab">
+                <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover" id="bookingsTable" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>Client</th>
+                            <th>Package</th>
+                            <th>Date & Time</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                            <th class="d-none">Created At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (!empty($bookings)): ?>
+                            <?php foreach ($bookings as $booking): ?>
+                                <?php $rowStatus = strtolower((string) ($booking['status'] ?? 'pending')); ?>
+                                <?php $refundAmount = (float) ($booking['refund_amount'] ?? 0); ?>
+                                <tr>
+                                    <td><strong><?= esc($booking['booking_reference'] ?? '-') ?></strong></td>
+                                    <td><?= esc($booking['fullname'] ?? '-') ?></td>
+                                    <td><?= esc($booking['package_name'] ?? 'N/A') ?></td>
+                                    <td>
+                                        <?= esc(date('M j, Y', strtotime($booking['event_date'] ?? 'now'))) ?><br>
+                                        <small class="text-muted"><?= esc(date('g:i A', strtotime($booking['start_time'] ?? '00:00:00'))) ?></small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-<?= in_array($rowStatus, ['approved', 'completed'], true) ? 'success' : (in_array($rowStatus, ['rejected', 'cancelled', 'expired'], true) ? 'danger' : 'warning') ?>">
+                                            <?= esc(ucfirst($rowStatus)) ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <?php if ($rowStatus === 'pending'): ?>
+                                                <button class="btn btn-sm btn-approve" onclick="approveBooking(<?= (int) ($booking['id'] ?? 0) ?>)">Approve</button>
+                                                <button class="btn btn-sm btn-reject" onclick="rejectBooking(<?= (int) ($booking['id'] ?? 0) ?>)">Reject</button>
+                                            <?php elseif (in_array($rowStatus, ['approved', 'confirmed'], true)): ?>
+                                                <button class="btn btn-sm btn-primary" onclick="assignStaff(<?= (int) ($booking['id'] ?? 0) ?>)">Assign Staff</button>
+                                                <button class="btn btn-sm btn-info" onclick="openContract(<?= (int) ($booking['id'] ?? 0) ?>)">Contract</button>
+                                                <button class="btn btn-sm btn-warning text-white" onclick="cancelBooking(<?= (int) ($booking['id'] ?? 0) ?>)">Cancel</button>
+                                            <?php elseif ($rowStatus === 'rejected'): ?>
+                                                <button class="btn btn-sm btn-approve" onclick="approveBooking(<?= (int) ($booking['id'] ?? 0) ?>)">Approve</button>
+                                            <?php endif; ?>
+
+                                            <?php if (in_array($rowStatus, ['cancelled', 'expired', 'rejected'], true) && $refundAmount > 0): ?>
+                                                <button class="btn btn-sm btn-warning text-white" onclick="openRefundModal(<?= (int) ($booking['id'] ?? 0) ?>)">
+                                                    <?= ($booking['refund_status'] ?? '') === 'processed' ? 'View Refund' : 'Record Refund' ?>
+                                                </button>
+                                            <?php endif; ?>
+
+                                            <button class="btn btn-sm btn-view" onclick="viewDetails(<?= (int) ($booking['id'] ?? 0) ?>)">Details</button>
+                                        </div>
+                                    </td>
+                                    <td class="d-none"><?= esc($booking['created_at'] ?? '') ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="terminal-bookings-pane" role="tabpanel" aria-labelledby="terminal-bookings-tab">
+                <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover" id="terminalBookingsTable" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>Client</th>
+                            <th>Event Date</th>
+                            <th>Payment Status</th>
+                            <th>Total Paid</th>
+                            <th>Refund Eligibility</th>
+                            <th>Refund Status</th>
+                            <th>Refund Amount</th>
+                            <th>Reason / Type</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be loaded dynamically via AJAX -->
+                    </tbody>
+                </table>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="refund-bookings-pane" role="tabpanel" aria-labelledby="refund-bookings-tab">
+                <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover" id="refundBookingsTable" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>Client</th>
+                            <th>Refund Amount</th>
+                            <th>Refund Status</th>
+                            <th>Refund Evidence</th>
+                            <th>Processed At</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be loaded dynamically via AJAX -->
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Modals -->
@@ -407,6 +517,32 @@ $title = "Bookings - San Isidro Labrador Resort";
         </div>
     </div>
 
+    <div class="modal fade" id="cancellationModal" tabindex="-1" aria-labelledby="cancellationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cancellationModalLabel">Cancel Booking</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>You are about to cancel booking <span id="cancelBookingId" class="fw-bold"></span>.</p>
+                    <div class="mb-3">
+                        <label for="cancellationReason" class="form-label">Reason for cancellation:</label>
+                        <textarea class="form-control" id="cancellationReason" rows="3" placeholder="Please provide a reason for cancellation..."></textarea>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="noShowFlag">
+                        <label class="form-check-label" for="noShowFlag">Mark as no-show</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-warning text-white" onclick="confirmCancellation()">Confirm Cancellation</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="conflictModal" tabindex="-1" aria-labelledby="conflictModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -428,62 +564,82 @@ $title = "Bookings - San Isidro Labrador Resort";
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="refundModal" tabindex="-1" aria-labelledby="refundModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form id="refundForm" enctype="multipart/form-data">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="refundModalLabel">Record Refund</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="refundBookingId" name="booking_id">
+                        <div class="alert alert-light border">
+                            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                                <div>
+                                    <div class="small text-muted">Booking</div>
+                                    <div class="fw-semibold" id="refundBookingReference">-</div>
+                                </div>
+                                <div>
+                                    <div class="small text-muted">Refund Amount</div>
+                                    <div class="fw-semibold text-warning" id="refundBookingAmount">₱0.00</div>
+                                </div>
+                                <div>
+                                    <div class="small text-muted">Current Status</div>
+                                    <div id="refundBookingStatus">-</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="refundReferenceNumber" class="form-label">Refund Reference Number</label>
+                            <input type="text" class="form-control" id="refundReferenceNumber" name="refund_reference_number" placeholder="Enter bank / e-wallet reference number">
+                            <small class="text-muted">You can submit a reference number, a screenshot, or both.</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="refundScreenshot" class="form-label">Refund Screenshot</label>
+                            <input type="file" class="form-control" id="refundScreenshot" name="refund_screenshot" accept="image/*">
+                            <small class="text-muted">Upload a clear screenshot of the refund confirmation.</small>
+                            <div class="mt-2">
+                                <img id="refundScreenshotPreview" alt="Refund screenshot preview" style="display:none; max-width: 100%; border-radius: 10px; border: 1px solid #e5d9cc;">
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info mb-0">
+                            At least one proof field is required before the refund can be marked processed.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-brown" id="refundSubmitBtn">Save Refund Proof</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
 <script>
 // Global variables
 let bookingsTable;
+let terminalBookingsTable;
+let refundsTable;
 let currentBookingId = null;
+let currentRefundBookingId = null;
 let conflictingBookings = [];
 
 $(document).ready(function() {
     // Initialize DataTable
     bookingsTable = $('#bookingsTable').DataTable({
         "processing": true,
-        "serverSide": true,
-        "ajax": {
-            "url": "<?= site_url('bookings/data') ?>",
-            "type": "GET",
-            "data": function(d) {
-                d.status_filter = $('#statusFilter').val();
-                d.package_filter = $('#packageFilter').val();
-                d.date_filter = $('#dateFilter').val();
-            }
-        },
-        "columns": [
-            { 
-                "data": "booking_reference",
-                "render": function(data, type, row) {
-                    return `<strong>${data}</strong>`;
-                }
-            },
-            { "data": "client_name" },
-            { "data": "package_name" },
-            { 
-                "data": "event_date",
-                "render": function(data, type, row) {
-                    return `${data}<br><small class="text-muted">${row.start_time}</small>`;
-                }
-            },
-            { 
-                "data": "status",
-                "render": function(data, type, row) {
-                    return data; // Already formatted as HTML badge
-                }
-            },
-            { 
-                "data": "actions",
-                "render": function(data, type, row) {
-                     let html = data;
-                    html = html.replace(/btn-success/g, 'btn-approve');    // Green → Medium Brown
-                    html = html.replace(/btn-danger/g, 'btn-reject');      // Red → Dark Brown
-                    html = html.replace(/btn-secondary/g, 'btn-view');     // Gray → Brown Outline
-                    return html;
-                }
-            }
+        "serverSide": false,
+        "order": [[6, "desc"]],
+        "columnDefs": [
+            { "targets": 6, "visible": false, "searchable": false }
         ],
-        "order": [[3, "desc"]],
         "responsive": true,
         "lengthMenu": [10, 25, 50, 100],
         "pageLength": 10,
@@ -499,23 +655,202 @@ $(document).ready(function() {
         }
     });
 
+    terminalBookingsTable = $('#terminalBookingsTable').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "<?= site_url('bookings/data') ?>",
+            "type": "GET",
+            "data": function(d) {
+                d.status_filter = 'terminal';
+                d.package_filter = $('#packageFilter').val();
+                d.date_filter = $('#dateFilter').val();
+            }
+        },
+        "columns": [
+            {
+                "data": "booking_reference",
+                "render": function(data) {
+                    return `<strong>${data}</strong>`;
+                }
+            },
+            { "data": "client_name" },
+            { "data": "event_date" },
+            {
+                "data": "payment_status",
+                "render": function(data) {
+                    return getPaymentStatusBadge((data || 'pending').toLowerCase());
+                }
+            },
+            {
+                "data": "total_paid",
+                "render": function(data) {
+                    return `₱${parseFloat(data || 0).toLocaleString()}`;
+                }
+            },
+            { "data": "refund_eligibility" },
+            {
+                "data": "refund_status",
+                "render": function(data) {
+                    return getRefundStatusBadge((data || 'not_applicable').toLowerCase());
+                }
+            },
+            {
+                "data": "refund_amount",
+                "render": function(data) {
+                    return `<strong>₱${parseFloat(data || 0).toLocaleString()}</strong>`;
+                }
+            },
+            {
+                "data": null,
+                "render": function(data, type, row) {
+                    return `<div><span class="badge bg-secondary me-1">${row.cancellation_type || 'Cancelled'}</span>${row.cancellation_reason || '-'}</div>`;
+                }
+            },
+            {
+                "data": "actions",
+                "render": function(data) {
+                    return data;
+                }
+            }
+        ],
+        "order": [[2, "desc"]],
+        "responsive": true,
+        "lengthMenu": [10, 25, 50, 100],
+        "pageLength": 10,
+        "language": {
+            "emptyTable": "No cancelled or expired bookings found",
+            "info": "Showing _START_ to _END_ of _TOTAL_ bookings",
+            "infoEmpty": "Showing 0 to 0 of 0 bookings",
+            "infoFiltered": "(filtered from _MAX_ total bookings)",
+            "loadingRecords": "Loading...",
+            "processing": "Processing...",
+            "search": "Search:",
+            "zeroRecords": "No matching bookings found"
+        }
+    });
+
+    refundsTable = $('#refundBookingsTable').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "<?= site_url('bookings/data') ?>",
+            "type": "GET",
+            "data": function(d) {
+                d.status_filter = 'refunds';
+                d.package_filter = $('#packageFilter').val();
+                d.date_filter = $('#dateFilter').val();
+            }
+        },
+        "columns": [
+            {
+                "data": "booking_reference",
+                "render": function(data) {
+                    return `<strong>${data}</strong>`;
+                }
+            },
+            { "data": "client_name" },
+            {
+                "data": "refund_amount",
+                "render": function(data) {
+                    return `<strong>₱${parseFloat(data || 0).toLocaleString()}</strong>`;
+                }
+            },
+            {
+                "data": "refund_status",
+                "render": function(data) {
+                    return getRefundStatusBadge((data || 'not_applicable').toLowerCase());
+                }
+            },
+            {
+                "data": null,
+                "render": function(data, type, row) {
+                    const referenceHtml = row.refund_reference_number && row.refund_reference_number !== '-'
+                        ? `<div><span class="badge bg-light text-dark border me-1">Ref</span>${row.refund_reference_number}</div>`
+                        : '<span class="text-muted">No reference number yet</span>';
+
+                    const screenshotHtml = row.refund_screenshot_path
+                        ? `<a href="<?= base_url() ?>${row.refund_screenshot_path}" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm mt-1">View Screenshot</a>`
+                        : '<div class="text-muted small mt-1">No screenshot uploaded</div>';
+
+                    return `${referenceHtml}${screenshotHtml}`;
+                }
+            },
+            {
+                "data": "refund_processed_at",
+                "render": function(data) {
+                    return data && data !== '-' ? data : '<span class="text-muted">Pending</span>';
+                }
+            },
+            {
+                "data": "actions",
+                "render": function(data) {
+                    return data;
+                }
+            }
+        ],
+        "order": [[5, "desc"]],
+        "responsive": true,
+        "lengthMenu": [10, 25, 50, 100],
+        "pageLength": 10,
+        "language": {
+            "emptyTable": "No refund records found",
+            "info": "Showing _START_ to _END_ of _TOTAL_ bookings",
+            "infoEmpty": "Showing 0 to 0 of 0 bookings",
+            "infoFiltered": "(filtered from _MAX_ total bookings)",
+            "loadingRecords": "Loading...",
+            "processing": "Processing...",
+            "search": "Search:",
+            "zeroRecords": "No matching bookings found"
+        }
+    });
+
     // Load statistics
     loadBookingStats();
 
     // Filter event handlers
     $('#packageFilter, #dateFilter, #statusFilter').on('change', function() {
-        bookingsTable.ajax.reload();
+        const params = new URLSearchParams(window.location.search);
+        const status = $('#statusFilter').val();
+        const packageId = $('#packageFilter').val();
+        const date = $('#dateFilter').val();
+
+        if (status) {
+            params.set('status', status);
+        } else {
+            params.delete('status');
+        }
+
+        if (packageId) {
+            params.set('package', packageId);
+        } else {
+            params.delete('package');
+        }
+
+        if (date) {
+            params.set('date', date);
+        } else {
+            params.delete('date');
+        }
+
+        window.location.href = `<?= site_url('admin/bookings') ?>${params.toString() ? '?' + params.toString() : ''}`;
+        terminalBookingsTable.ajax.reload();
+        refundsTable.ajax.reload();
         loadBookingStats();
     });
 
     // Search input
     $('#searchInput').on('keyup', function() {
         bookingsTable.search(this.value).draw();
+        terminalBookingsTable.search(this.value).draw();
+        refundsTable.search(this.value).draw();
     });
 
     // Refresh button handler
     window.refreshBookings = function() {
-        bookingsTable.ajax.reload(null, false);
+        window.location.reload();
+        terminalBookingsTable.ajax.reload(null, false);
+        refundsTable.ajax.reload(null, false);
         loadBookingStats();
         showToast('Bookings refreshed', 'success');
     };
@@ -607,6 +942,8 @@ if (booking.event_type === 'Others' && booking.other_event_type) {
         const totalGuests = booking.total_guests || 'N/A';
         const totalAmount = booking.total_amount || 0;
         const specialRequests = booking.special_requests || 'None';
+        const refundReferenceNumber = booking.refund_reference_number || '-';
+        const refundScreenshotPath = booking.refund_screenshot_path || '';
 
         let detailsHtml = `
             <div class="row mb-3">
@@ -678,6 +1015,27 @@ if (booking.event_type === 'Others' && booking.other_event_type) {
                             <span>Balance:</span>
                             <span class="text-danger">₱${parseFloat(balance || 0).toLocaleString()}</span>
                         </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Refund Status:</span>
+                            <span>${getRefundStatusBadge((booking.refund_status || 'not_applicable').toLowerCase())}</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Refund Amount:</span>
+                            <span class="text-warning fw-semibold">₱${parseFloat(booking.refund_amount || 0).toLocaleString()}</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Refund Reference:</span>
+                            <span>${refundReferenceNumber}</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Refund Screenshot:</span>
+                            <span>${refundScreenshotPath ? `<a href="<?= base_url() ?>${refundScreenshotPath}" target="_blank" rel="noopener">View Screenshot</a>` : 'N/A'}</span>
+                        </div>
+                        ${booking.refund_processed_at ? `
+                        <div class="d-flex justify-content-between">
+                            <span>Refund Processed At:</span>
+                            <span>${formatDateTime(booking.refund_processed_at)}</span>
+                        </div>` : ''}
                     </div>
                 </div>
             </div>
@@ -879,6 +1237,188 @@ function approveWithConflicts() {
     });
 }
 
+function cancelBooking(id) {
+    currentBookingId = id;
+
+    $.ajax({
+        url: `<?= site_url('bookings/') ?>${id}/details`,
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            if (response.success) {
+                const booking = response.booking;
+                $('#cancelBookingId').text(booking.booking_reference);
+                $('#cancellationReason').val('');
+                $('#noShowFlag').prop('checked', false);
+                const cancellationModal = new bootstrap.Modal(document.getElementById('cancellationModal'));
+                cancellationModal.show();
+            } else {
+                showToast(response.message, 'error');
+            }
+        },
+        error: function() {
+            showToast('Error loading booking details', 'error');
+        }
+    });
+}
+
+function confirmCancellation() {
+    const reason = $('#cancellationReason').val().trim();
+    const noShow = $('#noShowFlag').is(':checked');
+
+    if (!reason) {
+        showToast('Please provide a reason for cancellation', 'warning');
+        return;
+    }
+
+    $.ajax({
+        url: `<?= site_url('bookings/') ?>${currentBookingId}/cancel`,
+        type: 'POST',
+        data: {
+            reason: reason,
+            no_show: noShow ? 1 : 0
+        },
+        dataType: 'json',
+        success: function(response) {
+            if (response.success) {
+                showToast(response.message, 'success');
+                refreshBookings();
+                const cancellationModalEl = document.getElementById('cancellationModal');
+                const cancellationModal = bootstrap.Modal.getOrCreateInstance(cancellationModalEl);
+                cancellationModal.hide();
+            } else {
+                showToast(response.message, 'error');
+            }
+        },
+        error: function() {
+            showToast('Error cancelling booking', 'error');
+        }
+    });
+}
+
+function markRefundProcessed(id) {
+    openRefundModal(id);
+}
+
+function openRefundModal(id) {
+    currentRefundBookingId = id;
+
+    const refundForm = document.getElementById('refundForm');
+    refundForm.reset();
+    $('#refundScreenshotPreview').hide().attr('src', '');
+    $('#refundBookingReference').text('-');
+    $('#refundBookingAmount').text('₱0.00');
+    $('#refundBookingStatus').html(getRefundStatusBadge('pending'));
+
+    $.ajax({
+        url: `<?= site_url('bookings/') ?>${id}/details`,
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            if (response.success) {
+                const booking = response.booking;
+                $('#refundBookingId').val(booking.id);
+                $('#refundBookingReference').text(booking.booking_reference || 'N/A');
+                $('#refundBookingAmount').text(`₱${parseFloat(booking.refund_amount || 0).toLocaleString()}`);
+                $('#refundBookingStatus').html(getRefundStatusBadge((booking.refund_status || 'pending').toLowerCase()));
+                $('#refundReferenceNumber').val(booking.refund_reference_number || '');
+
+                if (booking.refund_screenshot_path) {
+                    $('#refundScreenshotPreview').attr('src', `<?= base_url() ?>${booking.refund_screenshot_path}`).show();
+                }
+
+                $('#refundModalLabel').text((booking.refund_status || '') === 'processed' ? 'View Refund Proof' : 'Record Refund');
+                $('#refundSubmitBtn').text((booking.refund_status || '') === 'processed' ? 'Update Refund Proof' : 'Save Refund Proof');
+
+                const refundModal = new bootstrap.Modal(document.getElementById('refundModal'));
+                refundModal.show();
+            } else {
+                showToast(response.message || 'Error loading booking details', 'error');
+            }
+        },
+        error: function() {
+            showToast('Error loading booking details', 'error');
+        }
+    });
+}
+
+async function submitRefundProcessed(event) {
+    if (event) {
+        event.preventDefault();
+    }
+
+    const refundReferenceNumber = $('#refundReferenceNumber').val().trim();
+    const refundScreenshot = $('#refundScreenshot')[0].files[0] || null;
+
+    if (!refundReferenceNumber && !refundScreenshot) {
+        showToast('Provide a refund reference number or screenshot', 'warning');
+        return;
+    }
+
+    const refundButton = $('#refundSubmitBtn');
+    const originalText = refundButton.text();
+
+    refundButton.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+
+    try {
+        const formData = new window.FormData();
+        formData.append('refund_reference_number', refundReferenceNumber);
+
+        if (refundScreenshot) {
+            formData.append('refund_screenshot', refundScreenshot);
+        }
+
+        const response = await fetch(`<?= site_url('bookings/') ?>${currentRefundBookingId}/refund-processed`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.message || 'Error updating refund status');
+        }
+
+        showToast(data.message, 'success');
+        refreshBookings();
+
+        const refundModalEl = document.getElementById('refundModal');
+        const refundModal = bootstrap.Modal.getOrCreateInstance(refundModalEl);
+        refundModal.hide();
+    } catch (error) {
+        showToast(error.message || 'Error updating refund status', 'error');
+    } finally {
+        refundButton.prop('disabled', false).html(originalText);
+    }
+}
+
+function expireDueBookings() {
+    if (!confirm('Mark overdue active bookings as completed or expired?')) {
+        return;
+    }
+
+    $.ajax({
+        url: `<?= site_url('bookings/expire-due') ?>`,
+        type: 'POST',
+        dataType: 'json',
+        success: function(response) {
+            if (response.success) {
+                showToast(response.message, 'success');
+                refreshBookings();
+            } else {
+                showToast(response.message, 'error');
+            }
+        },
+        error: function() {
+            showToast('Error expiring due bookings', 'error');
+        }
+    });
+}
+
 // Reject booking function
 function rejectBooking(id) {
     currentBookingId = id;
@@ -956,7 +1496,7 @@ function viewCalendar() {
 
 // Utility functions
 function formatDate(dateString) {
-    const date = new Date(dateString);
+    const date = new window.Date(dateString);
     return date.toLocaleDateString('en-US', { 
         year: 'numeric', 
         month: 'long', 
@@ -965,7 +1505,7 @@ function formatDate(dateString) {
 }
 
 function formatTime(timeString) {
-    const time = new Date(`2000-01-01T${timeString}`);
+    const time = new window.Date(`2000-01-01T${timeString}`);
     return time.toLocaleTimeString('en-US', { 
         hour: 'numeric', 
         minute: '2-digit',
@@ -974,7 +1514,7 @@ function formatTime(timeString) {
 }
 
 function formatDateTime(dateTimeString) {
-    const date = new Date(dateTimeString);
+    const date = new window.Date(dateTimeString);
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {
         hour: '2-digit', 
         minute: '2-digit'
@@ -988,7 +1528,8 @@ function getStatusBadge(status) {
         'confirmed': '<span class="badge bg-info">Confirmed</span>',
         'rejected': '<span class="badge bg-danger">Rejected</span>',
         'cancelled': '<span class="badge bg-secondary">Cancelled</span>',
-        'completed': '<span class="badge bg-primary">Completed</span>'
+        'completed': '<span class="badge bg-primary">Completed</span>',
+        'expired': '<span class="badge bg-dark">Expired</span>'
     };
     return badges[status] || '<span class="badge bg-secondary">Unknown</span>';
 }
@@ -1002,6 +1543,33 @@ function getPaymentStatusBadge(status) {
     };
     return badges[status] || '<span class="badge bg-secondary">Unknown</span>';
 }
+
+function getRefundStatusBadge(status) {
+    const badges = {
+        'pending': '<span class="badge bg-warning text-dark">Pending</span>',
+        'processed': '<span class="badge bg-success">Processed</span>',
+        'failed': '<span class="badge bg-danger">Failed</span>',
+        'not_applicable': '<span class="badge bg-light text-muted border">Not applicable</span>'
+    };
+
+    return badges[status] || '<span class="badge bg-secondary">Unknown</span>';
+}
+
+$('#refundScreenshot').on('change', function() {
+    const file = this.files && this.files[0];
+    if (!file) {
+        $('#refundScreenshotPreview').hide().attr('src', '');
+        return;
+    }
+
+    const reader = new window.FileReader();
+    reader.onload = function(e) {
+        $('#refundScreenshotPreview').attr('src', e.target.result).show();
+    };
+    reader.readAsDataURL(file);
+});
+
+$('#refundForm').on('submit', submitRefundProcessed);
 
 function showToast(message, type = 'info') {
     // Simple toast implementation

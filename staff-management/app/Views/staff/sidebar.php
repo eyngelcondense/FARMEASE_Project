@@ -36,7 +36,7 @@ if (!isset($current_page)) {
             </li>
             <li class="nav-item">
                 <a href="<?= site_url('assignment')?>" 
-                   class="nav-link <?= $current_page === 'assignments' ? 'active' : '' ?>">
+                   class="nav-link <?= in_array($current_page, ['assignments', 'assign-booking'], true) ? 'active' : '' ?>">
                     <i class="fas fa-tasks"></i>
                     <span>Assignments</span>
                 </a>
@@ -52,7 +52,7 @@ if (!isset($current_page)) {
         <ul class="nav-menu">
             <li class="nav-item">
                 <a href="<?= site_url('staff')?>" 
-                   class="nav-link <?= in_array($current_page, ['staff_list', 'staff_create']) ? 'active' : '' ?>">
+                   class="nav-link <?= in_array($current_page, ['staff_list', 'staff_create', 'staff_edit', 'staff_show'], true) ? 'active' : '' ?>">
                     <i class="fas fa-user-friends"></i>
                     <span>Staff Directory</span>
                 </a>
@@ -66,7 +66,7 @@ if (!isset($current_page)) {
             </li>
             <li class="nav-item">
                 <a href="<?= site_url('staff-management')?>" 
-                   class="nav-link <?= in_array($current_page, ['team', 'staff_list']) ? 'active' : '' ?>">
+                   class="nav-link <?= $current_page === 'team' ? 'active' : '' ?>">
                     <i class="fas fa-users"></i>
                     <span>Team Members</span>
                 </a>

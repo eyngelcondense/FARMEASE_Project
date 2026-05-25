@@ -1,6 +1,35 @@
 <?php
-$current_page = $current_page ?? 'dashboard';
-$page_title   = $page_title ?? 'Staff Portal';
+$current_page = $current_page ?? null;
+
+if ($current_page === null) {
+    $path = trim(service('uri')->getPath(), '/');
+    $segments = $path === '' ? [] : explode('/', $path);
+    $first = $segments[0] ?? '';
+    $second = $segments[1] ?? '';
+
+    $inferredPage = match ($first) {
+        'staff' => match ($second) {
+            '', 'dashboard' => 'dashboard',
+            'schedule' => 'schedule',
+            'profile' => 'profile',
+            'availability' => 'availability',
+            'assignments' => 'assignments',
+            'assignToBooking' => 'assign-booking',
+            'management' => 'team',
+            'create', 'edit', 'show' => 'staff_list',
+            default => 'staff_list',
+        },
+        'assignment', 'assignments' => 'assignments',
+        'availability' => 'availability',
+        'staff-management' => 'team',
+        'staff' => 'staff_list',
+        default => 'dashboard',
+    };
+
+    $current_page = $inferredPage;
+}
+
+$page_title = $page_title ?? 'Staff Portal';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -11,6 +40,7 @@ $page_title   = $page_title ?? 'Staff Portal';
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <?= $this->include('staff/style') ?>
 </head>
 <body>

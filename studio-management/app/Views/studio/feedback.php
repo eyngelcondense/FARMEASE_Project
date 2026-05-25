@@ -1,5 +1,6 @@
 <?php
 $pager = null;
+$current_page = 'feedback';
 ?>
 <?= $this->extend('studio/layout_sidebar') ?>
 <?= $this->section('content') ?>

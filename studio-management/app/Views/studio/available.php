@@ -1,3 +1,6 @@
+<?php
+$current_page = 'available';
+?>
 <?= $this->extend('studio/layout_sidebar') ?>
 <?= $this->section('content') ?>
 

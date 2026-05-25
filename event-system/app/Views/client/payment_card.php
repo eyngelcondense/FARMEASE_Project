@@ -3,14 +3,20 @@ $booking = array_filter($bookings, function($b) use ($payment) {
     return $b['id'] == $payment['booking_id'];
 });
 $booking = !empty($booking) ? array_values($booking)[0] : null;
+
+$displayStatus = $payment['status'] === 'verified' ? 'paid' : ($payment['status'] === 'refunded' ? 'refunded' : 'pending');
+$statusNote = $payment['status'] === 'failed' ? 'Failed attempt' : '';
 ?>
 
 <div class="booking-card">
     <div class="booking-header">
         <div>
             <span class="booking-ref">Payment #<?= $payment['payment_reference'] ?></span>
-            <span class="payment-status payment-<?= $payment['status'] ?>">
-                <?= ucfirst($payment['status']) ?>
+            <span class="payment-status payment-<?= $displayStatus ?>">
+                <?= ucfirst($displayStatus) ?>
+                <?php if ($statusNote): ?>
+                    <small style="display: block; font-size: 0.7em; opacity: 0.8;"><?= esc($statusNote) ?></small>
+                <?php endif; ?>
             </span>
         </div>
         <div>

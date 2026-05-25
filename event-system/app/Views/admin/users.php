@@ -109,7 +109,8 @@
 <!-- Admins Table -->
 <div class="table-card">
     <h3 class="section-title">Administrators</h3>
-    <table class="table table-striped table-bordered" id="adminsTable" style="width:100%">
+    <div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover" id="adminsTable" style="width:100%">
         <thead>
             <tr>
                 <th>Email</th>
@@ -186,12 +187,14 @@
             <?php endif; ?>
         </tbody>
     </table>
+    </div>
 </div>
 
 <!-- Clients Table -->
 <div class="table-card">
     <h3 class="section-title">Clients</h3>
-    <table class="table table-striped table-bordered" id="clientsTable" style="width:100%">
+    <div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover" id="clientsTable" style="width:100%">
         <thead>
             <tr>
                 <th>Client Name</th>
@@ -269,6 +272,7 @@
             <?php endif; ?>
         </tbody>
     </table>
+    </div>
 </div>
 
 <!-- User Details Modal -->

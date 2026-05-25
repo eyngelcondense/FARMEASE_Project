@@ -262,7 +262,7 @@
             align-items: center;
             gap: 10px;
             padding: 10px 12px;
-            color: rgba(255,255,255,0.85);
+            color: rgba(255,255,255,0.9);
             text-decoration: none;
             border-radius: 6px;
             font-size: 13px;
@@ -272,16 +272,16 @@
         }
 
         .nav-link:hover {
-            background-color: rgba(255,255,255,0.1);
+            background-color: rgba(255,255,255,0.12);
             color: white;
             transform: translateX(3px);
         }
 
         .nav-link.active {
-            background-color: #6d5d4d;
-            color: white;
+            background-color: #ffffff;
+            color: #6f4e37;
             font-weight: 600;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
         }
 
         .nav-link.active::before {
@@ -292,12 +292,12 @@
             transform: translateY(-50%);
             width: 4px;
             height: 70%;
-            background-color: white;
+            background-color: #8b7d6b;
             border-radius: 0 4px 4px 0;
         }
 
         .nav-link.active i {
-            color: white;
+            color: #6f4e37;
             transform: scale(1.1);
         }
 
@@ -2143,7 +2143,7 @@
 /* Stats Cards */
 .stats-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 20px;
     margin-bottom: 30px;
 }
@@ -2679,4 +2679,96 @@
         padding: 0 !important;
     }
 }
+        /* ===== MUTED PALETTE & STANDARDIZATION OVERRIDES ===== */
+        :root{
+            --muted-bg: #f7f8fa;
+            --muted-card: #ffffff;
+            --muted-border: #eceeef;
+            --muted-text: #3b4448;
+            --muted-subtext: #6c757d;
+            --muted-accent: #6b7f8f; /* muted blue-gray */
+            --sidebar-bg-soft: #8b7d6b; /* brown */
+            --sidebar-color-soft: #ffffff;
+        }
+
+        /* Sidebar: lighter, low-contrast background */
+        .sidebar {
+            background-color: var(--sidebar-bg-soft) !important;
+            color: var(--sidebar-color-soft) !important;
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+        }
+        .sidebar .nav-link.active {
+            background-color: #ffffff !important;
+            color: #8b7d6b !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12) !important;
+        }
+        .sidebar .nav-link.active::before {
+            background-color: #8b7d6b !important;
+        }
+        .sidebar .nav-link.active i {
+            color: #8b7d6b !important;
+        }
+
+        /* Soften header and page background */
+        .top-header, .main-layout, .dashboard-content {
+            background-color: var(--muted-bg) !important;
+        }
+
+        /* Cards: subtle border, smaller shadow, consistent radius */
+        .card, .stat-card, .chart-card, .mini-card, .table-card {
+            background-color: var(--muted-card) !important;
+            border: 1px solid var(--muted-border) !important;
+            box-shadow: 0 1px 6px rgba(18,24,28,0.06) !important;
+            border-radius: 10px !important;
+            padding: 18px !important;
+        }
+
+        /* Stat icons and bars: use muted accent, remove heavy gradients */
+        .stat-icon, .bar, .event-badge, .status-indicator {
+            background: var(--muted-accent) !important;
+            color: #ffffff !important;
+            box-shadow: none !important;
+        }
+
+        /* Buttons: muted primary, outline for secondary actions */
+        .view-calendar-btn, .add-testimonial-btn, .add-staff-btn, .add-event-btn,
+        .upload-btn, .assign-btn, .btn-approve, .btn-edit {
+            background-color: var(--muted-accent) !important;
+            color: white !important;
+            box-shadow: none !important;
+        }
+        .icon-btn, .filter-select, .filter-dropdown, .form-input, .form-select {
+            border-color: var(--muted-border) !important;
+        }
+
+        /* Notifications & toasts: softer border */
+        .notification-menu, .toast-notification {
+            border: 1px solid var(--muted-border) !important;
+            box-shadow: 0 6px 20px rgba(18,24,28,0.06) !important;
+        }
+
+        /* Tables: cleaner, more subtle row hover */
+        .bookings-table tbody tr:hover,
+        .payments-table tbody tr:hover,
+        .venues-table tbody tr:hover {
+            background-color: #fbfcfd !important;
+        }
+
+        /* Reduce prominence of floating notification button */
+        .floating-notification-btn {
+            background: var(--muted-accent) !important;
+            box-shadow: 0 6px 16px rgba(27,38,46,0.06) !important;
+            border: 2px solid #fff !important;
+        }
+
+        /* Status badge subtle tones */
+        .status-paid { background-color: #e9f7ef !important; color: #17643a !important; }
+        .status-pending { background-color: #fff7e6 !important; color: #7a5b00 !important; }
+        .status-refunded { background-color: #fff1f2 !important; color: #772029 !important; }
+
+        /* Simplify chart small stats: hide less-important items to reduce noise */
+        .chart-stat-item.less-important { display: none; }
+
     </style>

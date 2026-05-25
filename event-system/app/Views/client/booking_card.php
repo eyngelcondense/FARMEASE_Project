@@ -4,6 +4,11 @@ $bookingPayments = array_filter($payments, function($payment) use ($booking) {
     return $payment['booking_id'] == $booking['id'];
 });
 
+$bookingStatus = $booking['status'] ?? 'pending';
+$bookingStatusClass = in_array($bookingStatus, ['pending', 'approved', 'confirmed', 'cancelled', 'completed', 'expired'], true)
+    ? $bookingStatus
+    : 'pending';
+
 $totalPaid = 0;
 $hasFailedPayments = false;
 foreach ($bookingPayments as $payment) {
@@ -22,9 +27,7 @@ if ($totalPaid >= $booking['total_amount']) {
 } elseif ($totalPaid > 0) {
     $paymentStatus = 'partial';
 } elseif ($hasFailedPayments) {
-    $paymentStatus = 'failed';
-} elseif (strtotime($booking['event_date']) < time() && $booking['status'] === 'approved') {
-    $paymentStatus = 'overdue';
+    $paymentStatus = 'pending';
 }
 ?>
 
@@ -32,13 +35,13 @@ if ($totalPaid >= $booking['total_amount']) {
     <div class="booking-header">
         <div>
             <span class="booking-ref">#<?= $booking['booking_reference'] ?></span>
-            <span class="booking-status status-<?= $booking['status'] ?>">
-                <?= ucfirst($booking['status']) ?>
+            <span class="booking-status status-<?= $bookingStatusClass ?>">
+                <?= ucfirst($bookingStatusClass) ?>
             </span>
             <span class="payment-status payment-<?= $paymentStatus ?>">
                 Payment: <?= ucfirst($paymentStatus) ?>
-                <?php if ($paymentStatus === 'failed'): ?>
-                    <small style="display: block; font-size: 0.7em; opacity: 0.8;">Recent payment failed</small>
+                <?php if ($hasFailedPayments && $paymentStatus === 'pending'): ?>
+                    <small style="display: block; font-size: 0.7em; opacity: 0.8;">Recent payment attempt failed</small>
                 <?php endif; ?>
             </span>
         </div>
@@ -97,8 +100,8 @@ if ($totalPaid >= $booking['total_amount']) {
                 </div>
                 <div>
                     <span>₱<?= number_format($payment['amount'], 2) ?></span><br>
-                    <span class="payment-status payment-<?= $payment['status'] ?>">
-                        <?= ucfirst($payment['status']) ?>
+                    <span class="payment-status payment-<?= $payment['status'] === 'verified' ? 'paid' : ($payment['status'] === 'refunded' ? 'refunded' : 'pending') ?>">
+                        <?= ucfirst($payment['status'] === 'verified' ? 'paid' : ($payment['status'] === 'refunded' ? 'refunded' : 'pending')) ?>
                         <?php if ($payment['status'] === 'failed'): ?>
                             <br><small style="font-size: 0.7em; opacity: 0.8;">Try again</small>
                         <?php endif; ?>

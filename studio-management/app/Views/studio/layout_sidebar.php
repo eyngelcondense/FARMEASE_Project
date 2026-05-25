@@ -1,6 +1,34 @@
 <?php
-$current_page = $current_page ?? 'dashboard';
-$page_title   = $page_title ?? 'Studio Management - San Isidro Labrador Resort';
+$current_page = $current_page ?? null;
+
+if ($current_page === null) {
+    $path = trim(service('uri')->getPath(), '/');
+    $segments = $path === '' ? [] : explode('/', $path);
+    $first = $segments[0] ?? '';
+    $second = $segments[1] ?? '';
+    $third = $segments[2] ?? '';
+
+    $inferredPage = match ($first) {
+        'studio' => match ($second) {
+            '', 'dashboard' => 'dashboard',
+            'bookings' => 'bookings',
+            'schedule' => 'schedule',
+            'gallery' => 'gallery',
+            'info' => 'info',
+            'feedback' => 'feedback',
+            'profile' => 'profile',
+            'assignments' => 'assignments',
+            'available' => 'available',
+            'create', 'edit', 'show' => 'index',
+            default => is_numeric($second) && $third === 'bookings' ? 'bookings' : 'index',
+        },
+        default => 'dashboard',
+    };
+
+    $current_page = $inferredPage;
+}
+
+$page_title = $page_title ?? 'Studio Management - San Isidro Labrador Resort';
 ?>
 <!DOCTYPE html>
 <html lang="en">

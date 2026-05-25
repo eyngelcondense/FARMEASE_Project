@@ -1,19 +1,7 @@
 <?php
     $current_page = 'schedule';
     
-    if (empty($bookings)) {
-        $bookings = [
-            ['id'=>1,'booking_reference'=>'FE-2506-001','event_type'=>'Wedding','event_date'=>'2025-06-02','start_time'=>'09:00:00','end_time'=>'18:00:00','status'=>'approved','venue_name'=>'Main Hall','client_fullname'=>'Santos Family','is_assigned'=>1],
-            ['id'=>2,'booking_reference'=>'FE-2506-002','event_type'=>'Debut','event_date'=>'2025-06-05','start_time'=>'14:00:00','end_time'=>'22:00:00','status'=>'confirmed','venue_name'=>'Garden Venue','client_fullname'=>'Reyes Family','is_assigned'=>0],
-            ['id'=>3,'booking_reference'=>'FE-2506-003','event_type'=>'Corporate Event','event_date'=>'2025-06-09','start_time'=>'08:00:00','end_time'=>'17:00:00','status'=>'confirmed','venue_name'=>'Function Room A','client_fullname'=>'Dela Cruz Corp.','is_assigned'=>1],
-            ['id'=>4,'booking_reference'=>'FE-2506-004','event_type'=>'Birthday Party','event_date'=>'2025-06-12','start_time'=>'15:00:00','end_time'=>'21:00:00','status'=>'approved','venue_name'=>'Poolside','client_fullname'=>'Garcia Family','is_assigned'=>0],
-            ['id'=>5,'booking_reference'=>'FE-2506-005','event_type'=>'Wedding','event_date'=>'2025-06-14','start_time'=>'09:00:00','end_time'=>'20:00:00','status'=>'approved','venue_name'=>'Main Hall','client_fullname'=>'Dela Cruz Family','is_assigned'=>1],
-            ['id'=>6,'booking_reference'=>'FE-2506-006','event_type'=>'Debut','event_date'=>'2025-06-15','start_time'=>'13:00:00','end_time'=>'21:00:00','status'=>'confirmed','venue_name'=>'Garden Venue','client_fullname'=>'Santos Debut','is_assigned'=>0],
-            ['id'=>7,'booking_reference'=>'FE-2506-007','event_type'=>'Corporate Event','event_date'=>'2025-06-18','start_time'=>'08:00:00','end_time'=>'17:00:00','status'=>'confirmed','venue_name'=>'Function Room A','client_fullname'=>'Reyes Corp.','is_assigned'=>1],
-            ['id'=>8,'booking_reference'=>'FE-2506-008','event_type'=>'Photo Shoot','event_date'=>'2025-06-25','start_time'=>'08:00:00','end_time'=>'13:00:00','status'=>'approved','venue_name'=>'Studio 1','client_fullname'=>'Garcia Photography','is_assigned'=>1],
-            ['id'=>9,'booking_reference'=>'FE-2506-009','event_type'=>'Birthday Party','event_date'=>'2025-06-28','start_time'=>'16:00:00','end_time'=>'22:00:00','status'=>'confirmed','venue_name'=>'Poolside','client_fullname'=>'Cruz Family','is_assigned'=>0],
-        ];
-    }
+    // Show actual bookings; do not populate demo data when none exist.
     if (empty($staff)) $staff = ['id'=>1,'name'=>'Maria Cristina Reyes','role'=>'event_coordinator'];
 
     $firstName = explode(' ', $staff['name'])[0];

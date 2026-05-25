@@ -107,6 +107,28 @@
         font-weight: bold;
         color: #5c3a21;
     }
+
+    #assignmentTabs {
+        gap: 0.5rem;
+        border-bottom: 1px solid #d8c8b9;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 0.25rem;
+    }
+
+    #assignmentTabs .nav-link {
+        white-space: nowrap;
+        border: 1px solid transparent;
+        border-radius: 10px 10px 0 0;
+        color: #5c3a21;
+    }
+
+    #assignmentTabs .nav-link.active {
+        background-color: #fff7f0;
+        border-color: #d8c8b9 #d8c8b9 #fff7f0;
+        color: #5c3a21;
+        font-weight: 600;
+    }
 </style>
 
 <div class="container-fluid">
@@ -129,19 +151,19 @@
     <!-- Assignment Statistics -->
     <div class="assignment-stats">
         <div class="stat-card">
-            <div class="stat-number" id="totalAssignments">-</div>
+            <div class="stat-number" id="totalAssignments"><?= esc($assignmentStats['total_assignments'] ?? 0) ?></div>
             <div class="stat-label">Total Assignments</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number" id="todayAssignments">-</div>
+            <div class="stat-number" id="todayAssignments"><?= esc($assignmentStats['today_assignments'] ?? 0) ?></div>
             <div class="stat-label">Today's Assignments</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number" id="upcomingAssignments">-</div>
+            <div class="stat-number" id="upcomingAssignments"><?= esc($assignmentStats['upcoming_assignments'] ?? 0) ?></div>
             <div class="stat-label">Upcoming This Week</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number" id="unassignedBookings">-</div>
+            <div class="stat-number" id="unassignedBookings"><?= esc($assignmentStats['unassigned_bookings'] ?? 0) ?></div>
             <div class="stat-label">Unassigned Bookings</div>
         </div>
     </div>
@@ -210,7 +232,6 @@
                                 <th>Assigned Staff</th>
                                 <th>Date & Time</th>
                                 <th>Venue</th>
-                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -233,7 +254,6 @@
                                 <th>Event Type</th>
                                 <th>Date & Time</th>
                                 <th>Assigned Staff</th>
-                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -283,7 +303,27 @@
                             </tr>
                         </thead>
                         <tbody id="unassignedTableBody">
-                            <!-- Unassigned bookings will be loaded here -->
+                            <?php if (!empty($unassignedBookings)): ?>
+                                <?php foreach ($unassignedBookings as $booking): ?>
+                                    <tr>
+                                        <td><strong><?= esc($booking['booking_reference'] ?? '-') ?></strong></td>
+                                        <td><?= esc($booking['event_type'] ?? '-') ?></td>
+                                        <td>
+                                            <div class="booking-date"><?= esc(date('M j, Y', strtotime($booking['event_date'] ?? 'now'))) ?></div>
+                                            <small><?= esc($booking['start_time'] ?? '-') ?> - <?= esc($booking['end_time'] ?? '-') ?></small>
+                                        </td>
+                                        <td><?= esc($booking['total_guests'] ?? 0) ?></td>
+                                        <td><?= esc($booking['venue_name'] ?? 'N/A') ?></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary btn-action" onclick="quickAssign(<?= (int) ($booking['id'] ?? 0) ?>)">
+                                                <i class="fas fa-user-plus"></i> Assign Staff
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr><td colspan="6" class="text-center text-muted">No unassigned bookings</td></tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
@@ -309,6 +349,13 @@
                                 <label for="bookingSelect" class="form-label">Select Booking *</label>
                                 <select class="form-select" id="bookingSelect" required>
                                     <option value="">Select Booking</option>
+                                    <?php if (!empty($unassignedBookings)): ?>
+                                        <?php foreach ($unassignedBookings as $booking): ?>
+                                            <option value="<?= (int) ($booking['id'] ?? 0) ?>">
+                                                <?= esc(($booking['booking_reference'] ?? '-') . ' - ' . ($booking['event_type'] ?? '-') . ' (' . date('M j, Y', strtotime($booking['event_date'] ?? 'now')) . ')') ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </select>
                             </div>
                         </div>
@@ -389,7 +436,7 @@ function loadAssignments() {
             }
             
             if (response.length === 0) {
-                tbody.append('<tr><td colspan="7" class="text-center text-muted">No assignments found</td></tr>');
+                tbody.append('<tr><td colspan="6" class="text-center text-muted">No assignments found</td></tr>');
                 console.log('No assignments found');
                 return;
             }
@@ -413,7 +460,6 @@ function loadAssignments() {
                             <small>${assignment.start_time} - ${assignment.end_time}</small>
                         </td>
                         <td>${assignment.venue_name || 'N/A'}</td>
-                        <td>${statusBadge}</td>
                         <td>
                             <button class="btn btn-sm btn-outline-primary btn-action" onclick="editAssignment(${assignment.id})">
                                 <i class="fas fa-edit"></i>
@@ -488,18 +534,17 @@ function loadUnassignedBookings() {
             console.log('loadUnassignedBookings response:', response);
             let tbody = $('#unassignedTableBody');
             let bookingSelect = $('#bookingSelect');
-            
+
+            if (!response || !Array.isArray(response)) {
+                console.warn('Invalid bookings response:', response);
+                return;
+            }
+
             tbody.empty();
             bookingSelect.empty().append('<option value="">Select Booking</option>');
             
-            if (!response || !Array.isArray(response)) {
-                console.warn('Invalid bookings response:', response);
-                tbody.append('<tr><td colspan="6" class="text-center text-muted">No unassigned bookings</td></tr>');
-                return;
-            }
-            
             if (response.length === 0) {
-                tbody.append('<tr><td colspan="6" class="text-center text-muted">No unassigned bookings</td></tr>');
+                tbody.append('<tr><td colspan="5" class="text-center text-muted">No unassigned bookings</td></tr>');
                 console.log('No unassigned bookings found');
             }
             
@@ -535,9 +580,6 @@ function loadUnassignedBookings() {
         },
         error: function(xhr, status, error) {
             console.error('Error loading unassigned bookings:', status, error, xhr);
-            let tbody = $('#unassignedTableBody');
-            tbody.empty();
-            tbody.append('<tr><td colspan="6" class="text-center text-danger">Error loading bookings</td></tr>');
             showNotification('Error loading bookings: ' + error, 'error');
         }
     });
@@ -557,10 +599,6 @@ function loadAssignmentStats() {
         },
         error: function(xhr, status, error) {
             console.error('Error loading stats:', status, error, xhr);
-            $('#totalAssignments').text(0);
-            $('#todayAssignments').text(0);
-            $('#upcomingAssignments').text(0);
-            $('#unassignedBookings').text(0);
             showNotification('Error loading assignment statistics: ' + error, 'error');
         }
     });

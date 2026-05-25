@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
+use Config\Database;
 
 class AdminController extends BaseController
 {
@@ -43,7 +44,38 @@ class AdminController extends BaseController
 
     public function manageStaffView()
     {
-        return view('admin/manage-staff', ['current_page' => 'manage_staff']);
+        $db = Database::connect();
+
+        $unassignedBookings = $db->table('bookings b')
+            ->select('b.id, b.booking_reference, b.event_type, b.event_date, b.start_time, b.end_time, b.total_guests, v.name as venue_name, c.fullname as client_fullname')
+            ->join('staff_assignments sa', 'sa.booking_id = b.id', 'left')
+            ->join('venues v', 'v.id = b.venue_id', 'left')
+            ->join('clients c', 'c.id = b.client_id', 'left')
+            ->whereIn('b.status', ['pending', 'approved', 'confirmed'])
+            ->where('sa.id', null)
+            ->orderBy('b.event_date', 'ASC')
+            ->get()
+            ->getResultArray();
+
+        $assignmentStats = [
+            'total_assignments' => $db->table('staff_assignments')->countAllResults(),
+            'today_assignments' => $db->table('staff_assignments sa')
+                ->join('bookings b', 'b.id = sa.booking_id', 'left')
+                ->where('b.event_date', date('Y-m-d'))
+                ->countAllResults(),
+            'upcoming_assignments' => $db->table('staff_assignments sa')
+                ->join('bookings b', 'b.id = sa.booking_id', 'left')
+                ->where('b.event_date >=', date('Y-m-d'))
+                ->where('b.event_date <=', date('Y-m-d', strtotime('+7 days')))
+                ->countAllResults(),
+            'unassigned_bookings' => count($unassignedBookings),
+        ];
+
+        return view('admin/manage-staff', [
+            'current_page' => 'manage_staff',
+            'unassignedBookings' => $unassignedBookings,
+            'assignmentStats' => $assignmentStats,
+        ]);
     }
 
     public function studiosView()

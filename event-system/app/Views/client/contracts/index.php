@@ -364,14 +364,14 @@ $title = "My Contracts | San Isidro Labrador Resort and Leisure Farm";
 
         <?php if (session()->getFlashdata('success')): ?>
             <div class="alert alert-success alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 <i class="icon fas fa-check"></i> <?= session()->getFlashdata('success') ?>
             </div>
         <?php endif; ?>
 
         <?php if (session()->getFlashdata('error')): ?>
             <div class="alert alert-danger alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 <i class="icon fas fa-ban"></i> <?= session()->getFlashdata('error') ?>
             </div>
         <?php endif; ?>
@@ -475,9 +475,7 @@ $title = "My Contracts | San Isidro Labrador Resort and Leisure Farm";
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="quickSignModalLabel">Sign Contract</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>You are about to sign: <strong id="signContractTitle"></strong></p>
@@ -519,7 +517,7 @@ $title = "My Contracts | San Isidro Labrador Resort and Leisure Farm";
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" id="submitSignature">
                     <i class="fas fa-signature"></i> Sign Contract
                 </button>
@@ -715,7 +713,7 @@ $(document).ready(function() {
     function showSuccessAlert(message) {
         const alertHtml = `
             <div class="alert alert-success alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 <i class="icon fas fa-check"></i> ${message}
             </div>
         `;

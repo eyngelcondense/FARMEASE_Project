@@ -12,20 +12,6 @@ if (!isset($current_page)) {
             </div>
             <div class="sidebar-title">San Isidro Labrador<br>Resort and Leisure Farm</div>
         </div>
-        <!-- <button class="sidebar-toggle" onclick="toggleSidebar()">
-            <i class="fas fa-chevron-left"></i>
-        </button> -->
-
-        <!-- Add Quick Event Button -->
-        <button class="quick-add-btn" onclick="openQuickEventModal()">
-            <div class="quick-add-btn-icon">
-                <i class="fas fa-plus"></i>
-            </div>
-            <div class="quick-add-text">
-                <div class="quick-add-text-title">Add Quick Event</div>
-                <div class="quick-add-text-sub">Events</div>
-            </div>
-        </button>
     </div>
 
     <nav class="nav-section">
@@ -167,46 +153,3 @@ if (!isset($current_page)) {
         </ul>
     </nav>
 </aside>
-
-<!-- Quick Event Modal -->
-<div id="quickEventModal" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Add Quick Event</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="<?= site_url('admin/calendar/add_event') ?>" method="post">
-                    <div class="form-group">
-                        <label for="event_title">Event Title:</label>
-                        <input type="text" id="event_title" name="event_title" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="event_date">Date:</label>
-                        <input type="date" id="event_date" name="event_date" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="event_time">Time:</label>
-                        <input type="time" id="event_time" name="event_time" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label for="event_desc">Description:</label>
-                        <textarea id="event_desc" name="event_desc" class="form-control" rows="3"></textarea>
-                    </div>
-                    <div class="text-right">
-                        <button type="submit" class="btn btn-primary">Add Event</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-// Open modal
-function openQuickEventModal() {
-    const quickEventModal = new bootstrap.Modal(document.getElementById('quickEventModal'));
-    quickEventModal.show();
-}
-</script>

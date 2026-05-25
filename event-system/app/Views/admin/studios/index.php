@@ -176,7 +176,8 @@
 
 <!-- Studios Table -->
 <div class="table-card">
-    <table class="table table-striped table-bordered" id="studiosTable">
+    <div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover" id="studiosTable">
         <thead>
             <tr>
                 <th>Name</th>
@@ -192,6 +193,7 @@
             <!-- Data loaded via AJAX -->
         </tbody>
     </table>
+    </div>
 </div>
 
 <script>

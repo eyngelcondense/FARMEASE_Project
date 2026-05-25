@@ -1,5 +1,5 @@
 <?php
-$current_page = 'team';
+$current_page = 'staff_list';
 $page_title   = 'Staff Management - San Isidro Labrador Resort';
 ?>
 <?= $this->extend('staff/layout_sidebar') ?>

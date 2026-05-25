@@ -31,6 +31,14 @@ class BookingModel extends Model
         'special_requests',
         'status',
         'payment_status',
+        'cancellation_reason',
+        'cancelled_at',
+        'refund_amount',
+        'refund_status',
+        'refund_processed_at',
+        'refund_reference_number',
+        'refund_screenshot_path',
+        'no_show',
         'down_payment_paid',      // ADDED
         'down_payment_amount',    // ADDED
         'full_payment_paid',      // ADDED
@@ -57,7 +65,7 @@ class BookingModel extends Model
         'total_guests' => 'required|integer|greater_than[0]',
         'package_id' => 'required|integer',
         'venue_id' => 'required|integer',
-        'status' => 'permit_empty|in_list[pending,approved,confirmed,rejected,cancelled,completed]',
+        'status' => 'permit_empty|in_list[pending,approved,confirmed,rejected,cancelled,completed,expired]',
         'payment_status' => 'permit_empty|in_list[pending,partial,paid,refunded]'
     ];
 
@@ -161,7 +169,9 @@ class BookingModel extends Model
                         ->join('packages p', 'b.package_id = p.id', 'left')
                         ->join('venues v', 'b.venue_id = v.id', 'left');
         
-        if ($status) {
+        if (is_array($status) && ! empty($status)) {
+            $builder->whereIn('b.status', $status);
+        } elseif ($status) {
             $builder->where('b.status', $status);
         }
         
@@ -199,6 +209,64 @@ class BookingModel extends Model
     }
 
     /**
+     * Calculate the refundable amount for a booking from verified payments.
+     */
+    public function calculateRefundAmount(array $booking, bool $noShow = false): float
+    {
+        if ($noShow || empty($booking['id'])) {
+            return 0.0;
+        }
+
+        $eventDate = $booking['event_date'] ?? null;
+        if (empty($eventDate)) {
+            return 0.0;
+        }
+
+        $daysUntilEvent = (int) floor((strtotime($eventDate . ' 23:59:59') - time()) / 86400);
+        if ($daysUntilEvent < 0) {
+            return 0.0;
+        }
+
+        if ($daysUntilEvent >= 90) {
+            $rate = 1.00;
+        } elseif ($daysUntilEvent >= 60) {
+            $rate = 0.85;
+        } elseif ($daysUntilEvent >= 30) {
+            $rate = 0.75;
+        } else {
+            $rate = 0.65;
+        }
+
+        $db = db_connect();
+        $row = $db->table('payments')
+            ->selectSum('amount')
+            ->where('booking_id', (int) $booking['id'])
+            ->where('status', 'verified')
+            ->get()
+            ->getRowArray();
+
+        $paidAmount = (float) ($row['amount'] ?? 0);
+
+        return round($paidAmount * $rate, 2);
+    }
+
+    /**
+     * Get a human readable cancellation type for booking summaries.
+     */
+    public function getCancellationType(array $booking): string
+    {
+        if (!empty($booking['no_show'])) {
+            return 'No Show';
+        }
+
+        if (($booking['status'] ?? '') === 'expired') {
+            return 'Expired';
+        }
+
+        return 'Cancelled';
+    }
+
+    /**
      * Get bookings by status
      */
     public function getBookingsByStatus($status)
@@ -228,6 +296,19 @@ class BookingModel extends Model
         }
         
         return $builder->findAll();
+    }
+
+    /**
+     * Get approved bookings within a date range.
+     */
+    public function getApprovedBookingsInRange(string $startDate, string $endDate): array
+    {
+        return $this->select('event_date')
+            ->where('status', 'approved')
+            ->where('event_date >=', $startDate)
+            ->where('event_date <=', $endDate)
+            ->orderBy('event_date', 'ASC')
+            ->findAll();
     }
 
     /**

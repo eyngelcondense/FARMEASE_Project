@@ -548,7 +548,7 @@
                   <div class="venue-card-body">
                     <h5>${venue.name}</h5>
                     <p>${venue.description || 'No description available.'}</p>
-                    <button class="btn-view-more" onclick="goToGallery(${venue.id})">
+                    <button class="btn btn-view-more" onclick="goToGallery(${venue.id})">
                       View Gallery
                     </button>
                   </div>
@@ -574,7 +574,7 @@
           <i class="fas fa-exclamation-triangle"></i>
           <h3>Error Loading Packages</h3>
           <p>${message}</p>
-          <button onclick="loadPackagesData()" class="btn-view-more" style="margin-top: 20px; width: auto; display: inline-block;">
+          <button onclick="loadPackagesData()" class="btn btn-view-more" style="margin-top: 20px; width: auto; display: inline-block;">
             <i class="fas fa-redo"></i> Try Again
           </button>
         </div>

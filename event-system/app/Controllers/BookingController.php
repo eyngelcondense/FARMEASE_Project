@@ -240,6 +240,9 @@ class BookingController extends BaseController
             // Process studio booking if selected
             $studioAmount = 0;
             $studioId = $this->request->getPost('studio_id');
+            $studioBookingTimestamp = date('Y-m-d H:i:s');
+
+            log_message('debug', 'Studio selection received: ' . var_export($studioId, true));
             
             if ($studioId) {
                 // Prefer local studio data if available
@@ -255,7 +258,9 @@ class BookingController extends BaseController
 
                     $this->studioBookingData = [
                         'studio_id' => (int)$studioId,
-                        'booking_id' => null
+                        'booking_id' => null,
+                        'created_at' => $studioBookingTimestamp,
+                        'updated_at' => $studioBookingTimestamp
                     ];
                 } else {
                     // Fallback to external studio-management API if local not found
@@ -265,7 +270,7 @@ class BookingController extends BaseController
                             'connect_timeout' => 5
                         ]);
 
-                        $studioResponse = $client->get("http://localhost:8081/api/studio/{$studioId}", [
+                        $studioResponse = $client->get("http://localhost:8083/api/studio/{$studioId}", [
                             'headers' => [
                                 'Accept' => 'application/json',
                                 'Content-Type' => 'application/json'
@@ -287,7 +292,9 @@ class BookingController extends BaseController
 
                             $this->studioBookingData = [
                                 'studio_id' => (int)$studioId,
-                                'booking_id' => null
+                                'booking_id' => null,
+                                'created_at' => $studioBookingTimestamp,
+                                'updated_at' => $studioBookingTimestamp
                             ];
                         } else {
                             log_message('error', 'Studio API returned status: ' . $studioResponse->getStatusCode());
@@ -363,32 +370,22 @@ class BookingController extends BaseController
             if (isset($this->studioBookingData)) {
                 try {
                     $this->studioBookingData['booking_id'] = $bookingId;
-                    
-                    $client = \Config\Services::curlrequest([
-                        'timeout' => 10,
-                        'connect_timeout' => 5
-                    ]);
-                    
-                    $studioBookingResponse = $client->post("http://localhost:8081/api/booking/create", [
-                        'json' => $this->studioBookingData,
-                        'headers' => [
-                            'Accept' => 'application/json',
-                            'Content-Type' => 'application/json'
-                        ]
-                    ]);
-                    
-                    if ($studioBookingResponse->getStatusCode() === 201) {
-                        log_message('debug', 'Studio booking created successfully for booking ID: ' . $bookingId);
-                    } else {
-                        $responseBody = $studioBookingResponse->getBody();
-                        log_message('error', 'Studio booking failed - Status: ' . $studioBookingResponse->getStatusCode() . ', Body: ' . $responseBody);
-                        throw new \Exception('Studio booking could not be confirmed. The studio might be unavailable for the selected time.');
+                    $this->studioBookingData['updated_at'] = date('Y-m-d H:i:s');
+
+                    log_message('debug', 'Creating local studio booking link: booking_id=' . $bookingId . ', studio_id=' . $this->studioBookingData['studio_id']);
+
+                    $studioBookingInserted = $db->table('studio_bookings')->insert($this->studioBookingData);
+
+                    if (!$studioBookingInserted) {
+                        $errors = $db->error();
+                        log_message('error', 'Studio booking insert failed: ' . print_r($errors, true));
+                        throw new \Exception('Studio booking could not be saved.');
                     }
+
+                    log_message('debug', 'Studio booking linked successfully for booking ID: ' . $bookingId);
                 } catch (\Exception $e) {
                     log_message('error', 'Studio booking creation error: ' . $e->getMessage());
-                    // Don't fail the entire booking if studio booking fails
-                    // Log the error but allow the main booking to succeed
-                    log_message('warning', 'Main booking succeeded but studio booking failed for booking ID: ' . $bookingId);
+                    throw $e;
                 }
             }
 
@@ -466,12 +463,23 @@ class BookingController extends BaseController
             // Get all booked dates for the next 6 months
             $startDate = date('Y-m-d');
             $endDate = date('Y-m-d', strtotime('+6 months'));
-            $bookings = $this->bookingModel->getApprovedBookingsInRange($startDate, $endDate);
-            
-            $bookedDates = array_unique(array_column($bookings, 'event_date'));
+            $bookings = $this->bookingModel->getBookedDates();
+
+            $bookings = array_filter($bookings, function ($booking) use ($startDate, $endDate) {
+                return isset($booking['event_date'])
+                    && $booking['event_date'] >= $startDate
+                    && $booking['event_date'] <= $endDate;
+            });
+
+            $bookedDates = array_values(array_unique(array_column($bookings, 'event_date')));
         }
 
         return $this->response->setJSON($bookedDates);
+    }
+
+    public function getBookedDates()
+    {
+        return $this->bookedDates();
     }
 
     /**

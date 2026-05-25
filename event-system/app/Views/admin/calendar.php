@@ -11,6 +11,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <style>
     :root {
       --primary-color: #8B4513;        /* Saddle Brown */
@@ -167,6 +168,16 @@
         color: white;
     }
 
+    .event-badge.completed {
+        background: #4f6d7a;
+        color: white;
+    }
+
+    .event-badge.refunded {
+        background: #6c757d;
+        color: white;
+    }
+
     /* Graph Grid Styles */
     .calendar-grid-container {
         background: white;
@@ -301,6 +312,16 @@
 
     .event-block.approved {
         background: var(--primary-dark);
+        color: white;
+    }
+
+    .event-block.completed {
+        background: #4f6d7a;
+        color: white;
+    }
+
+    .event-block.refunded {
+        background: #6c757d;
         color: white;
     }
 
@@ -529,11 +550,17 @@
     let currentYear = new Date().getFullYear();
     let selectedDate = null;
     let selectedPackage = '';
+    const initialCalendarData = <?= json_encode($initialCalendarData ?? null, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?>;
 
     // Initialize calendar
     document.addEventListener('DOMContentLoaded', function() {
-        loadCalendar();
         setupEventListeners();
+
+        if (initialCalendarData && initialCalendarData.data) {
+            updateCalendarDisplay(initialCalendarData);
+        } else {
+            loadCalendar();
+        }
     });
 
     function setupEventListeners() {
@@ -809,17 +836,27 @@
     }
 
     // Update booking status
-    async function updateBookingStatus(bookingId, status, event) {
-        event.stopPropagation();
-        
-        if (!confirm(`Are you sure you want to ${status} this booking?`)) {
+    async function updateBookingStatus(bookingId, status, event, actionType = 'status') {
+        if (event) {
+            event.stopPropagation();
+        }
+
+        const prompt = actionType === 'payment'
+            ? 'mark this booking payment as refunded'
+            : `set this booking to ${status}`;
+
+        if (!confirm(`Are you sure you want to ${prompt}?`)) {
             return;
         }
 
         try {
             const formData = new FormData();
             formData.append('booking_id', bookingId);
-            formData.append('status', status);
+            if (actionType === 'payment') {
+                formData.append('payment_status', status);
+            } else {
+                formData.append('status', status);
+            }
 
             const response = await fetch('/admin/calendar/update-status', {
                 method: 'POST',
@@ -829,7 +866,7 @@
             const result = await response.json();
 
             if (result.success) {
-                alert('Booking status updated successfully');
+                alert(result.message || 'Booking status updated successfully');
                 // Reload the grid to reflect changes
                 if (selectedDate) {
                     loadCalendarGrid(selectedDate);
@@ -885,6 +922,7 @@
                 <div class="col-12">
                     <h6>Booking Information</h6>
                     <p><strong>Status:</strong> <span class="badge bg-${getStatusBadgeColor(booking.status)}">${booking.status}</span></p>
+                    <p><strong>Payment Status:</strong> <span class="badge bg-${getStatusBadgeColor(booking.payment_status)}">${booking.payment_status || 'pending'}</span></p>
                     <p><strong>Total Amount:</strong> ₱${parseFloat(booking.total_amount || 0).toLocaleString()}</p>
                     ${booking.special_requests ? `<p><strong>Special Requests:</strong> ${booking.special_requests}</p>` : ''}
                 </div>
@@ -898,6 +936,31 @@
                     </button>
                     <button class="btn btn-danger btn-sm ms-2" onclick="updateBookingStatus(${booking.id}, 'cancelled', event)">
                         <i class="fas fa-times"></i> Reject Booking
+                    </button>
+                </div>
+            </div>
+            ` : ''}
+            ${['approved', 'confirmed'].includes(booking.status) ? `
+            <div class="row mt-3">
+                <div class="col-12">
+                    <h6>Lifecycle Actions</h6>
+                    <button class="btn btn-primary btn-sm" onclick="updateBookingStatus(${booking.id}, 'completed', event)">
+                        <i class="fas fa-check-double"></i> Mark Completed
+                    </button>
+                    ${booking.payment_status !== 'refunded' ? `
+                    <button class="btn btn-warning btn-sm ms-2" onclick="updateBookingStatus(${booking.id}, 'refunded', event, 'payment')">
+                        <i class="fas fa-undo"></i> Mark Refunded
+                    </button>
+                    ` : ''}
+                </div>
+            </div>
+            ` : ''}
+            ${!['pending', 'approved', 'confirmed'].includes(booking.status) && booking.payment_status !== 'refunded' ? `
+            <div class="row mt-3">
+                <div class="col-12">
+                    <h6>Refund Bookkeeping</h6>
+                    <button class="btn btn-warning btn-sm" onclick="updateBookingStatus(${booking.id}, 'refunded', event, 'payment')">
+                        <i class="fas fa-undo"></i> Mark Refunded
                     </button>
                 </div>
             </div>
@@ -937,7 +1000,9 @@
             'pending': 'warning',
             'approved': 'success',
             'confirmed': 'info',
-            'cancelled': 'danger'
+            'cancelled': 'danger',
+            'completed': 'primary',
+            'refunded': 'secondary'
         };
         return colors[status] || 'secondary';
     }

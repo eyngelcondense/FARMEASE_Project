@@ -48,6 +48,7 @@ $title = "Booking History | San Isidro Labrador Resort and Leisure Farm";
     .status-confirmed { background: #d4edda; color: #155724; }
     .status-cancelled { background: #f8d7da; color: #721c24; }
     .status-completed { background: #e2e3e5; color: #383d41; }
+    .status-expired { background: #e2e3e5; color: #6c757d; }
     .payment-status {
         padding: 4px 8px;
         border-radius: 15px;
@@ -68,9 +69,9 @@ $title = "Booking History | San Isidro Labrador Resort and Leisure Farm";
         color: #4b3832; /* Dark coffee brown text */
     }
 
-    .payment-overdue { 
-        background: #d2b48c; /* Tan/Light brown (to signify attention) */
-        color: #5d4037; /* Darker, rich brown text */
+    .payment-refunded {
+        background: #e2e3e5;
+        color: #6c757d;
     }
     .booking-details {
         display: grid;

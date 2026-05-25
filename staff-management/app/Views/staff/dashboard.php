@@ -46,9 +46,6 @@ $current_page  = 'dashboard';
         </div>
     </div>
     <div class="header-actions">
-        <button class="icon-btn" onclick="refreshDashboard()" title="Refresh Dashboard">
-            <i class="fas fa-sync-alt"></i>
-        </button>
     </div>
 </header>
 
@@ -191,51 +188,9 @@ $current_page  = 'dashboard';
         </div>
     </div>
 </div>
-
-<div class="loading-overlay" id="loadingOverlay">
-    <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
-    </div>
-</div>
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
 <script>
-    function refreshDashboard() {
-        showLoading(true);
-        setTimeout(() => {
-            showLoading(false);
-            showToast('Dashboard refreshed successfully', 'success');
-        }, 800);
-    }
-
-    function showLoading(show) {
-        document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
-    }
-
-    function showToast(message, type = 'info') {
-        const toast = document.createElement('div');
-        toast.className = `toast-notification toast-${type}`;
-        toast.innerHTML = `
-            <div class="toast-content">
-                <i class="fas fa-${type === 'success' ? 'check' : 'info'}-circle"></i>
-                <span>${message}</span>
-            </div>
-            <button class="toast-close" onclick="this.parentElement.remove()">
-                <i class="fas fa-times"></i>
-            </button>
-        `;
-
-        document.body.appendChild(toast);
-
-        setTimeout(() => {
-            toast.classList.add('show');
-        }, 100);
-
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 300);
-        }, 4000);
-    }
 </script>
 <?= $this->endSection() ?>

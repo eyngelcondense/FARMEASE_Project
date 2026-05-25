@@ -1,3 +1,6 @@
+<?php
+$current_page = 'bookings';
+?>
 <?= $this->extend('studio/layout_sidebar') ?>
 <?= $this->section('content') ?>
 

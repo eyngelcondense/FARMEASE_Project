@@ -115,6 +115,9 @@ $routes->group('', ['namespace' => 'App\Controllers', 'filter' => 'group:admin']
     $routes->post('bookings/(:num)/approve', 'AdminBookingsController::approveBooking/$1');
     $routes->post('bookings/(:num)/approve-with-conflicts', 'AdminBookingsController::approveBookingWithConflicts/$1');
     $routes->post('bookings/(:num)/reject', 'AdminBookingsController::rejectBooking/$1');
+    $routes->post('bookings/(:num)/cancel', 'AdminBookingsController::cancelBooking/$1');
+    $routes->post('bookings/(:num)/refund-processed', 'AdminBookingsController::markRefundProcessed/$1');
+    $routes->post('bookings/expire-due', 'AdminBookingsController::expireDueBookings');
     $routes->post('bookings/(:num)/assign-staff', 'AdminBookingsController::assignStaff/$1');
     $routes->get('bookings/stats', 'AdminBookingsController::getBookingStats');
 

@@ -57,7 +57,7 @@ class ClientController extends BaseController
 
             foreach ($imageRows as $row) {
                 if (!isset($imageMap[$row['studio_id']])) {
-                    $imageMap[$row['studio_id']] = $row['image_path'];
+                    $imageMap[$row['studio_id']] = $this->normalizeAssetPath($row['image_path']);
                 }
             }
         }
@@ -219,6 +219,28 @@ class ClientController extends BaseController
                       ->getRow();
         
         return $identity->secret ?? '';
+    }
+
+    private function normalizeAssetPath(?string $path): ?string
+    {
+        $path = trim((string) $path);
+
+        if ($path === '') {
+            return null;
+        }
+
+        $parsedPath = parse_url($path, PHP_URL_PATH);
+        if (is_string($parsedPath) && $parsedPath !== '') {
+            $path = $parsedPath;
+        }
+
+        $path = ltrim($path, '/');
+
+        if (str_starts_with($path, 'public/')) {
+            $path = substr($path, 7);
+        }
+
+        return $path;
     }
 
     public function saveFeedback()

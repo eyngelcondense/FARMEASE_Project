@@ -30,6 +30,12 @@ class BookingModel extends Model
         'special_requests',
         'status',
         'payment_status',
+        'cancellation_reason',
+        'cancelled_at',
+        'refund_amount',
+        'refund_status',
+        'refund_processed_at',
+        'no_show',
         'down_payment_paid',      // ADDED
         'down_payment_amount',    // ADDED
         'full_payment_paid',      // ADDED
@@ -56,7 +62,7 @@ class BookingModel extends Model
         'total_guests' => 'required|integer|greater_than[0]',
         'package_id' => 'required|integer',
         'venue_id' => 'required|integer',
-        'status' => 'permit_empty|in_list[pending,approved,confirmed,rejected,cancelled,completed]',
+        'status' => 'permit_empty|in_list[pending,approved,confirmed,rejected,cancelled,completed,expired]',
         'payment_status' => 'permit_empty|in_list[pending,partial,paid,refunded]'
     ];
 

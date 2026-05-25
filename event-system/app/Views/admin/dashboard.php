@@ -11,6 +11,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <?= $this->include('admin/style') ?>
 
@@ -71,49 +72,74 @@
         <div class="dashboard-content">
             <!-- Stats Cards -->
             <div class="stats-row" id="statsRow">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-calendar-check"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>Total Events</h3>
-                        <p id="totalEvents">0</p>
-                    </div>
-                </div>
+                <!-- Priority order: Total Bookings, Pending approvals, Gross Revenue, Refund Costs, Net Revenue, Upcoming events, Total events -->
                 <div class="stat-card">
                     <div class="stat-icon">
                         <i class="fas fa-ticket-alt"></i>
                     </div>
                     <div class="stat-info">
                         <h3>Total Bookings</h3>
-                        <p id="totalBookings">0</p>
+                        <p id="totalBookings"><?= esc($stats['total_bookings'] ?? 0) ?></p>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-peso-sign"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>Revenue</h3>
-                        <p id="totalRevenue">Php 0</p>
-                    </div>
-                </div>
+
                 <div class="stat-card">
                     <div class="stat-icon">
                         <i class="fas fa-clock"></i>
                     </div>
                     <div class="stat-info">
                         <h3>Pending</h3>
-                        <p id="pendingBookings">0</p>
+                        <p id="pendingBookings"><?= esc($stats['pending_bookings'] ?? 0) ?></p>
                     </div>
                 </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-peso-sign"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Gross Revenue</h3>
+                        <p id="grossRevenue">Php <?= number_format((float) ($stats['gross_revenue'] ?? 0), 2) ?></p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-rotate-left"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Refund Costs</h3>
+                        <p id="refundCosts">Php <?= number_format((float) ($stats['refund_costs'] ?? 0), 2) ?></p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Net Revenue</h3>
+                        <p id="netRevenue">Php <?= number_format((float) ($stats['net_revenue'] ?? 0), 2) ?></p>
+                    </div>
+                </div>
+
                 <div class="stat-card">
                     <div class="stat-icon">
                         <i class="fas fa-calendar-day"></i>
                     </div>
                     <div class="stat-info">
                         <h3>Upcoming</h3>
-                        <p id="upcomingEvents">0</p>
+                        <p id="upcomingEvents"><?= esc($stats['upcoming_events'] ?? 0) ?></p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Total Events</h3>
+                        <p id="totalEvents"><?= esc($stats['total_events'] ?? 0) ?></p>
                     </div>
                 </div>
             </div>
@@ -123,10 +149,7 @@
                 <!-- Net Sales Chart -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3>
-                            Net Sales
-                            <i class="fas fa-chevron-down" style="font-size: 11px; color: #a89b88;"></i>
-                        </h3>
+                        <h3>Net Sales</h3>
                         <div class="chart-controls">
                             <select class="filter-select" id="salesFilter" onchange="updateSalesChart()">
                                 <option value="weekly">Weekly</option>
@@ -137,16 +160,24 @@
                     </div>
                     <div class="chart-stats">
                         <div class="chart-stat-item">
-                            <h4>Total Revenue</h4>
-                            <p id="chartTotalRevenue">0</p>
+                            <h4>Gross Revenue</h4>
+                            <p id="chartGrossRevenue"><?= number_format((float) ($stats['gross_revenue'] ?? 0), 2) ?></p>
                         </div>
                         <div class="chart-stat-item">
-                            <h4>Total Bookings</h4>
-                            <p id="chartTotalBookings">0</p>
+                            <h4>Refund Costs</h4>
+                            <p id="chartRefundCosts"><?= number_format((float) ($stats['refund_costs'] ?? 0), 2) ?></p>
                         </div>
                         <div class="chart-stat-item">
+                            <h4>Net Revenue</h4>
+                            <p id="chartNetRevenue"><?= number_format((float) ($stats['net_revenue'] ?? 0), 2) ?></p>
+                        </div>
+                        <div class="chart-stat-item less-important">
                             <h4>Avg. Booking</h4>
-                            <p id="chartAvgBooking">0</p>
+                            <p id="chartAvgBooking">₱<?= number_format((float) ($stats['average_booking_value'] ?? 0), 2) ?></p>
+                        </div>
+                        <div class="chart-stat-item less-important">
+                            <h4>Total Bookings</h4>
+                            <p id="chartTotalBookings"><?= esc($stats['total_bookings'] ?? 0) ?></p>
                         </div>
                     </div>
                     <div class="chart-container">
@@ -195,10 +226,25 @@
                     <div class="mini-card">
                         <div class="mini-card-header">
                             <h4>Recent Bookings</h4>
-                            <a href="/admin/bookings" class="view-all">View All</a>
+                            <a href="<?= site_url('admin/bookings') ?>" class="view-all">View All</a>
                         </div>
                         <div class="mini-card-content" id="recentBookings">
-                            <!-- Recent bookings will be loaded dynamically -->
+                            <?php if (!empty($recentBookings)): ?>
+                                <?php foreach ($recentBookings as $booking): ?>
+                                    <div class="booking-item">
+                                        <div class="booking-info">
+                                            <strong><?= esc($booking['client_name'] ?? 'Unknown Client') ?></strong>
+                                            <span class="booking-package"><?= esc($booking['package_name'] ?? 'No Package') ?></span>
+                                        </div>
+                                        <div class="booking-meta">
+                                            <span class="booking-date"><?= esc(date('M j, Y', strtotime($booking['event_date'] ?? 'now'))) ?></span>
+                                            <span class="booking-status status-<?= esc($booking['status'] ?? 'pending') ?>"><?= esc($booking['status'] ?? 'pending') ?></span>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <p class="text-muted text-center">No recent bookings</p>
+                            <?php endif; ?>
                         </div>
                     </div>
 
@@ -206,10 +252,25 @@
                     <div class="mini-card">
                         <div class="mini-card-header">
                             <h4>Upcoming Events</h4>
-                            <a href="/admin/calendar" class="view-all">View Calendar</a>
+                            <a href="<?= site_url('admin/calendar') ?>" class="view-all">View Calendar</a>
                         </div>
                         <div class="mini-card-content" id="upcomingEventsList">
-                            <!-- Upcoming events will be loaded dynamically -->
+                            <?php if (!empty($upcomingEvents)): ?>
+                                <?php foreach ($upcomingEvents as $event): ?>
+                                    <div class="event-item">
+                                        <div class="event-info">
+                                            <strong><?= esc($event['client_name'] ?? 'Unknown Client') ?></strong>
+                                            <span class="event-venue"><?= esc($event['venue_name'] ?? 'No Venue') ?></span>
+                                        </div>
+                                        <div class="event-meta">
+                                            <span class="event-date"><?= esc(date('M j, Y', strtotime($event['event_date'] ?? 'now'))) ?></span>
+                                            <span class="event-time"><?= esc(date('g:i A', strtotime($event['start_time'] ?? 'now'))) ?></span>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <p class="text-muted text-center">No upcoming events</p>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -233,6 +294,7 @@
         let currentSalesFilter = 'weekly';
         let currentVenueFilter = 'bookings';
         let currentPackageFilter = 'bookings';
+        let dashboardStats = <?= json_encode($stats ?? [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
 
         // Initialize everything when page loads
         document.addEventListener('DOMContentLoaded', function() {
@@ -355,7 +417,7 @@
         // Load Dashboard Stats
         async function loadDashboardStats() {
             try {
-                const response = await fetch('/admin/dashboard/stats');
+                const response = await fetch('<?= site_url('admin/dashboard/stats') ?>');
                 const data = await response.json();
                 
                 if (data.success) {
@@ -368,17 +430,25 @@
         }
 
         function updateStatsDisplay(stats) {
+            dashboardStats = { ...dashboardStats, ...stats };
             document.getElementById('totalEvents').textContent = stats.total_events.toLocaleString();
             document.getElementById('totalBookings').textContent = stats.total_bookings.toLocaleString();
-            document.getElementById('totalRevenue').textContent = `Php ${parseFloat(stats.revenue).toLocaleString()}`;
+            document.getElementById('grossRevenue').textContent = `Php ${parseFloat(stats.gross_revenue || 0).toLocaleString()}`;
+            document.getElementById('refundCosts').textContent = `Php ${parseFloat(stats.refund_costs || 0).toLocaleString()}`;
+            document.getElementById('netRevenue').textContent = `Php ${parseFloat(stats.net_revenue || 0).toLocaleString()}`;
             document.getElementById('pendingBookings').textContent = stats.pending_bookings.toLocaleString();
             document.getElementById('upcomingEvents').textContent = stats.upcoming_events.toLocaleString();
+            document.getElementById('chartGrossRevenue').textContent = parseFloat(stats.gross_revenue || 0).toLocaleString();
+            document.getElementById('chartRefundCosts').textContent = parseFloat(stats.refund_costs || 0).toLocaleString();
+            document.getElementById('chartNetRevenue').textContent = parseFloat(stats.net_revenue || 0).toLocaleString();
+            document.getElementById('chartAvgBooking').textContent = `₱${parseFloat(stats.average_booking_value || 0).toLocaleString()}`;
+            document.getElementById('chartTotalBookings').textContent = stats.total_bookings.toLocaleString();
         }
 
         // Load Chart Data
         async function loadChartData() {
             try {
-                const response = await fetch('/admin/dashboard/chart-data');
+                const response = await fetch('<?= site_url('admin/dashboard/chart-data') ?>');
                 const data = await response.json();
                 
                 if (data.success) {
@@ -409,7 +479,7 @@
                 data: {
                     labels: salesData.labels,
                     datasets: [{
-                        label: 'Net Sales',
+                        label: 'Gross Revenue',
                         data: salesData.data,
                         borderColor: '#8b7d6b',
                         backgroundColor: 'rgba(139, 125, 107, 0.05)',
@@ -422,15 +492,19 @@
                         pointHoverRadius: 7
                     }]
                 },
-                options: getChartOptions('Sales (₱)')
+                options: getChartOptions('Revenue (₱)')
             });
 
             // Update chart stats
             const totalRevenue = salesData.data.reduce((a, b) => a + b, 0);
-            const totalBookings = salesData.data.length * 10; // Simulated
-            const avgBooking = totalRevenue / totalBookings;
+            const refundCosts = parseFloat(dashboardStats.refund_costs || 0);
+            const netRevenue = Math.max(totalRevenue - refundCosts, 0);
+            const totalBookings = parseInt(dashboardStats.total_bookings || 0, 10);
+            const avgBooking = totalBookings > 0 ? totalRevenue / totalBookings : 0;
 
-            document.getElementById('chartTotalRevenue').textContent = totalRevenue.toLocaleString();
+            document.getElementById('chartGrossRevenue').textContent = totalRevenue.toLocaleString();
+            document.getElementById('chartRefundCosts').textContent = refundCosts.toLocaleString();
+            document.getElementById('chartNetRevenue').textContent = netRevenue.toLocaleString();
             document.getElementById('chartTotalBookings').textContent = totalBookings.toLocaleString();
             document.getElementById('chartAvgBooking').textContent = `₱${Math.round(avgBooking).toLocaleString()}`;
         }
@@ -604,7 +678,7 @@
         // Load Recent Bookings
         async function loadRecentBookings() {
             try {
-                const response = await fetch('/admin/dashboard/recent-bookings');
+                const response = await fetch('<?= site_url('admin/dashboard/recent-bookings') ?>');
                 const data = await response.json();
                 
                 if (data.success) {
@@ -640,7 +714,7 @@
         // Load Upcoming Events
         async function loadUpcomingEvents() {
             try {
-                const response = await fetch('/admin/dashboard/upcoming-events');
+                const response = await fetch('<?= site_url('admin/dashboard/upcoming-events') ?>');
                 const data = await response.json();
                 
                 if (data.success) {
@@ -700,7 +774,7 @@ function initNotifications() {
     // Load real notifications from API
     async function loadNotifications() {
         try {
-            const response = await fetch('/notifications/get');
+            const response = await fetch('<?= site_url('notifications/get') ?>');
             const data = await response.json();
             
             if (data.success) {

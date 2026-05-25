@@ -54,12 +54,22 @@ class AdminBookingsController extends BaseController
             });
         }
 
+        $bookings = $this->sortBookingsByRecency($bookings);
+
+        $bookingCounts = [
+            'total' => count($bookings),
+            'pending' => count(array_filter($bookings, fn ($booking) => ($booking['status'] ?? '') === 'pending')),
+            'approved' => count(array_filter($bookings, fn ($booking) => ($booking['status'] ?? '') === 'approved')),
+            'rejected' => count(array_filter($bookings, fn ($booking) => ($booking['status'] ?? '') === 'rejected')),
+        ];
+
         $data = [
             'current_page' => 'bookings',
             'title' => 'Bookings Management',
             'bookings' => $bookings,
+            'bookingCounts' => $bookingCounts,
             'packages' => $this->packageModel->findAll(),
-            'statuses' => ['pending', 'approved', 'confirmed', 'rejected', 'cancelled', 'completed'],
+            'statuses' => ['pending', 'approved', 'confirmed', 'rejected', 'cancelled', 'completed', 'expired'],
             'currentFilters' => [
                 'status' => $status,
                 'package' => $package,
@@ -68,6 +78,18 @@ class AdminBookingsController extends BaseController
         ];
 
         return view('admin/bookings/index', $data);
+    }
+
+    /**
+     * Sort booking arrays by newest record first.
+     */
+    private function sortBookingsByRecency(array $bookings): array
+    {
+        usort($bookings, static function (array $left, array $right): int {
+            return strtotime($right['created_at'] ?? '1970-01-01 00:00:00') <=> strtotime($left['created_at'] ?? '1970-01-01 00:00:00');
+        });
+
+        return $bookings;
     }
 
     /**
@@ -84,7 +106,26 @@ class AdminBookingsController extends BaseController
         $dateFilter = $this->request->getGet('date_filter');
 
         // Get bookings with client information
-        $bookings = $this->bookingModel->getBookingsWithClient($statusFilter);
+        if ($statusFilter === 'terminal') {
+            $bookings = $this->bookingModel->getBookingsWithClient(['cancelled', 'expired']);
+        } elseif ($statusFilter === 'refunds') {
+            $bookings = array_filter($this->bookingModel->getBookingsWithClient(), function ($booking) {
+                $refundStatus = (string) ($booking['refund_status'] ?? '');
+                $bookingStatus = (string) ($booking['status'] ?? '');
+
+                return in_array($refundStatus, ['pending', 'processed', 'failed'], true)
+                    || (
+                        in_array($bookingStatus, ['cancelled', 'rejected', 'expired'], true)
+                        && (
+                            (float) ($booking['refund_amount'] ?? 0) > 0
+                            || !empty($booking['refund_reference_number'])
+                            || !empty($booking['refund_screenshot_path'])
+                        )
+                    );
+            });
+        } else {
+            $bookings = $this->bookingModel->getBookingsWithClient($statusFilter);
+        }
         
         // Apply package filter manually
         if ($packageFilter) {
@@ -132,6 +173,15 @@ class AdminBookingsController extends BaseController
         $data = [];
         foreach ($paginatedBookings as $booking) {
             $statusBadge = $this->getStatusBadge($booking['status']);
+            $totalPaid = (float) $this->paymentModel->getTotalPaidAmount($booking['id']);
+            $refundAmount = (float) ($booking['refund_amount'] ?? 0);
+
+            if ($refundAmount <= 0 && in_array($booking['status'], ['cancelled', 'expired'], true)) {
+                $refundAmount = (float) $this->bookingModel->calculateRefundAmount($booking, !empty($booking['no_show']));
+            }
+
+            $refundEligible = $refundAmount > 0 ? 'Eligible' : 'Not eligible';
+            $cancellationType = $this->bookingModel->getCancellationType($booking);
             
             $data[] = [
                 'id' => $booking['id'],
@@ -141,6 +191,16 @@ class AdminBookingsController extends BaseController
                 'event_date' => date('M j, Y', strtotime($booking['event_date'])),
                 'start_time' => date('g:i A', strtotime($booking['start_time'])),
                 'status' => $statusBadge,
+                'payment_status' => ucfirst((string) ($booking['payment_status'] ?? 'pending')),
+                'total_paid' => number_format($totalPaid, 2),
+                'refund_eligibility' => $refundEligible,
+                'refund_amount' => number_format($refundAmount, 2),
+                'cancellation_type' => $cancellationType,
+                'cancellation_reason' => $booking['cancellation_reason'] ?? $booking['rejection_reason'] ?? '-',
+                'refund_status' => ucfirst((string) ($booking['refund_status'] ?? 'not applicable')),
+                'refund_processed_at' => $booking['refund_processed_at'] ?? '-',
+                'refund_reference_number' => $booking['refund_reference_number'] ?? '-',
+                'refund_screenshot_path' => $booking['refund_screenshot_path'] ?? null,
                 'actions' => $this->getActionButtons($booking)
             ];
         }
@@ -242,12 +302,12 @@ class AdminBookingsController extends BaseController
                 'updated_at' => date('Y-m-d H:i:s')
             ]);
 
-            $refundAmount = $this->refundDownPaymentIfAny($booking);
+            $refundAmount = $this->applyRefundTracking($booking, $reason, 'rejected');
             $this->notifyClientForBooking(
                 $booking,
                 'Booking Rejected',
                 $refundAmount > 0
-                    ? "Your booking {$booking['booking_reference']} was rejected. Your down payment of ₱" . number_format($refundAmount, 2) . ' has been marked refunded.'
+                    ? "Your booking {$booking['booking_reference']} was rejected. A refund of ₱" . number_format($refundAmount, 2) . ' has been recorded for processing.'
                     : "Your booking {$booking['booking_reference']} was rejected. Reason: {$reason}",
                 'danger'
             );
@@ -255,7 +315,7 @@ class AdminBookingsController extends BaseController
             return $this->response->setJSON([
                 'success' => true,
                 'message' => $refundAmount > 0
-                    ? 'Booking rejected successfully and down payment marked refunded.'
+                    ? 'Booking rejected successfully and refund tracking was updated.'
                     : 'Booking rejected successfully'
             ]);
         } catch (\Exception $e) {
@@ -646,12 +706,12 @@ class AdminBookingsController extends BaseController
                 ]);
 
                 if ($conflictBooking) {
-                    $refundAmount = $this->refundDownPaymentIfAny($conflictBooking);
+                    $refundAmount = $this->applyRefundTracking($conflictBooking, 'Automatically rejected due to a booking conflict.', 'rejected');
                     $this->notifyClientForBooking(
                         $conflictBooking,
                         'Booking Rejected',
                         $refundAmount > 0
-                            ? "Your booking {$conflictBooking['booking_reference']} was automatically rejected due to a conflict. Your down payment of ₱" . number_format($refundAmount, 2) . ' has been marked refunded.'
+                            ? "Your booking {$conflictBooking['booking_reference']} was automatically rejected due to a conflict. A refund of ₱" . number_format($refundAmount, 2) . ' has been recorded for processing.'
                             : "Your booking {$conflictBooking['booking_reference']} was automatically rejected due to a conflict.",
                         'danger'
                     );
@@ -709,7 +769,8 @@ class AdminBookingsController extends BaseController
             'confirmed' => 'bg-info',
             'rejected' => 'bg-danger',
             'cancelled' => 'bg-secondary',
-            'completed' => 'bg-primary'
+            'completed' => 'bg-primary',
+            'expired' => 'bg-dark'
         ];
 
         $class = $badgeClasses[$status] ?? 'bg-secondary';
@@ -728,17 +789,189 @@ class AdminBookingsController extends BaseController
         if ($booking['status'] === 'pending') {
             $buttons .= "<button class='btn btn-success btn-sm me-1' onclick='approveBooking({$booking['id']})'>Approve</button>";
             $buttons .= "<button class='btn btn-danger btn-sm me-1' onclick='rejectBooking({$booking['id']})'>Reject</button>";
-        } elseif ($booking['status'] === 'approved') {
+        } elseif (in_array($booking['status'], ['approved', 'confirmed'], true)) {
             $buttons .= "<button class='btn btn-primary btn-sm me-1' onclick='assignStaff({$booking['id']})'>Assign Staff</button>";
             $buttons .= "<button class='btn btn-info btn-sm me-1' onclick='openContract({$booking['id']})'>Contract</button>";
-            $buttons .= "<button class='btn btn-danger btn-sm me-1' onclick='rejectBooking({$booking['id']})'>Revoke</button>";
+            $buttons .= "<button class='btn btn-warning btn-sm me-1 text-white' onclick='cancelBooking({$booking['id']})'>Cancel</button>";
         } elseif ($booking['status'] === 'rejected') {
             $buttons .= "<button class='btn btn-success btn-sm me-1' onclick='approveBooking({$booking['id']})'>Approve</button>";
+        }
+
+        if (in_array($booking['status'], ['cancelled', 'expired', 'rejected'], true) && (float) ($booking['refund_amount'] ?? 0) > 0) {
+            $refundLabel = ($booking['refund_status'] ?? '') === 'processed' ? 'View Refund' : 'Record Refund';
+            $buttons .= "<button class='btn btn-warning btn-sm me-1 text-white' onclick='openRefundModal({$booking['id']})'>{$refundLabel}</button>";
         }
         
         $buttons .= "<button class='btn btn-outline-secondary btn-sm' onclick='viewDetails({$booking['id']})'>Details</button>";
         
         return $buttons;
+    }
+
+    public function cancelBooking($id)
+    {
+        $reason = trim((string) $this->request->getPost('reason'));
+        $noShow = filter_var($this->request->getPost('no_show'), FILTER_VALIDATE_BOOLEAN);
+
+        if ($reason === '') {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Cancellation reason is required'
+            ]);
+        }
+
+        $booking = $this->bookingModel->find($id);
+        if (!$booking) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Booking not found'
+            ]);
+        }
+
+        $refundAmount = $noShow ? 0.0 : $this->bookingModel->calculateRefundAmount($booking, false);
+        $updateData = [
+            'status' => 'cancelled',
+            'cancellation_reason' => $reason,
+            'cancelled_at' => date('Y-m-d H:i:s'),
+            'no_show' => $noShow ? 1 : 0,
+            'refund_amount' => $refundAmount,
+            'refund_status' => $refundAmount > 0 ? 'pending' : 'not_applicable',
+            'refund_processed_at' => null,
+            'refund_reference_number' => null,
+            'refund_screenshot_path' => null,
+            'payment_status' => $booking['payment_status'] ?? 'pending',
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+
+        $this->bookingModel->update($id, $updateData);
+
+        $this->notifyClientForBooking(
+            $booking,
+            'Booking Cancelled',
+            $refundAmount > 0
+                ? "Your booking {$booking['booking_reference']} was cancelled. A refund of ₱" . number_format($refundAmount, 2) . ' has been recorded for processing.'
+                : "Your booking {$booking['booking_reference']} was cancelled. Reason: {$reason}",
+            'warning'
+        );
+
+        return $this->response->setJSON([
+            'success' => true,
+            'message' => 'Booking cancelled successfully',
+            'refund_amount' => number_format($refundAmount, 2)
+        ]);
+    }
+
+    public function markRefundProcessed($id)
+    {
+        $booking = $this->bookingModel->find($id);
+        if (!$booking) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Booking not found'
+            ]);
+        }
+
+        $refundAmount = (float) ($booking['refund_amount'] ?? 0);
+        if ($refundAmount <= 0) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'No refund is pending for this booking'
+            ]);
+        }
+
+        $refundReferenceNumber = trim((string) $this->request->getPost('refund_reference_number'));
+        $refundScreenshot = $this->request->getFile('refund_screenshot');
+
+        log_message('info', 'Recording refund proof for booking ID: ' . $id . ', reference: ' . ($refundReferenceNumber !== '' ? $refundReferenceNumber : 'none'));
+
+        if ($refundReferenceNumber === '' && (! $refundScreenshot || $refundScreenshot->getName() === '')) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Provide a refund reference number or upload a refund screenshot'
+            ]);
+        }
+
+        $refundScreenshotPath = null;
+        if ($refundScreenshot && $refundScreenshot->getName() !== '') {
+            if (! $refundScreenshot->isValid()) {
+                log_message('error', 'Invalid refund screenshot upload for booking ID: ' . $id);
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Invalid refund screenshot upload'
+                ]);
+            }
+
+            $uploadDir = FCPATH . 'uploads/refunds/';
+            if (! is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+
+            $newName = $refundScreenshot->getRandomName();
+            if (! $refundScreenshot->move($uploadDir, $newName)) {
+                log_message('error', 'Failed to save refund screenshot for booking ID: ' . $id);
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Failed to save refund screenshot'
+                ]);
+            }
+
+            $refundScreenshotPath = 'uploads/refunds/' . $newName;
+        }
+
+        $existingReference = trim((string) ($booking['refund_reference_number'] ?? ''));
+        $existingScreenshot = trim((string) ($booking['refund_screenshot_path'] ?? ''));
+
+        $this->bookingModel->update($id, [
+            'refund_status' => 'processed',
+            'refund_processed_at' => date('Y-m-d H:i:s'),
+            'payment_status' => 'refunded',
+            'refund_reference_number' => $refundReferenceNumber !== '' ? $refundReferenceNumber : ($existingReference !== '' ? $existingReference : null),
+            'refund_screenshot_path' => $refundScreenshotPath ?? ($existingScreenshot !== '' ? $existingScreenshot : null),
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
+
+        log_message('info', 'Refund processed for booking ID: ' . $id . ', screenshot: ' . ($refundScreenshotPath ?? ($existingScreenshot !== '' ? $existingScreenshot : 'none')));
+
+        return $this->response->setJSON([
+            'success' => true,
+            'message' => 'Refund marked as processed successfully'
+        ]);
+    }
+
+    public function expireDueBookings()
+    {
+        $now = date('Y-m-d H:i:s');
+        $dueBookings = $this->bookingModel
+            ->whereIn('status', ['pending', 'approved', 'confirmed'])
+            ->groupStart()
+                ->where('event_date <', date('Y-m-d'))
+                ->orGroupStart()
+                    ->where('event_date', date('Y-m-d'))
+                    ->where('end_time <', date('H:i:s'))
+                ->groupEnd()
+            ->groupEnd()
+            ->findAll();
+
+        $updated = 0;
+        foreach ($dueBookings as $booking) {
+            $terminalStatus = in_array($booking['status'], ['approved', 'confirmed'], true) ? 'completed' : 'expired';
+            $this->bookingModel->update($booking['id'], [
+                'status' => $terminalStatus,
+                'cancelled_at' => $now,
+                'refund_amount' => 0,
+                'refund_status' => 'not_applicable',
+                'refund_processed_at' => null,
+                'refund_reference_number' => null,
+                'refund_screenshot_path' => null,
+                'updated_at' => $now
+            ]);
+            $updated++;
+        }
+
+        return $this->response->setJSON([
+            'success' => true,
+            'message' => $updated . ' booking(s) were updated',
+            'updated' => $updated
+        ]);
     }
 
     public function assignStaff($id)
@@ -866,35 +1099,27 @@ class AdminBookingsController extends BaseController
         }
     }
 
-    private function refundDownPaymentIfAny(array $booking): float
+    private function applyRefundTracking(array $booking, string $reason, string $sourceStatus): float
     {
-        $payment = $this->paymentModel
-            ->where('booking_id', $booking['id'])
-            ->where('payment_type', 'down_payment')
-            ->where('status', 'verified')
-            ->first();
+        $refundAmount = (float) $this->paymentModel->getTotalPaidAmount($booking['id']);
 
-        if (!$payment) {
-            $this->bookingModel->update($booking['id'], [
-                'payment_status' => 'refunded',
-                'down_payment_paid' => 0,
-                'down_payment_amount' => 0
-            ]);
-            return 0.0;
+        $updateData = [
+            'refund_amount' => $refundAmount,
+            'refund_status' => $refundAmount > 0 ? 'pending' : 'not_applicable',
+            'refund_processed_at' => null,
+            'refund_reference_number' => null,
+            'refund_screenshot_path' => null,
+            'cancellation_reason' => $reason,
+            'cancelled_at' => date('Y-m-d H:i:s'),
+            'payment_status' => $booking['payment_status'] ?? 'pending',
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+
+        if ($sourceStatus === 'rejected') {
+            $updateData['rejection_reason'] = $reason;
         }
 
-        $refundAmount = (float) $payment['amount'];
-
-        $this->paymentModel->update($payment['id'], [
-            'status' => 'refunded',
-            'notes' => 'Refunded due to booking rejection'
-        ]);
-
-        $this->bookingModel->update($booking['id'], [
-            'payment_status' => 'refunded',
-            'down_payment_paid' => 0,
-            'down_payment_amount' => 0
-        ]);
+        $this->bookingModel->update($booking['id'], $updateData);
 
         return $refundAmount;
     }

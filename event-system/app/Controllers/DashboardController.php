@@ -32,6 +32,8 @@ class DashboardController extends BaseController
         
         // Get dashboard statistics
         $stats = $this->getDashboardStats();
+        $recentBookings = $this->getRecentBookingsList();
+        $upcomingEvents = $this->getUpcomingEventsList();
         
         // Get recent notifications
         $notifications = $this->notificationModel->getRecentNotifications(10, null);
@@ -40,6 +42,8 @@ class DashboardController extends BaseController
             'current_page' => 'dashboard',
             'page_title' => 'Dashboard',
             'stats' => $stats,
+            'recentBookings' => $recentBookings,
+            'upcomingEvents' => $upcomingEvents,
             'notifications' => $notifications,
             'packages' => $this->packageModel->findAll(),
             'current_page' => 'dashboard'
@@ -75,69 +79,113 @@ class DashboardController extends BaseController
 
     public function getRecentBookings()
     {
-        $bookings = $this->bookingModel
+        $bookings = $this->getRecentBookingsList();
+
+        return $this->respond(['success' => true, 'bookings' => $bookings]);
+    }
+
+    private function getRecentBookingsList(): array
+    {
+        return $this->bookingModel
             ->select('bookings.*, clients.fullname as client_name, packages.name as package_name')
             ->join('clients', 'clients.id = bookings.client_id')
             ->join('packages', 'packages.id = bookings.package_id', 'left')
             ->orderBy('bookings.created_at', 'DESC')
             ->limit(5)
             ->findAll();
-
-        return $this->respond(['success' => true, 'bookings' => $bookings]);
     }
 
     private function getDashboardStats()
     {
-        // Total Events (approved bookings)
-        $totalEvents = $this->bookingModel->where('status', 'approved')->countAllResults();
-        
-        // Total Bookings (all statuses)
-        $totalBookings = $this->bookingModel->countAll();
-        
-        // Revenue (sum of total_amount from approved bookings)
-        $revenueResult = $this->bookingModel->selectSum('total_amount')
-                                           ->where('status', 'approved')
-                                           ->get()
-                                           ->getRow();
-        $revenue = $revenueResult->total_amount ?? 0;
-        
-        // Pending Bookings
-        $pendingBookings = $this->bookingModel->where('status', 'pending')->countAllResults();
+        $db = db_connect();
 
-        // Upcoming Events (next 7 days)
-        $upcomingEvents = $this->bookingModel
-            ->where('status', 'approved')
+        $statusCounts = [
+            'pending' => 0,
+            'approved' => 0,
+            'confirmed' => 0,
+            'rejected' => 0,
+            'cancelled' => 0,
+            'completed' => 0,
+            'expired' => 0,
+        ];
+
+        foreach ($db->table('bookings')->select('status, COUNT(*) AS total')->groupBy('status')->get()->getResultArray() as $row) {
+            $status = (string) ($row['status'] ?? '');
+            if (array_key_exists($status, $statusCounts)) {
+                $statusCounts[$status] = (int) ($row['total'] ?? 0);
+            }
+        }
+
+        $totalBookings = array_sum($statusCounts);
+        $pendingBookings = $statusCounts['pending'];
+        $approvedBookings = $statusCounts['approved'];
+        $confirmedBookings = $statusCounts['confirmed'];
+        $completedBookings = $statusCounts['completed'];
+        $rejectedBookings = $statusCounts['rejected'];
+        $cancelledBookings = $statusCounts['cancelled'];
+        $expiredBookings = $statusCounts['expired'];
+
+        $eventBookings = $approvedBookings + $confirmedBookings + $completedBookings;
+
+        $grossRevenueRow = $db->table('payments')
+            ->selectSum('amount', 'gross_revenue')
+            ->where('status', 'verified')
+            ->get()
+            ->getRowArray();
+        $grossRevenue = (float) ($grossRevenueRow['gross_revenue'] ?? 0);
+
+        $refundRow = $db->query(
+            "SELECT COALESCE(SUM(refund_amount), 0) AS refund_costs, COALESCE(COUNT(*), 0) AS refund_count
+             FROM bookings
+             WHERE refund_processed_at IS NOT NULL OR payment_status = 'refunded'"
+        )->getRowArray();
+        $refundCosts = (float) ($refundRow['refund_costs'] ?? 0);
+        $refundedBookings = (int) ($refundRow['refund_count'] ?? 0);
+        $netRevenue = max($grossRevenue - $refundCosts, 0);
+
+        $upcomingEvents = (int) $db->table('bookings')
+            ->whereIn('status', ['approved', 'confirmed'])
             ->where('event_date >=', date('Y-m-d'))
             ->where('event_date <=', date('Y-m-d', strtotime('+7 days')))
             ->countAllResults();
 
         return [
-            'total_events' => $totalEvents,
+            'total_events' => $eventBookings,
             'total_bookings' => $totalBookings,
-            'revenue' => $revenue,
             'pending_bookings' => $pendingBookings,
-            'upcoming_events' => $upcomingEvents
+            'approved_bookings' => $approvedBookings,
+            'confirmed_bookings' => $confirmedBookings,
+            'completed_bookings' => $completedBookings,
+            'rejected_bookings' => $rejectedBookings,
+            'cancelled_bookings' => $cancelledBookings,
+            'expired_bookings' => $expiredBookings,
+            'gross_revenue' => $grossRevenue,
+            'refund_costs' => $refundCosts,
+            'net_revenue' => $netRevenue,
+            'refunded_bookings' => $refundedBookings,
+            'upcoming_events' => $upcomingEvents,
+            'average_booking_value' => $totalBookings > 0 ? $grossRevenue / $totalBookings : 0,
         ];
     }
 
     private function getSalesData()
     {
-        // Get sales data for the last 6 weeks
+        // Gross verified payment revenue for the last 6 weeks
         $salesData = [];
         $labels = [];
+        $db = db_connect();
         
         for ($i = 5; $i >= 0; $i--) {
             $weekStart = date('Y-m-d', strtotime('-' . ($i * 7) . ' days'));
             $weekEnd = date('Y-m-d', strtotime($weekStart . ' +6 days'));
             
-            $weekRevenue = $this->bookingModel
-                ->selectSum('total_amount')
-                ->where('status', 'approved')
-                ->where('event_date >=', $weekStart)
-                ->where('event_date <=', $weekEnd)
+            $weekRevenue = $db->table('payments')
+                ->selectSum('amount', 'week_revenue')
+                ->where('status', 'verified')
+                ->where('payment_date >=', $weekStart)
+                ->where('payment_date <=', $weekEnd)
                 ->get()
-                ->getRow()
-                ->total_amount ?? 0;
+                ->getRowArray()['week_revenue'] ?? 0;
             
             $salesData[] = $weekRevenue;
             $labels[] = 'Week ' . (6 - $i);
@@ -158,7 +206,7 @@ class DashboardController extends BaseController
         foreach ($venues as $venue) {
             $bookingCount = $this->bookingModel
                 ->where('venue_id', $venue['id'])
-                ->where('status', 'approved')
+                ->whereIn('status', ['approved', 'confirmed', 'completed'])
                 ->countAllResults();
             
             $venueData[] = $bookingCount;
@@ -175,23 +223,26 @@ class DashboardController extends BaseController
     {
         $packages = $this->packageModel->findAll();
         $packageData = [];
+        $db = db_connect();
         
         foreach ($packages as $package) {
             $bookingCount = $this->bookingModel
                 ->where('package_id', $package['id'])
-                ->where('status', 'approved')
+                ->whereIn('status', ['approved', 'confirmed', 'completed'])
                 ->countAllResults();
+
+            $revenueRow = $db->table('payments p')
+                ->selectSum('p.amount', 'package_revenue')
+                ->join('bookings b', 'b.id = p.booking_id')
+                ->where('p.status', 'verified')
+                ->where('b.package_id', $package['id'])
+                ->get()
+                ->getRowArray();
             
             $packageData[] = [
                 'name' => $package['name'],
                 'bookings' => $bookingCount,
-                'revenue' => $this->bookingModel
-                    ->selectSum('total_amount')
-                    ->where('package_id', $package['id'])
-                    ->where('status', 'approved')
-                    ->get()
-                    ->getRow()
-                    ->total_amount ?? 0
+                'revenue' => (float) ($revenueRow['package_revenue'] ?? 0)
             ];
         }
         
@@ -205,18 +256,23 @@ class DashboardController extends BaseController
 
     public function getUpcomingEvents()
     {
-        $upcomingEvents = $this->bookingModel
+        $upcomingEvents = $this->getUpcomingEventsList();
+
+        return $this->respond(['success' => true, 'events' => $upcomingEvents]);
+    }
+
+    private function getUpcomingEventsList(): array
+    {
+        return $this->bookingModel
             ->select('bookings.*, clients.fullname as client_name, packages.name as package_name, venues.name as venue_name')
             ->join('clients', 'clients.id = bookings.client_id')
             ->join('packages', 'packages.id = bookings.package_id', 'left')
             ->join('venues', 'venues.id = bookings.venue_id', 'left')
-            ->where('bookings.status', 'approved')
+            ->whereIn('bookings.status', ['approved', 'confirmed'])
             ->where('bookings.event_date >=', date('Y-m-d'))
             ->orderBy('bookings.event_date', 'ASC')
             ->limit(5)
             ->findAll();
-
-        return $this->respond(['success' => true, 'events' => $upcomingEvents]);
     }
 
     private function createSampleNotifications()

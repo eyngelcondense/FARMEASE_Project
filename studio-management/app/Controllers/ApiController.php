@@ -223,7 +223,7 @@ class ApiController extends BaseController
         
         $builder = $db->table('studio_bookings sb')
             ->select('b.event_date, b.start_time, b.end_time, b.booking_reference,
-                     b.event_type, b.status, c.fullname as client_name')
+                     b.event_type, b.status, b.payment_status, c.fullname as client_name')
             ->join('bookings b', 'b.id = sb.booking_id')
             ->join('clients c', 'c.id = b.client_id')
             ->where('sb.studio_id', $id)
@@ -302,7 +302,7 @@ class ApiController extends BaseController
         
         $builder = $db->table('studio_bookings sb')
             ->select('sb.id, sb.booking_id, b.booking_reference, b.event_type,
-                     b.event_date, b.start_time, b.end_time, b.status,
+                     b.event_date, b.start_time, b.end_time, b.status, b.payment_status,
                      c.fullname as client_name, c.phone as client_phone')
             ->join('bookings b', 'b.id = sb.booking_id')
             ->join('clients c', 'c.id = b.client_id')

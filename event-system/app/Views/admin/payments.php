@@ -359,7 +359,8 @@
 </div>
 
 <div class="table-card">
-    <table class="table table-striped table-bordered" id="paymentsTable" style="width:100%">
+    <div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover" id="paymentsTable" style="width:100%">
         <thead>
             <tr>
                 <th>Payment Ref</th>
@@ -469,6 +470,7 @@
             <?php endif; ?>
         </tbody>
     </table>
+    </div>
 </div>
 
 <!-- Payment Details Modal -->
