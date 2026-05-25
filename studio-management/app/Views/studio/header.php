@@ -304,5 +304,16 @@
     <main class="container-fluid mt-4">
         <?= $this->renderSection('content') ?>
     </main>
+
+    <script>
+        function confirmLogout(event) {
+            event.preventDefault();
+            const confirmAction = confirm("Are you sure you want to log out?");
+            if (confirmAction) {
+                window.location.href = event.currentTarget.href;
+            }
+            return false;
+        }
+    </script>
 </body>
 </html>

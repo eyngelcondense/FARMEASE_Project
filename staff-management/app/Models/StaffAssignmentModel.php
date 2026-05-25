@@ -91,8 +91,8 @@ class StaffAssignmentModel extends Model
     // ── Assigned bookings only (for staff-focused schedule calendar) ─────────
     public function getAssignedBookingsForCalendar(int $staffId): array
     {
-        $firstDay = date('Y-m-01');
-        $lastDay  = date('Y-m-t');
+        $firstDay = date('Y-m-d', strtotime('-6 months'));
+        $lastDay  = date('Y-m-d', strtotime('+12 months'));
 
         return $this->db->table('staff_assignments sa')
             ->select('b.id, b.booking_reference, b.event_type, b.event_date,

@@ -79,7 +79,14 @@ class ClientController extends BaseController
         }
         unset($studio);
 
-        $hasStudioFeedback = $db->fieldExists('studio_id', 'feedback');
+        $feedbackTable = null;
+        if ($db->tableExists('feedbacks')) {
+            $feedbackTable = 'feedbacks';
+        } elseif ($db->tableExists('feedback')) {
+            $feedbackTable = 'feedback';
+        }
+
+        $hasStudioFeedback = !empty($feedbackTable) && $db->fieldExists('studio_id', $feedbackTable);
         $selectedStudioId = (int) ($this->request->getGet('studio_id') ?? 0);
         if ($selectedStudioId === 0 && !empty($studios)) {
             $selectedStudioId = (int) $studios[0]['id'];
@@ -97,13 +104,23 @@ class ClientController extends BaseController
 
         $studioReviews = [];
         if ($hasStudioFeedback && $selectedStudioId > 0) {
-            $studioReviews = $db->table('feedback f')
-                ->select('f.rating, f.comments, f.created_at, c.fullname, c.profile_pic')
+            $reviewsBuilder = $db->table($feedbackTable . ' f')
+                ->select('f.studio_id, f.rating, f.comments, f.created_at, c.fullname, c.profile_pic')
                 ->join('clients c', 'c.id = f.client_id', 'left')
-                ->where('f.status', 'approved')
                 ->where('f.studio_id', $selectedStudioId)
-                ->orderBy('f.created_at', 'DESC')
-                ->limit(6)
+                ->limit(6);
+
+            if ($db->fieldExists('status', $feedbackTable)) {
+                $reviewsBuilder->where('f.status', 'approved');
+            }
+
+            if ($db->fieldExists('created_at', $feedbackTable)) {
+                $reviewsBuilder->orderBy('f.created_at', 'DESC');
+            } else {
+                $reviewsBuilder->orderBy('f.id', 'DESC');
+            }
+
+            $studioReviews = $reviewsBuilder
                 ->get()
                 ->getResultArray();
         }
@@ -253,7 +270,8 @@ class ClientController extends BaseController
             $path = substr($path, 7);
         }
 
-        return $path;
+        $studioUrl = rtrim(getenv('SSO_GROUP_URL_STUDIO') ?: 'http://localhost:8083/studio', '/studio');
+        return rtrim($studioUrl, '/') . '/' . $path;
     }
 
     public function saveFeedback()

@@ -5,10 +5,14 @@ namespace App\Filters;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Filters\FilterInterface;
-use Config\SsoConfig;
 
 class AuthCheckFilter implements FilterInterface
 {
+    private function centralLogoutUrl(string $reason = 'studio_authcheck_blocked'): string
+    {
+        return 'http://localhost:8080/logout?reason=' . urlencode($reason) . '&source=studio-management';
+    }
+
     public function before(RequestInterface $request, $arguments = null)
     {
         $path = $request->getPath();
@@ -24,9 +28,8 @@ class AuthCheckFilter implements FilterInterface
         if (!$session->get('isLoggedIn') && !$session->get('sso_auth')) {
             log_message('debug', 'AuthCheckFilter blocked path: ' . $path);
             session()->setTempdata('beforeLoginUrl', current_url(), 30);
-
-            $config = config(SsoConfig::class);
-            return redirect()->to($config->loginUrl);
+            // Prevent SSO bounce loops by clearing central auth first.
+            return redirect()->to($this->centralLogoutUrl('studio_auth_missing'));
         }
     }
 

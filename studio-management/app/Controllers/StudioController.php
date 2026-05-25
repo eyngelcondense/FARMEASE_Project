@@ -13,6 +13,13 @@ class StudioController extends BaseController
     protected $bookingModel;
     protected $imageModel;
 
+    private function centralLogoutUrl(string $reason = 'studio_session_invalid'): string
+    {
+        $config = new \Config\SsoConfig();
+        $base = preg_replace('#/login/?$#', '/logout', $config->loginUrl) ?: 'http://localhost:8080/logout';
+        return $base . '?reason=' . urlencode($reason) . '&source=studio-management';
+    }
+
     public function __construct()
     {
         $this->studioModel = model(StudioModel::class);
@@ -546,8 +553,7 @@ class StudioController extends BaseController
     {
         session()->destroy();
         log_message('info', 'Studio user logged out. Redirecting to event system.');
-        $config = new \Config\SsoConfig();
-        return redirect()->to($config->loginUrl)->with('message', 'You have been logged out.');
+        return redirect()->to($this->centralLogoutUrl('studio_manual_logout'))->with('message', 'You have been logged out.');
     }
 }
 

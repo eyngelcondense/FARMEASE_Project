@@ -21,13 +21,17 @@ foreach ($bookingPayments as $payment) {
 }
 
 $balance = $booking['total_amount'] - $totalPaid;
-$paymentStatus = 'pending';
-if ($totalPaid >= $booking['total_amount']) {
-    $paymentStatus = 'paid';
-} elseif ($totalPaid > 0) {
-    $paymentStatus = 'partial';
-} elseif ($hasFailedPayments) {
-    $paymentStatus = 'pending';
+$paymentStatus = $booking['payment_status'] ?? 'pending';
+
+// Recalculate if it's not already paid or refunded
+if (!in_array($paymentStatus, ['paid', 'refunded'])) {
+    if ($totalPaid >= $booking['total_amount']) {
+        $paymentStatus = 'paid';
+    } elseif ($totalPaid > 0) {
+        $paymentStatus = 'partial';
+    } elseif ($hasFailedPayments) {
+        $paymentStatus = 'pending';
+    }
 }
 ?>
 
@@ -87,6 +91,30 @@ if ($totalPaid >= $booking['total_amount']) {
                 ₱<?= number_format($balance, 2) ?>
             </div>
         </div>
+        <?php if ($bookingStatus === 'cancelled' && !empty($booking['cancellation_reason'])): ?>
+            <div class="detail-item">
+                <div class="detail-label text-danger">Cancellation Reason</div>
+                <div class="detail-value"><?= esc($booking['cancellation_reason']) ?></div>
+            </div>
+        <?php endif; ?>
+        <?php if (!empty($booking['refund_status'])): ?>
+            <div class="detail-item">
+                <div class="detail-label">Refund Status</div>
+                <div class="detail-value"><?= esc(ucfirst($booking['refund_status'])) ?></div>
+            </div>
+            <?php if (!empty($booking['refund_amount'])): ?>
+                <div class="detail-item">
+                    <div class="detail-label">Refund Amount</div>
+                    <div class="detail-value">₱<?= number_format($booking['refund_amount'], 2) ?></div>
+                </div>
+            <?php endif; ?>
+            <?php if (!empty($booking['refund_processed_at'])): ?>
+                <div class="detail-item">
+                    <div class="detail-label">Refund Processed</div>
+                    <div class="detail-value"><?= date('M j, Y g:i A', strtotime($booking['refund_processed_at'])) ?></div>
+                </div>
+            <?php endif; ?>
+        <?php endif; ?>
     </div>
 
     <?php if (!empty($bookingPayments)): ?>

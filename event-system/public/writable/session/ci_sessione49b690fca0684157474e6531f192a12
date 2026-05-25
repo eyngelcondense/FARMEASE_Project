@@ -1,0 +1,1 @@
+__ci_last_regenerate|i:1779692535;error|s:67:"SSO redirect reason: staff_manual_logout. Source: staff-management.";__ci_vars|a:1:{s:5:"error";s:3:"old";}csrf_test_name|s:32:"1b09c3a2f4f3d917c1e49dc5960ed7cd";_ci_previous_url|s:78:"http://localhost:8080/login?reason=staff_manual_logout&source=staff-management";user|a:1:{s:2:"id";i:2;}

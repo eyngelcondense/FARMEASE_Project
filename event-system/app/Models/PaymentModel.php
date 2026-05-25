@@ -283,7 +283,7 @@ class PaymentModel extends Model
     /**
      * Determine if payment is down payment or full/partial
      */
-    private function determinePaymentType($bookingId, $amount)
+    public function determinePaymentType($bookingId, $amount)
     {
         $bookingModel = new BookingModel();
         $booking = $bookingModel->find($bookingId);

@@ -6,8 +6,8 @@ use CodeIgniter\Config\BaseConfig;
 
 class Email extends BaseConfig
 {
-    public string $fromEmail  = '';
-    public string $fromName   = '';
+    public string $fromEmail  = 'admin@networq.online';
+    public string $fromName   = 'Farmease'; 
     public string $recipients = '';
 
     /**
@@ -18,7 +18,7 @@ class Email extends BaseConfig
     /**
      * The mail sending protocol: mail, sendmail, smtp
      */
-    public string $protocol = 'mail';
+    public string $protocol = 'smtp';
 
     /**
      * The server path to Sendmail.
@@ -28,27 +28,22 @@ class Email extends BaseConfig
     /**
      * SMTP Server Hostname
      */
-    public string $SMTPHost = '';
-
-    /**
-     * Which SMTP authentication method to use: login, plain
-     */
-    public string $SMTPAuthMethod = 'login';
+    public string $SMTPHost = 'smtp.hostinger.com';
 
     /**
      * SMTP Username
      */
-    public string $SMTPUser = '';
+    public string $SMTPUser = 'admin@networq.online';
 
     /**
      * SMTP Password
      */
-    public string $SMTPPass = '';
+    public string $SMTPPass = 'Bruhdacious_321';
 
     /**
      * SMTP Port
      */
-    public int $SMTPPort = 25;
+    public int $SMTPPort = 587;
 
     /**
      * SMTP Timeout (in seconds)
@@ -61,11 +56,7 @@ class Email extends BaseConfig
     public bool $SMTPKeepAlive = false;
 
     /**
-     * SMTP Encryption.
-     *
-     * @var string '', 'tls' or 'ssl'. 'tls' will issue a STARTTLS command
-     *             to the server. 'ssl' means implicit SSL. Connection on port
-     *             465 should set this to ''.
+     * SMTP Encryption: '', 'tls', or 'ssl'
      */
     public string $SMTPCrypto = 'tls';
 
@@ -82,17 +73,17 @@ class Email extends BaseConfig
     /**
      * Type of mail, either 'text' or 'html'
      */
-    public string $mailType = 'text';
+    public string $mailType = 'html';
 
     /**
-     * Character set (utf-8, iso-8859-1, etc.)
+     * Character set
      */
     public string $charset = 'UTF-8';
 
     /**
      * Whether to validate the email address
      */
-    public bool $validate = false;
+    public bool $validate = true;
 
     /**
      * Email Priority. 1 = highest. 5 = lowest. 3 = normal
@@ -103,10 +94,6 @@ class Email extends BaseConfig
      * Newline character. (Use “\r\n” to comply with RFC 822)
      */
     public string $CRLF = "\r\n";
-
-    /**
-     * Newline character. (Use “\r\n” to comply with RFC 822)
-     */
     public string $newline = "\r\n";
 
     /**

@@ -245,7 +245,7 @@ include('header.php');
         <article class="studio-card">
           <?php if (!empty($studio['cover_image'])): ?>
             <img
-              src="<?= base_url($studio['cover_image']) ?>"
+              src="<?= esc($studio['cover_image']) ?>"
               alt="<?= esc($studio['name']) ?>"
               class="studio-image"
             >
@@ -298,7 +298,7 @@ include('header.php');
       <div class="selected-studio-grid">
         <?php foreach ($selectedStudioImages as $image): ?>
           <article class="selected-studio-image-card">
-            <img src="<?= base_url($image['image_path']) ?>" alt="<?= esc($image['alt_text'] ?: $image['image_name']) ?>">
+            <img src="<?= esc($image['image_path']) ?>" alt="<?= esc($image['alt_text'] ?: $image['image_name']) ?>">
             <div class="caption">
               <div class="fw-semibold"><?= esc($image['image_name'] ?: 'Studio Photo') ?></div>
               <?php if (!empty($image['is_primary'])): ?>
@@ -336,29 +336,47 @@ include('header.php');
         <p class="mb-0 text-muted">Be the first to share your experience for this studio.</p>
       </div>
     <?php else: ?>
-      <div class="reviews-grid">
-        <?php foreach ($studioReviews as $review): ?>
-          <article class="review-card">
-            <div class="review-head">
-              <?php if (!empty($review['profile_pic'])): ?>
-                <img src="/uploads/profile_pics/<?= esc($review['profile_pic']) ?>" alt="<?= esc($review['fullname']) ?>" class="review-avatar">
-              <?php else: ?>
-                <img src="https://ui-avatars.com/api/?name=<?= urlencode($review['fullname'] ?? 'Client') ?>&background=7c6a43&color=fff&size=80" alt="<?= esc($review['fullname'] ?? 'Client') ?>" class="review-avatar">
-              <?php endif; ?>
-              <div>
-                <p class="review-name"><?= esc($review['fullname'] ?? 'Anonymous Client') ?></p>
-                <div class="review-stars">
-                  <?php for ($i = 1; $i <= 5; $i++): ?>
-                    <?= $i <= (int) ($review['rating'] ?? 0) ? '★' : '☆' ?>
-                  <?php endfor; ?>
+      <?php
+        $filteredReviews = [];
+        if (!empty($selectedStudio) && !empty($studioReviews)) {
+          foreach ($studioReviews as $r) {
+            if (isset($r['studio_id']) && (int) $r['studio_id'] === (int) $selectedStudio['id']) {
+              $filteredReviews[] = $r;
+            }
+          }
+        }
+      ?>
+
+      <?php if (empty($filteredReviews)): ?>
+        <div class="empty-state">
+          <h5 class="mb-2">No reviews yet</h5>
+          <p class="mb-0 text-muted">Be the first to share your experience for this studio.</p>
+        </div>
+      <?php else: ?>
+        <div class="reviews-grid">
+          <?php foreach ($filteredReviews as $review): ?>
+            <article class="review-card">
+              <div class="review-head">
+                <?php if (!empty($review['profile_pic'])): ?>
+                  <img src="/uploads/profile_pics/<?= esc($review['profile_pic']) ?>" alt="<?= esc($review['fullname']) ?>" class="review-avatar">
+                <?php else: ?>
+                  <img src="https://ui-avatars.com/api/?name=<?= urlencode($review['fullname'] ?? 'Client') ?>&background=7c6a43&color=fff&size=80" alt="<?= esc($review['fullname'] ?? 'Client') ?>" class="review-avatar">
+                <?php endif; ?>
+                <div>
+                  <p class="review-name"><?= esc($review['fullname'] ?? 'Anonymous Client') ?></p>
+                  <div class="review-stars">
+                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                      <?= $i <= (int) ($review['rating'] ?? 0) ? '★' : '☆' ?>
+                    <?php endfor; ?>
+                  </div>
                 </div>
               </div>
-            </div>
-            <p class="review-text"><?= esc($review['comments'] ?? '') ?></p>
-            <span class="review-date"><?= !empty($review['created_at']) ? date('M d, Y', strtotime($review['created_at'])) : '' ?></span>
-          </article>
-        <?php endforeach; ?>
-      </div>
+              <p class="review-text"><?= esc($review['comments'] ?? '') ?></p>
+              <span class="review-date"><?= !empty($review['created_at']) ? date('M d, Y', strtotime($review['created_at'])) : '' ?></span>
+            </article>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
     <?php endif; ?>
   </section>
 </div>

@@ -21,7 +21,7 @@ $current_page = 'gallery';
                         <i class="fas fa-images"></i>
                     </div>
                     <h5>Total Photos</h5>
-                    <h3 class="text-primary">0</h3>
+                    <h3 class="text-primary"><?= count($images ?? []) ?></h3>
                 </div>
             </div>
         </div>
@@ -32,7 +32,7 @@ $current_page = 'gallery';
                         <i class="fas fa-star"></i>
                     </div>
                     <h5>Primary Photo</h5>
-                    <h3 class="text-success">0</h3>
+                    <h3 class="text-success"><?= count(array_filter($images ?? [], fn($i) => !empty($i['is_primary']))) ?></h3>
                 </div>
             </div>
         </div>
