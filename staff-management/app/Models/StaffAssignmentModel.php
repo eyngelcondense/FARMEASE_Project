@@ -88,6 +88,33 @@ class StaffAssignmentModel extends Model
             ->getResultArray();
     }
 
+    // ── Assigned bookings only (for staff-focused schedule calendar) ─────────
+    public function getAssignedBookingsForCalendar(int $staffId): array
+    {
+        $firstDay = date('Y-m-01');
+        $lastDay  = date('Y-m-t');
+
+        return $this->db->table('staff_assignments sa')
+            ->select('b.id, b.booking_reference, b.event_type, b.event_date,
+                      b.start_time, b.end_time, b.status,
+                      v.name as venue_name,
+                      c.fullname as client_fullname,
+                      1 as is_assigned')
+            ->join('bookings b', 'b.id = sa.booking_id', 'inner')
+            ->join('venues v', 'v.id = b.venue_id', 'left')
+            ->join('clients c', 'c.id = b.client_id', 'left')
+            ->where('sa.staff_id', $staffId)
+            ->whereIn('sa.status', ['assigned', 'accepted', 'completed'])
+            ->whereIn('b.status', ['confirmed', 'approved', 'completed'])
+            ->where('b.event_date >=', $firstDay)
+            ->where('b.event_date <=', $lastDay)
+            ->groupBy('b.id')
+            ->orderBy('b.event_date', 'ASC')
+            ->orderBy('b.start_time', 'ASC')
+            ->get()
+            ->getResultArray();
+    }
+
     // ── Upcoming assignments for dashboard (next 30 days) ───────────────────
     public function getUpcomingByStaff(int $staffId, int $limit = 5): array
     {

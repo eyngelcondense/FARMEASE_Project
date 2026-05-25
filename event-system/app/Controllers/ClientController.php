@@ -44,10 +44,11 @@ class ClientController extends BaseController
 
         $studioIds = array_column($studios, 'id');
         $imageMap = [];
+        $galleryMap = [];
 
         if (!empty($studioIds)) {
             $imageRows = $db->table('studio_images')
-                ->select('studio_id, image_path')
+                ->select('id, studio_id, image_path, image_name, alt_text, is_primary, sort_order, created_at')
                 ->whereIn('studio_id', $studioIds)
                 ->orderBy('is_primary', 'DESC')
                 ->orderBy('sort_order', 'ASC')
@@ -59,11 +60,22 @@ class ClientController extends BaseController
                 if (!isset($imageMap[$row['studio_id']])) {
                     $imageMap[$row['studio_id']] = $this->normalizeAssetPath($row['image_path']);
                 }
+
+                $galleryMap[$row['studio_id']][] = [
+                    'id' => (int) $row['id'],
+                    'image_path' => $this->normalizeAssetPath($row['image_path']),
+                    'image_name' => $row['image_name'] ?? '',
+                    'alt_text' => $row['alt_text'] ?? '',
+                    'is_primary' => (int) ($row['is_primary'] ?? 0),
+                    'sort_order' => (int) ($row['sort_order'] ?? 0),
+                    'created_at' => $row['created_at'] ?? null,
+                ];
             }
         }
 
         foreach ($studios as &$studio) {
             $studio['cover_image'] = $imageMap[$studio['id']] ?? null;
+            $studio['images'] = $galleryMap[$studio['id']] ?? [];
         }
         unset($studio);
 
@@ -102,6 +114,7 @@ class ClientController extends BaseController
         $data['selectedStudioId'] = $selectedStudioId;
         $data['selectedStudio'] = $selectedStudio;
         $data['hasStudioFeedback'] = $hasStudioFeedback;
+        $data['selectedStudioImages'] = $selectedStudioId > 0 ? ($galleryMap[$selectedStudioId] ?? []) : [];
 
         return view('client/studios', $data);
     }

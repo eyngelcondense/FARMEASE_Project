@@ -112,7 +112,7 @@ class SchedulingController extends BaseController
         return view('staff/schedule', [
             'title'    => 'Schedule',
             'staff'    => $staffModel->find($staffId),
-            'bookings' => $assignmentModel->getAllBookingsWithAssignedFlag($staffId),
+            'bookings' => $assignmentModel->getAssignedBookingsForCalendar($staffId),
         ]);
     }
 
@@ -125,7 +125,7 @@ class SchedulingController extends BaseController
         $assignmentModel = model(StaffAssignmentModel::class);
 
         $bookings = array_values(array_filter(
-            $assignmentModel->getAllBookingsWithAssignedFlag($staffId),
+            $assignmentModel->getAssignedBookingsForCalendar($staffId),
             static fn (array $booking): bool => $booking['event_date'] >= date('Y-m-d')
                 && in_array($booking['status'] ?? null, ['confirmed', 'approved'], true)
         ));

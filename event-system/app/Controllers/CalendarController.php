@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\BookingModel;
 use App\Models\PackageModel;
 use App\Models\VenueModel;
+use App\Libraries\CentralEmailNotificationService;
 use CodeIgniter\API\ResponseTrait;
 
 class CalendarController extends BaseController
@@ -14,12 +15,14 @@ class CalendarController extends BaseController
     protected $bookingModel;
     protected $venueModel;
     protected $packageModel;
+    protected $emailNotificationService;
 
     public function __construct()
     {
         $this->bookingModel = new BookingModel();
         $this->venueModel = new VenueModel();
         $this->packageModel = new PackageModel();
+        $this->emailNotificationService = new CentralEmailNotificationService();
     }
 
     public function index()
@@ -185,6 +188,22 @@ class CalendarController extends BaseController
                 ], 500);
             }
 
+            try {
+                if (($updateData['status'] ?? '') === 'approved') {
+                    $this->emailNotificationService->sendBookingApproved((int) $bookingId, 'Approved');
+                } elseif (($updateData['status'] ?? '') === 'confirmed') {
+                    $this->emailNotificationService->sendBookingApproved((int) $bookingId, 'Confirmed');
+                } elseif (($updateData['status'] ?? '') === 'completed') {
+                    $this->emailNotificationService->sendBookingCompleted((int) $bookingId);
+                } elseif (($updateData['status'] ?? '') === 'cancelled') {
+                    $this->emailNotificationService->sendBookingCancelled((int) $bookingId, (string) $updateData['cancellation_reason']);
+                } elseif (($updateData['status'] ?? '') === 'expired') {
+                    $this->emailNotificationService->sendBookingExpired((int) $bookingId, true);
+                }
+            } catch (\Throwable $e) {
+                log_message('error', 'Calendar status email dispatch failed for booking ' . $bookingId . ': ' . $e->getMessage());
+            }
+
             $message = 'Booking status updated successfully';
             if (isset($updateData['payment_status']) && !isset($updateData['status'])) {
                 $message = 'Payment status updated successfully';
@@ -217,7 +236,8 @@ class CalendarController extends BaseController
             ->join('venues', 'venues.id = bookings.venue_id', 'left')
             ->join('clients', 'clients.id = bookings.client_id', 'left')
             ->join('packages', 'packages.id = bookings.package_id', 'left')
-            ->where("bookings.event_date BETWEEN '$startDate' AND '$endDate'")
+            ->where('bookings.event_date >=', $startDate)
+            ->where('bookings.event_date <=', $endDate)
             ->whereIn('bookings.status', ['approved', 'pending', 'confirmed', 'completed', 'cancelled', 'expired']);
 
         if ($packageId) {
@@ -246,8 +266,8 @@ class CalendarController extends BaseController
 
     private function generateCalendar($month, $year, $bookings)
     {
-        $firstDay = date('N', strtotime("$year-$month-01"));
-        $daysInMonth = date('t', strtotime("$year-$month-01"));
+        $firstDay = (int) date('w', strtotime(sprintf('%04d-%02d-01', $year, $month)));
+        $daysInMonth = (int) date('t', strtotime(sprintf('%04d-%02d-01', $year, $month)));
 
         $calendar = [];
 
@@ -257,7 +277,7 @@ class CalendarController extends BaseController
             $prevMonth = 12;
             $prevYear--;
         }
-        $daysInPrevMonth = date('t', strtotime("$prevYear-$prevMonth-01"));
+        $daysInPrevMonth = (int) date('t', strtotime(sprintf('%04d-%02d-01', $prevYear, $prevMonth)));
 
         $nextMonth = $month + 1;
         $nextYear = $year;
@@ -266,18 +286,18 @@ class CalendarController extends BaseController
             $nextYear++;
         }
 
-        for ($i = 1; $i < $firstDay; $i++) {
+        for ($i = 0; $i < $firstDay; $i++) {
             $prevMonthDay = $daysInPrevMonth - $firstDay + $i + 1;
             $calendar[] = [
                 'day' => $prevMonthDay,
                 'month' => 'prev',
-                'date' => "$prevYear-$prevMonth-$prevMonthDay",
+                'date' => sprintf('%04d-%02d-%02d', $prevYear, $prevMonth, $prevMonthDay),
                 'bookings' => []
             ];
         }
 
         for ($day = 1; $day <= $daysInMonth; $day++) {
-            $currentDate = "$year-$month-" . sprintf('%02d', $day);
+            $currentDate = sprintf('%04d-%02d-%02d', $year, $month, $day);
             $dayBookings = array_filter($bookings, function ($booking) use ($currentDate) {
                 return $booking['event_date'] == $currentDate;
             });
@@ -296,7 +316,7 @@ class CalendarController extends BaseController
             $calendar[] = [
                 'day' => $day,
                 'month' => 'next',
-                'date' => "$nextYear-$nextMonth-" . sprintf('%02d', $day),
+                'date' => sprintf('%04d-%02d-%02d', $nextYear, $nextMonth, $day),
                 'bookings' => []
             ];
         }

@@ -8,6 +8,7 @@ use App\Models\PackageModel;
 use App\Models\PaymentModel;
 use App\Models\BookingAddonModel;
 use App\Models\StudioModel;
+use App\Libraries\CentralEmailNotificationService;
 
 
 class BookingController extends BaseController
@@ -19,6 +20,7 @@ class BookingController extends BaseController
     protected $bookingAddonModel;
     protected $paymentModel;
     protected $studioModel;
+    protected $emailNotificationService;
 
     public function __construct()
     {
@@ -29,6 +31,7 @@ class BookingController extends BaseController
         $this->bookingAddonModel = new BookingAddonModel();
         $this->paymentModel = new PaymentModel();
         $this->studioModel = new StudioModel();
+        $this->emailNotificationService = new CentralEmailNotificationService();
         
     }
 
@@ -390,6 +393,12 @@ class BookingController extends BaseController
             }
 
             $db->transCommit();
+
+            try {
+                $this->emailNotificationService->sendBookingCreated((int) $bookingId);
+            } catch (\Throwable $e) {
+                log_message('error', 'Booking created email dispatch failed: ' . $e->getMessage());
+            }
 
             $successMessage = 'Booking request submitted successfully! Your reference number is: ' . $bookingData['booking_reference'];
             if ($addonsAmount > 0 || $studioAmount > 0) {

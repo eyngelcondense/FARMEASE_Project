@@ -41,40 +41,40 @@ $current_page = 'schedule';
                                     <?php foreach ($bookings as $booking): ?>
                                         <tr>
                                             <td>
-                                                <strong><?= date('M d, Y', strtotime($booking->event_date)) ?></strong>
+                                                <strong><?= !empty($booking['event_date']) ? date('M d, Y', strtotime($booking['event_date'])) : 'N/A' ?></strong>
                                                 <br>
                                                 <small class="text-muted">
-                                                    <?= date('l', strtotime($booking->event_date)) ?>
+                                                    <?= !empty($booking['event_date']) ? date('l', strtotime($booking['event_date'])) : 'N/A' ?>
                                                 </small>
                                             </td>
                                             <td>
                                                 <span class="badge bg-success text-white">
-                                                    <?= esc($booking->start_time) ?> - <?= esc($booking->end_time) ?>
+                                                    <?= esc($booking['start_time'] ?? 'N/A') ?> - <?= esc($booking['end_time'] ?? 'N/A') ?>
                                                 </span>
                                                 <br>
                                                 <small class="text-muted">
-                                                    (<?= esc($booking->total_hours) ?> hours)
+                                                    (<?= esc($booking['total_hours'] ?? 0) ?> hours)
                                                 </small>
                                             </td>
                                             <td>
                                                 <div>
-                                                    <strong><?= esc($booking->client_name) ?></strong>
+                                                    <strong><?= esc($booking['client_name'] ?? 'Unknown Client') ?></strong>
                                                     <br>
                                                     <small class="text-muted">
-                                                        <i class="fas fa-envelope"></i> <?= esc($booking->client_email) ?>
+                                                        <i class="fas fa-envelope"></i> <?= esc($booking['client_email'] ?? '') ?>
                                                         <br>
-                                                        <i class="fas fa-phone"></i> <?= esc($booking->client_phone) ?>
+                                                        <i class="fas fa-phone"></i> <?= esc($booking['client_phone'] ?? '') ?>
                                                     </small>
                                                 </div>
                                             </td>
                                             <td>
                                                 <span class="badge bg-info text-white">
-                                                    <?= esc($booking->event_type) ?>
+                                                    <?= esc($booking['event_type'] ?? 'N/A') ?>
                                                 </span>
                                             </td>
                                             <td>
                                                 <span class="badge bg-secondary text-white">
-                                                    <?= esc($booking->total_guests) ?> guests
+                                                    <?= esc($booking['total_guests'] ?? 0) ?> guests
                                                 </span>
                                             </td>
                                             <td>
@@ -84,10 +84,10 @@ $current_page = 'schedule';
                                             </td>
                                             <td>
                                                 <div class="btn-group-vertical btn-group-sm">
-                                                    <button class="btn btn-outline-primary" onclick="contactClient('<?= esc($booking->client_email) ?>', '<?= esc($booking->client_name) ?>')">
+                                                    <button class="btn btn-outline-primary" onclick="contactClient('<?= esc($booking['client_email'] ?? '') ?>', '<?= esc($booking['client_name'] ?? 'Unknown Client') ?>')">
                                                         <i class="fas fa-envelope"></i> Email
                                                     </button>
-                                                    <button class="btn btn-outline-success" onclick="callClient('<?= esc($booking->client_phone) ?>')">
+                                                    <button class="btn btn-outline-success" onclick="callClient('<?= esc($booking['client_phone'] ?? '') ?>')">
                                                         <i class="fas fa-phone"></i> Call
                                                     </button>
                                                 </div>
@@ -125,7 +125,7 @@ $current_page = 'schedule';
 
                     <?php
                     $todayBookings = array_filter($bookings, function($booking) {
-                        return $booking->event_date === date('Y-m-d');
+                        return ($booking['event_date'] ?? null) === date('Y-m-d');
                     });
                     ?>
 
@@ -136,18 +136,18 @@ $current_page = 'schedule';
                                     <div class="d-flex w-100 justify-content-between">
                                         <h6 class="mb-1">
                                             <i class="fas fa-clock"></i>
-                                            <?= esc($booking->start_time) ?> - <?= esc($booking->end_time) ?>
+                                            <?= esc($booking['start_time'] ?? 'N/A') ?> - <?= esc($booking['end_time'] ?? 'N/A') ?>
                                         </h6>
                                         <small class="text-muted">
-                                            <?= esc($booking->total_guests) ?> guests
+                                            <?= esc($booking['total_guests'] ?? 0) ?> guests
                                         </small>
                                     </div>
                                     <p class="mb-1">
-                                        <strong><?= esc($booking->client_name) ?></strong> -
-                                        <?= esc($booking->event_type) ?>
+                                        <strong><?= esc($booking['client_name'] ?? 'Unknown Client') ?></strong> -
+                                        <?= esc($booking['event_type'] ?? 'N/A') ?>
                                     </p>
                                     <small class="text-muted">
-                                        <i class="fas fa-phone"></i> <?= esc($booking->client_phone) ?>
+                                        <i class="fas fa-phone"></i> <?= esc($booking['client_phone'] ?? '') ?>
                                     </small>
                                 </div>
                             <?php endforeach; ?>

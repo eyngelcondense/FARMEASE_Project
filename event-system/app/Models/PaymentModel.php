@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use App\Libraries\CentralEmailNotificationService;
 
 class PaymentModel extends Model
 {
@@ -137,6 +138,10 @@ class PaymentModel extends Model
         $payment = $this->find($paymentId);
         if (!$payment) return false;
 
+        if (($payment['status'] ?? '') === 'verified') {
+            return true;
+        }
+
         $updated = $this->update($paymentId, [
             'status' => 'verified',
             'verified_by' => $adminId,
@@ -162,6 +167,17 @@ class PaymentModel extends Model
                     'full_payment_paid' => 1,
                     'payment_status' => 'paid'
                 ]);
+            }
+
+            try {
+                $emailNotificationService = new CentralEmailNotificationService();
+                $emailNotificationService->sendPaymentReceived((int) $bookingId, (int) $paymentId);
+
+                if ($this->isFullPaymentMade($bookingId)) {
+                    $emailNotificationService->sendPaymentFullyPaid((int) $bookingId);
+                }
+            } catch (\Throwable $e) {
+                log_message('error', 'Payment verification email dispatch failed: ' . $e->getMessage());
             }
         }
 
@@ -303,6 +319,10 @@ class PaymentModel extends Model
             return false;
         }
 
+        if (($payment['status'] ?? '') === 'verified') {
+            return true;
+        }
+
         // Update payment status to verified
         $updated = $this->update($payment['id'], [
             'status' => 'verified',
@@ -327,6 +347,17 @@ class PaymentModel extends Model
                     'full_payment_paid' => 1,
                     'payment_status' => 'paid'
                 ]);
+            }
+
+            try {
+                $emailNotificationService = new CentralEmailNotificationService();
+                $emailNotificationService->sendPaymentReceived((int) $bookingId, (int) $payment['id']);
+
+                if ($this->isFullPaymentMade($bookingId)) {
+                    $emailNotificationService->sendPaymentFullyPaid((int) $bookingId);
+                }
+            } catch (\Throwable $e) {
+                log_message('error', 'PayMongo verification email dispatch failed: ' . $e->getMessage());
             }
         }
 

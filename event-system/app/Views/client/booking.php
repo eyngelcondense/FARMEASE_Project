@@ -299,7 +299,7 @@
                     <h3 style="font-size: 18px; font-weight: bold; margin-bottom: 5px;">Availability Calendar</h3>
                     <p style="font-size: 13px; color: #666; margin: 0;">Dark brown dates are already booked</p>
                 <div class="mt-2">
-                  <a href="<?= site_url('studio-gallery') ?>" class="btn btn-sm btn-outline-secondary">
+                  <a href="<?= site_url('studio-gallery') ?>" class="btn btn-sm btn-outline-secondary" id="studioGalleryLink">
                     <i class="fas fa-images"></i> Browse Studio Gallery
                   </a>
                 </div>
@@ -475,6 +475,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const eventDateInput = document.getElementById("event_date");
   const durationInput = document.getElementById("duration_hours");
   const startTimeInput = document.querySelector("input[name='start_time']");
+  const studioGalleryLink = document.getElementById("studioGalleryLink");
 
   function updateCategoryDropdown() {
     const selected = packageSelect.value;
@@ -559,11 +560,37 @@ document.addEventListener("DOMContentLoaded", function() {
       params.set('start_time', startTimeInput.value);
     }
     if (startTimeInput && startTimeInput.value && durationInput && durationInput.value) {
-      const endTime = new Date(`1970-01-01T${startTimeInput.value}:00`);
-      endTime.setHours(endTime.getHours() + parseInt(durationInput.value, 10));
-      params.set('end_time', endTime.toTimeString().slice(0, 5));
+      const endTime = calculateEndTime(startTimeInput.value, parseInt(durationInput.value, 10));
+      if (endTime) {
+        params.set('end_time', endTime);
+      }
     }
     return params.toString();
+  }
+
+  function calculateEndTime(startTime, hoursToAdd) {
+    if (!startTime || Number.isNaN(hoursToAdd)) {
+      return '';
+    }
+
+    const parts = String(startTime).split(':');
+    if (parts.length < 2) {
+      return '';
+    }
+
+    const startHours = parseInt(parts[0], 10);
+    const startMinutes = parseInt(parts[1], 10);
+
+    if (Number.isNaN(startHours) || Number.isNaN(startMinutes)) {
+      return '';
+    }
+
+    const totalMinutes = (startHours * 60) + startMinutes + (hoursToAdd * 60);
+    const normalizedMinutes = ((totalMinutes % 1440) + 1440) % 1440;
+    const endHours = Math.floor(normalizedMinutes / 60);
+    const endMinutes = normalizedMinutes % 60;
+
+    return `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}`;
   }
 
   function loadAvailableStudios() {
@@ -665,6 +692,19 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
+  function updateStudioGalleryLink() {
+    if (!studioGalleryLink || !studioSelect) {
+      return;
+    }
+
+    const selectedStudioId = studioSelect.value;
+    const targetUrl = selectedStudioId
+      ? `<?= site_url('studio-gallery') ?>?studio_id=${encodeURIComponent(selectedStudioId)}#studio-gallery`
+      : `<?= site_url('studio-gallery') ?>`;
+
+    studioGalleryLink.setAttribute('href', targetUrl);
+  }
+
   let studioLoadTimer = null;
   function queueLoadStudios() {
     clearTimeout(studioLoadTimer);
@@ -697,10 +737,14 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   if (studioSelect) {
-    studioSelect.addEventListener("change", updateStudioPricing);
+    studioSelect.addEventListener("change", function() {
+      updateStudioPricing();
+      updateStudioGalleryLink();
+    });
   }
 
   loadAvailableStudios();
+  updateStudioGalleryLink();
 });
 </script>
 
@@ -708,7 +752,11 @@ document.addEventListener("DOMContentLoaded", function() {
 document.addEventListener("DOMContentLoaded", function() {
     const dateInput = document.getElementById("event_date");
     let bookedDates = [];
-    let currentDate = new Date();
+  let currentMonth = parseInt('<?= date('n') ?>', 10);
+  let currentYear = parseInt('<?= date('Y') ?>', 10);
+  const todayYear = parseInt('<?= date('Y') ?>', 10);
+  const todayMonth = parseInt('<?= date('n') ?>', 10);
+  const todayDate = parseInt('<?= date('j') ?>', 10);
 
     // Calendar functions
     const monthNames = [
@@ -716,22 +764,39 @@ document.addEventListener("DOMContentLoaded", function() {
         'July', 'August', 'September', 'October', 'November', 'December'
     ];
 
+    function isLeapYear(year) {
+      return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+    }
+
+    function getDaysInMonth(year, month) {
+      return [31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1];
+    }
+
+    function getFirstDayOfMonth(year, month) {
+      const offsets = [0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4];
+      let adjustedYear = year;
+
+      if (month < 3) {
+        adjustedYear -= 1;
+      }
+
+      return (adjustedYear + Math.floor(adjustedYear / 4) - Math.floor(adjustedYear / 100) + Math.floor(adjustedYear / 400) + offsets[month - 1] + 1) % 7;
+    }
+
     function renderCalendar() {
-        const year = currentDate.getFullYear();
-        const month = currentDate.getMonth();
+      const year = currentYear;
+      const month = currentMonth;
         
         // Update month/year display
         document.getElementById('calendar-month-year').textContent = 
-            `${monthNames[month]} ${year}`;
+        `${monthNames[month - 1]} ${year}`;
 
         // Get first day of month and number of days
-        const firstDay = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const firstDay = getFirstDayOfMonth(year, month);
+      const daysInMonth = getDaysInMonth(year, month);
         
         // Get today's date for comparison
-        const today = new Date();
-        const isCurrentMonth = today.getMonth() === month && today.getFullYear() === year;
-        const todayDate = today.getDate();
+      const isCurrentMonth = todayMonth === month && todayYear === year;
 
         // Clear existing calendar days
         const calendarDays = document.getElementById('calendar-days');
@@ -816,13 +881,21 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Previous month button
     document.getElementById('prev-month').addEventListener('click', function() {
-        currentDate.setMonth(currentDate.getMonth() - 1);
+      currentMonth -= 1;
+      if (currentMonth < 1) {
+        currentMonth = 12;
+        currentYear -= 1;
+      }
         renderCalendar();
     });
 
     // Next month button
     document.getElementById('next-month').addEventListener('click', function() {
-        currentDate.setMonth(currentDate.getMonth() + 1);
+      currentMonth += 1;
+      if (currentMonth > 12) {
+        currentMonth = 1;
+        currentYear += 1;
+      }
         renderCalendar();
     });
 });

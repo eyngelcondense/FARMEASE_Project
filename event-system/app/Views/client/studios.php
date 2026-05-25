@@ -172,6 +172,56 @@ include('header.php');
     gap: 8px;
     flex-wrap: wrap;
   }
+
+  .selected-studio-shell {
+    background: linear-gradient(135deg, rgba(124, 106, 67, 0.08), rgba(90, 74, 51, 0.02));
+    border: 1px solid #eadfce;
+    border-radius: 18px;
+    padding: 22px;
+    margin-top: 28px;
+  }
+
+  .selected-studio-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .selected-studio-header h3 {
+    margin: 0;
+    font-family: 'Times New Roman', Times, serif;
+    color: #3b2a18;
+  }
+
+  .selected-studio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 14px;
+  }
+
+  .selected-studio-image-card {
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #eadfce;
+    box-shadow: 0 6px 14px rgba(60, 42, 24, 0.08);
+  }
+
+  .selected-studio-image-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .selected-studio-image-card .caption {
+    padding: 10px 12px;
+    font-size: 0.88rem;
+    color: #59442c;
+  }
 </style>
 
 <div class="studios-shell">
@@ -213,6 +263,7 @@ include('header.php');
             <div class="meta"><strong>Capacity:</strong> <?= (int) $studio['capacity'] ?> guests</div>
             <div class="meta"><strong>Rate:</strong> PHP <?= number_format((float) $studio['cost'], 2) ?> / hour</div>
             <div class="studio-actions">
+              <a href="<?= site_url('studio-gallery?studio_id=' . (int) $studio['id']) ?>#studio-gallery" class="btn btn-sm btn-outline-secondary">View Gallery</a>
               <a href="<?= site_url('studio-gallery?studio_id=' . (int) $studio['id']) ?>#studio-reviews" class="btn btn-sm btn-outline-secondary">View Reviews</a>
               <a href="<?= site_url('testimonials') ?>" class="btn btn-sm btn-outline-primary">Leave Review</a>
             </div>
@@ -221,6 +272,44 @@ include('header.php');
       <?php endforeach; ?>
     </section>
   <?php endif; ?>
+
+  <section class="selected-studio-shell" id="studio-gallery">
+    <div class="selected-studio-header">
+      <div>
+        <h3><?= !empty($selectedStudio) ? esc($selectedStudio['name']) . ' Gallery' : 'Selected Studio Gallery' ?></h3>
+        <p class="mb-0 text-muted"><?= !empty($selectedStudio) ? 'Browse all active photos for this studio.' : 'Choose a studio above to view its gallery.' ?></p>
+      </div>
+      <?php if (!empty($selectedStudio)): ?>
+        <a href="<?= site_url('studio-gallery?studio_id=' . (int) $selectedStudio['id']) ?>#studio-gallery" class="btn btn-sm btn-outline-dark">Refresh View</a>
+      <?php endif; ?>
+    </div>
+
+    <?php if (empty($selectedStudio)): ?>
+      <div class="empty-state mb-0">
+        <h5 class="mb-2">No studio selected</h5>
+        <p class="mb-0 text-muted">Open a studio from the grid above to view its photos.</p>
+      </div>
+    <?php elseif (empty($selectedStudioImages)): ?>
+      <div class="empty-state mb-0">
+        <h5 class="mb-2">No gallery images yet</h5>
+        <p class="mb-0 text-muted">This studio has not uploaded gallery images yet.</p>
+      </div>
+    <?php else: ?>
+      <div class="selected-studio-grid">
+        <?php foreach ($selectedStudioImages as $image): ?>
+          <article class="selected-studio-image-card">
+            <img src="<?= base_url($image['image_path']) ?>" alt="<?= esc($image['alt_text'] ?: $image['image_name']) ?>">
+            <div class="caption">
+              <div class="fw-semibold"><?= esc($image['image_name'] ?: 'Studio Photo') ?></div>
+              <?php if (!empty($image['is_primary'])): ?>
+                <span class="badge bg-warning text-dark mt-1">Primary</span>
+              <?php endif; ?>
+            </div>
+          </article>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+  </section>
 
   <section class="reviews-section" id="studio-reviews">
     <h2 class="reviews-title">

@@ -16,7 +16,6 @@
 
     $byDate        = [];
     foreach ($bookings as $b) $byDate[$b['event_date']][] = $b;
-    $totalAssigned = count(array_filter($bookings, fn($b) => $b['is_assigned']));
     $totalAll      = count($bookings);
 ?>
 
@@ -69,6 +68,7 @@ $page_title    = 'Staff Schedule - San Isidro Labrador Resort';
     min-height: 140px; border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);
     padding: 12px; transition: var(--transition);
   }
+  .cal-cell.has-assignment { background: #fcfaf6; }
   .cal-cell:nth-child(7n) { border-right: none; }
   .cal-cell:hover { background: #FAFAFA; }
   .cal-cell.other .cell-num { color: #E0E0E0; }
@@ -86,6 +86,25 @@ $page_title    = 'Staff Schedule - San Isidro Labrador Resort';
   .evt:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
   .evt.assigned   { background: #FFFFFF; color: var(--text-main); border: 1px solid var(--border-color); border-left: 4px solid var(--primary-color); }
   .evt.unassigned { background: #F9F9F9; color: var(--text-muted); border: 1px solid var(--border-color); border-left: 4px solid #D9D9D9; }
+  .assignment-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--border-color);
+    background: #f6f1e9;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .assignment-indicator .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--primary-color);
+  }
   .more-pill { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-top: 4px; cursor: pointer; transition: var(--transition); }
   .more-pill:hover { color: var(--primary-color); }
 
@@ -159,7 +178,7 @@ $page_title    = 'Staff Schedule - San Isidro Labrador Resort';
     <div class="page-header">
         <h1 class="page-title">Event Schedule</h1>
         <div class="gold-line"></div>
-        <p class="page-subtitle">View all venue bookings and assignments</p>
+        <p class="page-subtitle">View your assigned bookings and event schedule</p>
     </div>
 
     <div class="toolbar">
@@ -177,11 +196,7 @@ $page_title    = 'Staff Schedule - San Isidro Labrador Resort';
     <div class="stats-row">
         <div class="stat-card">
             <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
-            <div class="stat-info"><h3>Monthly Bookings</h3><p><?= $totalAll ?></p></div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon"><i class="fas fa-user-check"></i></div>
-            <div class="stat-info"><h3>My Assignments</h3><p><?= $totalAssigned ?></p></div>
+        <div class="stat-info"><h3>My Assigned Events</h3><p><?= $totalAll ?></p></div>
         </div>
         <div class="stat-card">
             <div class="stat-icon"><i class="fas fa-check"></i></div>
@@ -194,8 +209,7 @@ $page_title    = 'Staff Schedule - San Isidro Labrador Resort';
     </div>
 
     <div class="legend">
-        <div class="leg"><div class="leg-dot" style="background:#c19a6b"></div>My assignment</div>
-        <div class="leg"><div class="leg-dot" style="background:#ddd4c6"></div>Other bookings</div>
+      <div class="leg"><div class="leg-dot" style="background:#c19a6b"></div>Assigned date</div>
         <div class="leg"><div class="leg-dot" style="background:#28a745"></div>Approved</div>
         <div class="leg"><div class="leg-dot" style="background:#8b7d6b"></div>Confirmed</div>
     </div>
@@ -222,12 +236,11 @@ $page_title    = 'Staff Schedule - San Isidro Labrador Resort';
             <div class="list-date-line"></div>
         </div>
         <?php foreach ($rows as $b):
-            $ac    = $b['is_assigned'] ? 'assigned' : 'unassigned';
             $sc    = 'status-' . $b['status'];
             $start = date('g:i A', strtotime($b['start_time']));
             $end   = date('g:i A', strtotime($b['end_time']));
         ?>
-        <div class="list-card <?= $ac ?>" onclick="openDrawer(<?= htmlspecialchars(json_encode($b), ENT_QUOTES) ?>)">
+        <div class="list-card assigned" onclick="openDrawer(<?= htmlspecialchars(json_encode($b), ENT_QUOTES) ?>)">
             <div class="card-main p-3" style="display: flex; gap: 15px; width: 100%;">
                 <div class="lc-time"><?= $start ?><br><?= $end ?></div>
                 <div class="lc-body">
@@ -237,7 +250,7 @@ $page_title    = 'Staff Schedule - San Isidro Labrador Resort';
                 </div>
                 <div class="lc-right">
                     <span class="assignment-status <?= $sc ?>"><?= ucfirst($b['status']) ?></span>
-                    <?php if ($b['is_assigned']): ?><span class="badge-assigned">Assigned</span><?php endif; ?>
+                    <span class="badge-assigned">Assigned</span>
                 </div>
             </div>
         </div>
@@ -291,12 +304,15 @@ function renderCal() {
     const dateStr   = `${y}-${String(m+1).padStart(2,'0')}-${String(cell.d).padStart(2,'0')}`;
     const evts      = (!cell.other && byDate[dateStr]) ? byDate[dateStr] : [];
     const div = document.createElement('div');
-    div.className = ['cal-cell',cell.other?'other':'',isToday?'today':'',isWeekend&&!cell.other?'weekend':''].filter(Boolean).join(' ');
+    div.className = ['cal-cell',cell.other?'other':'',isToday?'today':'',evts.length?'has-assignment':'',isWeekend&&!cell.other?'weekend':''].filter(Boolean).join(' ');
     let html = `<div class="cell-num"><span class="cni">${cell.d}</span></div>`;
-    evts.slice(0,2).forEach(b => {
-      html += `<div class="evt ${b.is_assigned?'assigned':'unassigned'}" onclick="openDrawer(${JSON.stringify(b).replace(/"/g,'&quot;')})">${b.event_type}</div>`;
+    if (evts.length) {
+      html += `<div class="assignment-indicator"><span class="dot"></span>${evts.length} assigned</div>`;
+    }
+    evts.slice(0,1).forEach(b => {
+      html += `<div class="evt assigned" onclick="openDrawer(${JSON.stringify(b).replace(/"/g,'&quot;')})">${b.event_type}</div>`;
     });
-    if (evts.length>2) html += `<div class="more-pill">+${evts.length-2} more</div>`;
+    if (evts.length>1) html += `<div class="more-pill">+${evts.length-1} more</div>`;
     div.innerHTML=html; grid.appendChild(div);
   });
 }

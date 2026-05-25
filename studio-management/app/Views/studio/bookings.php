@@ -27,7 +27,7 @@ $current_page = 'bookings';
                         <div class="card-header bg-primary text-white">
                             <h6 class="mb-0">
                                 <i class="fas fa-calendar-alt"></i>
-                                Booking #<?= esc($booking->booking_reference) ?>
+                                Booking #<?= esc($booking['booking_reference'] ?? 'N/A') ?>
                             </h6>
                         </div>
                         <div class="card-body">
@@ -37,7 +37,7 @@ $current_page = 'bookings';
                                         <i class="fas fa-user text-primary"></i>
                                         <strong>Client:</strong>
                                         <span class="badge bg-info text-white">
-                                            <?= esc($booking->client_name) ?>
+                                            <?= esc($booking['client_name'] ?? 'Unknown Client') ?>
                                         </span>
                                     </p>
                                 </div>
@@ -47,7 +47,7 @@ $current_page = 'bookings';
                                         <strong>Date:</strong>
                                         <br>
                                         <span class="text-muted">
-                                            <?= date('M d, Y', strtotime($booking->event_date)) ?>
+                                            <?= !empty($booking['event_date']) ? date('M d, Y', strtotime($booking['event_date'])) : 'N/A' ?>
                                         </span>
                                     </p>
                                 </div>
@@ -57,7 +57,7 @@ $current_page = 'bookings';
                                         <strong>Time:</strong>
                                         <br>
                                         <span class="text-muted">
-                                            <?= esc($booking->start_time) ?> - <?= esc($booking->end_time) ?>
+                                            <?= esc($booking['start_time'] ?? 'N/A') ?> - <?= esc($booking['end_time'] ?? 'N/A') ?>
                                         </span>
                                     </p>
                                 </div>
@@ -67,7 +67,7 @@ $current_page = 'bookings';
                                         <strong>Guests:</strong>
                                         <br>
                                         <span class="text-muted">
-                                            <?= esc($booking->total_guests) ?> people
+                                            <?= esc($booking['total_guests'] ?? 0) ?> people
                                         </span>
                                     </p>
                                 </div>
@@ -77,7 +77,7 @@ $current_page = 'bookings';
                                         <strong>Event:</strong>
                                         <br>
                                         <span class="text-muted">
-                                            <?= esc($booking->event_type) ?>
+                                            <?= esc($booking['event_type'] ?? 'N/A') ?>
                                         </span>
                                     </p>
                                 </div>
@@ -88,16 +88,16 @@ $current_page = 'bookings';
                                     <i class="fas fa-dollar-sign text-success"></i>
                                     <strong>Total Amount:</strong>
                                     <span class="badge bg-success text-white">
-                                        ₱<?= number_format($booking->total_amount, 2) ?>
+                                        ₱<?= number_format((float) ($booking['total_amount'] ?? 0), 2) ?>
                                     </span>
                                 </p>
                             </div>
 
                             <div class="d-grid gap-2 mt-3">
-                                <button class="btn btn-outline-primary btn-sm" onclick="contactClient('<?= esc($booking->client_email) ?>', '<?= esc($booking->client_name) ?>')">
+                                <button class="btn btn-outline-primary btn-sm" onclick="contactClient('<?= esc($booking['client_email'] ?? '') ?>', '<?= esc($booking['client_name'] ?? 'Unknown Client') ?>')">
                                     <i class="fas fa-envelope"></i> Email Client
                                 </button>
-                                <button class="btn btn-outline-info btn-sm" onclick="callClient('<?= esc($booking->client_phone) ?>')">
+                                <button class="btn btn-outline-info btn-sm" onclick="callClient('<?= esc($booking['client_phone'] ?? '') ?>')">
                                     <i class="fas fa-phone"></i> Call Client
                                 </button>
                             </div>
@@ -105,7 +105,7 @@ $current_page = 'bookings';
                         <div class="card-footer">
                             <small class="text-muted">
                                 <i class="fas fa-history"></i>
-                                Booked on <?= date('M d, Y H:i', strtotime($booking->created_at)) ?>
+                                Booked on <?= !empty($booking['booking_created_at'] ?? $booking['created_at'] ?? null) ? date('M d, Y H:i', strtotime($booking['booking_created_at'] ?? $booking['created_at'])) : 'N/A' ?>
                             </small>
                         </div>
                     </div>

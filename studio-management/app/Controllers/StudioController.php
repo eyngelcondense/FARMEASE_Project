@@ -127,19 +127,87 @@ class StudioController extends BaseController
         if ($studioId instanceof \CodeIgniter\HTTP\RedirectResponse) {
             return $studioId;
         }
-        
-        // Check if booking model is properly initialized
-        if ($this->bookingModel) {
-            if (ENVIRONMENT === 'development') {
-                log_message('debug', 'StudioController: dashboard loading bookings for studio_id=' . $studioId);
-            }
 
-            $data['bookings'] = $this->bookingModel->getBookingsForStudio($studioId);
-        } else {
-            $data['bookings'] = [];
-        }
+        $dashboardData = $this->getStudioDashboardData($studioId);
+        $data['bookings'] = $dashboardData['all_bookings'];
+        $data['stats'] = $dashboardData['stats'];
+        $data['todayBookings'] = $dashboardData['today_bookings'];
+        $data['upcomingBookings'] = $dashboardData['upcoming_bookings'];
+        $data['recentBookings'] = $dashboardData['recent_bookings'];
         
         return view('studio/dashboard', $data);
+    }
+
+    public function dashboardStats()
+    {
+        $studioId = $this->resolveStudioSessionContext('dashboardStats');
+        if ($studioId instanceof \CodeIgniter\HTTP\RedirectResponse) {
+            return $this->response->setStatusCode(401)->setJSON([
+                'success' => false,
+                'message' => 'Session expired. Please log in again.',
+            ]);
+        }
+
+        $dashboardData = $this->getStudioDashboardData($studioId);
+
+        return $this->response->setJSON([
+            'success' => true,
+            'data' => $dashboardData['stats'],
+        ]);
+    }
+
+    public function dashboardTodaySchedule()
+    {
+        $studioId = $this->resolveStudioSessionContext('dashboardTodaySchedule');
+        if ($studioId instanceof \CodeIgniter\HTTP\RedirectResponse) {
+            return $this->response->setStatusCode(401)->setJSON([
+                'success' => false,
+                'message' => 'Session expired. Please log in again.',
+            ]);
+        }
+
+        $dashboardData = $this->getStudioDashboardData($studioId);
+
+        return $this->response->setJSON([
+            'success' => true,
+            'bookings' => $dashboardData['today_bookings'],
+        ]);
+    }
+
+    public function dashboardUpcomingSchedule()
+    {
+        $studioId = $this->resolveStudioSessionContext('dashboardUpcomingSchedule');
+        if ($studioId instanceof \CodeIgniter\HTTP\RedirectResponse) {
+            return $this->response->setStatusCode(401)->setJSON([
+                'success' => false,
+                'message' => 'Session expired. Please log in again.',
+            ]);
+        }
+
+        $dashboardData = $this->getStudioDashboardData($studioId);
+
+        return $this->response->setJSON([
+            'success' => true,
+            'bookings' => $dashboardData['upcoming_bookings'],
+        ]);
+    }
+
+    public function dashboardRecentBookings()
+    {
+        $studioId = $this->resolveStudioSessionContext('dashboardRecentBookings');
+        if ($studioId instanceof \CodeIgniter\HTTP\RedirectResponse) {
+            return $this->response->setStatusCode(401)->setJSON([
+                'success' => false,
+                'message' => 'Session expired. Please log in again.',
+            ]);
+        }
+
+        $dashboardData = $this->getStudioDashboardData($studioId);
+
+        return $this->response->setJSON([
+            'success' => true,
+            'bookings' => $dashboardData['recent_bookings'],
+        ]);
     }
 
     private function resolveStudioSessionContext(string $context)
@@ -234,6 +302,83 @@ class StudioController extends BaseController
         }
         
         return view('studio/schedule', $data);
+    }
+
+    private function getStudioDashboardData(int $studioId): array
+    {
+        $bookings = [];
+        if ($this->bookingModel) {
+            $bookings = $this->bookingModel->getBookingsForStudio($studioId);
+        }
+
+        $bookings = $this->normalizeDashboardBookings($bookings);
+        $today = date('Y-m-d');
+
+        $todayBookings = array_values(array_filter($bookings, function (array $booking) use ($today) {
+            return $booking['event_date'] === $today && $this->isActiveDashboardBooking($booking);
+        }));
+        usort($todayBookings, function (array $left, array $right) {
+            return strcmp(($left['start_time'] ?? ''), ($right['start_time'] ?? ''));
+        });
+
+        $upcomingBookings = array_values(array_filter($bookings, function (array $booking) use ($today) {
+            return $booking['event_date'] >= $today && $this->isActiveDashboardBooking($booking);
+        }));
+        usort($upcomingBookings, function (array $left, array $right) {
+            $leftKey = ($left['event_date'] ?? '') . ' ' . ($left['start_time'] ?? '');
+            $rightKey = ($right['event_date'] ?? '') . ' ' . ($right['start_time'] ?? '');
+
+            return strcmp($leftKey, $rightKey);
+        });
+
+        $recentBookings = $bookings;
+        usort($recentBookings, function (array $left, array $right) {
+            return strcmp($right['booking_created_at_sort'] ?? '', $left['booking_created_at_sort'] ?? '');
+        });
+        $recentBookings = array_slice($recentBookings, 0, 5);
+
+        $stats = [
+            'total_bookings' => count($bookings),
+            'today_bookings' => count($todayBookings),
+            'upcoming_bookings' => count($upcomingBookings),
+            'completed_bookings' => count(array_filter($bookings, fn (array $booking) => ($booking['booking_status'] ?? 'pending') === 'completed')),
+            'cancelled_bookings' => count(array_filter($bookings, fn (array $booking) => ($booking['booking_status'] ?? 'pending') === 'cancelled')),
+            'payment_pending' => count(array_filter($bookings, fn (array $booking) => ($booking['payment_status'] ?? 'pending') === 'pending')),
+            'payment_partial' => count(array_filter($bookings, fn (array $booking) => ($booking['payment_status'] ?? 'pending') === 'partial')),
+            'payment_paid' => count(array_filter($bookings, fn (array $booking) => ($booking['payment_status'] ?? 'pending') === 'paid')),
+            'payment_refunded' => count(array_filter($bookings, fn (array $booking) => ($booking['payment_status'] ?? 'pending') === 'refunded')),
+        ];
+
+        return [
+            'all_bookings' => $bookings,
+            'today_bookings' => $todayBookings,
+            'upcoming_bookings' => $upcomingBookings,
+            'recent_bookings' => $recentBookings,
+            'stats' => $stats,
+        ];
+    }
+
+    private function normalizeDashboardBookings(array $bookings): array
+    {
+        return array_map(function ($booking) {
+            if (is_object($booking)) {
+                $booking = (array) $booking;
+            }
+
+            $booking['booking_status'] = $booking['booking_status'] ?? $booking['status'] ?? 'pending';
+            $booking['payment_status'] = $booking['payment_status'] ?? 'pending';
+            $booking['refund_status'] = $booking['refund_status'] ?? null;
+            $booking['booking_created_at_sort'] = $booking['booking_created_at'] ?? $booking['created_at'] ?? $booking['updated_at'] ?? '';
+
+            return $booking;
+        }, $bookings);
+    }
+
+    private function isActiveDashboardBooking(array $booking): bool
+    {
+        $status = $booking['booking_status'] ?? 'pending';
+
+        return ! in_array($status, ['cancelled', 'rejected', 'completed'], true);
     }
 
     public function feedback()

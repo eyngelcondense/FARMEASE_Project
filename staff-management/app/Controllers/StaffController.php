@@ -145,7 +145,7 @@ class StaffController extends BaseController
         return view('staff/schedule', [
             'title'    => 'Schedule',
             'staff'    => $this->staffModel->find($staffId),
-            'bookings' => $this->assignmentModel->getAllBookingsWithAssignedFlag($staffId),
+            'bookings' => $this->assignmentModel->getAssignedBookingsForCalendar($staffId),
         ]);
     }
 

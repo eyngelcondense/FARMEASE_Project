@@ -16,59 +16,36 @@ if (!isset($current_page)) {
 
     <nav class="nav-section">
         <div class="nav-section-title">
-            MAIN NAVIGATION
+            WORKFLOW
             <i class="fas fa-chevron-down" style="font-size: 9px;"></i>
         </div>
         <ul class="nav-menu">
             <li class="nav-item">
-                <a href="<?= site_url('staff/dashboard')?>" 
+                <a href="<?= site_url('staff/dashboard')?>"
                    class="nav-link <?= $current_page === 'dashboard' ? 'active' : '' ?>">
                     <i class="fas fa-th-large"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="<?= site_url('staff/schedule')?>" 
+                <a href="<?= site_url('staff/schedule')?>"
                    class="nav-link <?= $current_page === 'schedule' ? 'active' : '' ?>">
                     <i class="fas fa-calendar-alt"></i>
                     <span>My Schedule</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="<?= site_url('assignment')?>" 
+                <a href="<?= site_url('assignment')?>"
                    class="nav-link <?= in_array($current_page, ['assignments', 'assign-booking'], true) ? 'active' : '' ?>">
                     <i class="fas fa-tasks"></i>
                     <span>Assignments</span>
                 </a>
             </li>
-        </ul>
-    </nav>
-
-    <nav class="nav-section">
-        <div class="nav-section-title">
-            STAFF MANAGEMENT
-            <i class="fas fa-chevron-down" style="font-size: 9px;"></i>
-        </div>
-        <ul class="nav-menu">
             <li class="nav-item">
-                <a href="<?= site_url('staff')?>" 
-                   class="nav-link <?= in_array($current_page, ['staff_list', 'staff_create', 'staff_edit', 'staff_show'], true) ? 'active' : '' ?>">
-                    <i class="fas fa-user-friends"></i>
-                    <span>Staff Directory</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="<?= site_url('availability')?>" 
+                <a href="<?= site_url('availability')?>"
                    class="nav-link <?= $current_page === 'availability' ? 'active' : '' ?>">
                     <i class="fas fa-clock"></i>
                     <span>Availability</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="<?= site_url('staff-management')?>" 
-                   class="nav-link <?= $current_page === 'team' ? 'active' : '' ?>">
-                    <i class="fas fa-users"></i>
-                    <span>Team Members</span>
                 </a>
             </li>
         </ul>

@@ -117,6 +117,11 @@
         background: white;
     }
 
+    .calendar-day.current-month.has-bookings {
+        background: #fdf8f3;
+        border-color: #e8d7c8;
+    }
+
     .calendar-day.other-month {
         background: #f8f9fa;
         color: #adb5bd;
@@ -132,6 +137,44 @@
         font-weight: 600;
         margin-bottom: 4px;
         font-size: 0.9rem;
+    }
+
+    .day-booking-indicator {
+        margin-top: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+    }
+
+    .booking-count-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: #f3ece5;
+        color: #6f4e37;
+        border: 1px solid #e2d4c8;
+        font-size: 0.72rem;
+        font-weight: 600;
+        line-height: 1.2;
+    }
+
+    .booking-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #a67b5b;
+        opacity: 0.8;
+    }
+
+    .booking-preview {
+        margin-top: 6px;
+        font-size: 0.72rem;
+        color: #7a6a5c;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .event-badge {
@@ -636,17 +679,33 @@
             dayNumber.textContent = day.day;
             dayElement.appendChild(dayNumber);
 
-            // Add event badges
-            day.bookings.forEach(booking => {
-                const eventBadge = document.createElement('div');
-                eventBadge.className = `event-badge ${booking.status}`;
-                eventBadge.textContent = `${booking.package_name}`;
-                eventBadge.onclick = (e) => {
-                    e.stopPropagation();
-                    viewBooking(booking.id);
-                };
-                dayElement.appendChild(eventBadge);
-            });
+            // Subtle visual cue for dates that contain bookings.
+            const bookingCount = day.bookings.length;
+            if (bookingCount > 0 && day.month === 'current') {
+                dayElement.classList.add('has-bookings');
+
+                const indicator = document.createElement('div');
+                indicator.className = 'day-booking-indicator';
+
+                const countBadge = document.createElement('span');
+                countBadge.className = 'booking-count-badge';
+                countBadge.textContent = `${bookingCount} booking${bookingCount === 1 ? '' : 's'}`;
+
+                const dot = document.createElement('span');
+                dot.className = 'booking-dot';
+
+                indicator.appendChild(countBadge);
+                indicator.appendChild(dot);
+                dayElement.appendChild(indicator);
+
+                const firstBooking = day.bookings[0];
+                if (firstBooking && firstBooking.package_name) {
+                    const preview = document.createElement('div');
+                    preview.className = 'booking-preview';
+                    preview.textContent = firstBooking.package_name;
+                    dayElement.appendChild(preview);
+                }
+            }
 
             calendarGrid.appendChild(dayElement);
         });

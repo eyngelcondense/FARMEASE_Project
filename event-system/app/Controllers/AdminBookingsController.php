@@ -9,6 +9,7 @@ use App\Models\PackageModel;
 use App\Models\VenueModel;
 use App\Models\PaymentModel;
 use App\Models\NotificationModel;
+use App\Libraries\CentralEmailNotificationService;
 
 class AdminBookingsController extends BaseController
 {
@@ -18,6 +19,7 @@ class AdminBookingsController extends BaseController
     protected $venueModel;
     protected $paymentModel;
     protected $notificationModel;
+    protected $emailNotificationService;
 
     public function __construct()
     {
@@ -27,6 +29,7 @@ class AdminBookingsController extends BaseController
         $this->venueModel = new VenueModel();
         $this->paymentModel = new PaymentModel();
         $this->notificationModel = new NotificationModel();
+        $this->emailNotificationService = new CentralEmailNotificationService();
     }
 
     /**
@@ -642,6 +645,12 @@ class AdminBookingsController extends BaseController
                     'success'
                 );
 
+                try {
+                    $this->emailNotificationService->sendBookingApproved((int) $id, 'Approved');
+                } catch (\Throwable $e) {
+                    log_message('error', 'Booking approved email dispatch failed: ' . $e->getMessage());
+                }
+
                 log_message('debug', 'Booking approved successfully: ' . $id);
 
                 return $this->response->setJSON([
@@ -693,6 +702,12 @@ class AdminBookingsController extends BaseController
                     "Your booking {$currentBooking['booking_reference']} has been approved.",
                     'success'
                 );
+
+                try {
+                    $this->emailNotificationService->sendBookingApproved((int) $id, 'Approved');
+                } catch (\Throwable $e) {
+                    log_message('error', 'Booking approval email dispatch failed: ' . $e->getMessage());
+                }
             }
 
             // Reject conflicting bookings
@@ -853,6 +868,12 @@ class AdminBookingsController extends BaseController
             'warning'
         );
 
+        try {
+            $this->emailNotificationService->sendBookingCancelled((int) $id, $reason);
+        } catch (\Throwable $e) {
+            log_message('error', 'Booking cancelled email dispatch failed: ' . $e->getMessage());
+        }
+
         return $this->response->setJSON([
             'success' => true,
             'message' => 'Booking cancelled successfully',
@@ -929,6 +950,15 @@ class AdminBookingsController extends BaseController
             'updated_at' => date('Y-m-d H:i:s')
         ]);
 
+        try {
+            $processingNotes = $refundReferenceNumber !== ''
+                ? 'Refund reference number: ' . $refundReferenceNumber
+                : 'Refund proof uploaded and marked as processed.';
+            $this->emailNotificationService->sendRefundProcessed((int) $id, $processingNotes);
+        } catch (\Throwable $e) {
+            log_message('error', 'Refund processed email dispatch failed: ' . $e->getMessage());
+        }
+
         log_message('info', 'Refund processed for booking ID: ' . $id . ', screenshot: ' . ($refundScreenshotPath ?? ($existingScreenshot !== '' ? $existingScreenshot : 'none')));
 
         return $this->response->setJSON([
@@ -964,6 +994,17 @@ class AdminBookingsController extends BaseController
                 'refund_screenshot_path' => null,
                 'updated_at' => $now
             ]);
+
+            try {
+                if ($terminalStatus === 'completed') {
+                    $this->emailNotificationService->sendBookingCompleted((int) $booking['id']);
+                } else {
+                    $this->emailNotificationService->sendBookingExpired((int) $booking['id']);
+                }
+            } catch (\Throwable $e) {
+                log_message('error', 'Terminal status email dispatch failed for booking ' . $booking['id'] . ': ' . $e->getMessage());
+            }
+
             $updated++;
         }
 
@@ -1020,6 +1061,12 @@ class AdminBookingsController extends BaseController
             }
 
             $this->notifyAssignedStaff($booking, (array) $staffIds, $role, $notes);
+
+            try {
+                $this->emailNotificationService->sendAssignmentNotification((int) $id, (array) $staffIds, (string) $role, $notes);
+            } catch (\Throwable $e) {
+                log_message('error', 'Assignment email dispatch failed: ' . $e->getMessage());
+            }
 
             return $this->response->setJSON([
                 'success' => true,

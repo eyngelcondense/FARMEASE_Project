@@ -14,6 +14,10 @@ $routes->get('test', 'TestController::index');
 $routes->group('studio', ['filter' => 'authcheck'], function($routes) {
     $routes->get('', 'StudioController::index');
     $routes->get('dashboard', 'StudioController::dashboard');
+    $routes->get('dashboard/stats', 'StudioController::dashboardStats');
+    $routes->get('dashboard/today-schedule', 'StudioController::dashboardTodaySchedule');
+    $routes->get('dashboard/upcoming-schedule', 'StudioController::dashboardUpcomingSchedule');
+    $routes->get('dashboard/recent-bookings', 'StudioController::dashboardRecentBookings');
     $routes->get('bookings', 'StudioController::bookings');
     $routes->get('(:num)/bookings', 'StudioController::bookings/$1');
     $routes->get('info', 'StudioController::info');

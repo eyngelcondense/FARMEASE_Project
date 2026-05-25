@@ -38,13 +38,13 @@ class StudioBookingModel extends Model
             log_message('debug', 'StudioBookingModel: database connected');
             
             $builder = $db->table('studio_bookings sb');
-            $builder->select('sb.*, s.name as studio_name, s.location, b.booking_reference, b.event_date, b.start_time, b.end_time, b.event_type, b.payment_status, c.fullname as client_name');
+            $builder->select('sb.*, s.name as studio_name, s.location, b.booking_reference, b.event_date, b.start_time, b.end_time, b.event_type, b.status as booking_status, b.payment_status, b.refund_status, b.created_at as booking_created_at, b.updated_at as booking_updated_at, c.fullname as client_name');
             $builder->join('studios s', 'sb.studio_id = s.id');
             $builder->join('bookings b', 'sb.booking_id = b.id');
             $builder->join('clients c', 'b.client_id = c.id');
             $builder->orderBy('sb.created_at', 'DESC');
             
-            $result = $builder->get()->getResult();
+            $result = $builder->get()->getResultArray();
             log_message('debug', 'StudioBookingModel: query executed, got ' . count($result) . ' results');
             
             return $result;
@@ -67,13 +67,13 @@ class StudioBookingModel extends Model
         try {
             $db = \Config\Database::connect();
             $builder = $db->table('studio_bookings sb');
-            $builder->select('sb.*, b.booking_reference, b.event_date, b.start_time, b.end_time, b.event_type, b.total_hours, b.total_guests, b.total_amount, b.payment_status, c.fullname as client_name, c.email as client_email, c.phone as client_phone');
+            $builder->select('sb.*, b.booking_reference, b.event_date, b.start_time, b.end_time, b.event_type, b.total_hours, b.total_guests, b.total_amount, b.status as booking_status, b.payment_status, b.refund_status, b.down_payment_paid, b.down_payment_amount, b.full_payment_paid, b.created_at as booking_created_at, b.updated_at as booking_updated_at, c.fullname as client_name, c.email as client_email, c.phone as client_phone');
             $builder->join('bookings b', 'sb.booking_id = b.id');
             $builder->join('clients c', 'b.client_id = c.id');
             $builder->where('sb.studio_id', $studioId);
             $builder->orderBy('b.event_date', 'DESC');
             
-            $result = $builder->get()->getResult();
+            $result = $builder->get()->getResultArray();
             log_message('debug', 'StudioBookingModel: found ' . count($result) . ' bookings for studio ' . $studioId);
             
             return $result;
