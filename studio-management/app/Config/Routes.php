@@ -20,8 +20,8 @@ $routes->group('studio', ['filter' => 'authcheck'], function($routes) {
     $routes->get('dashboard/recent-bookings', 'StudioController::dashboardRecentBookings');
     $routes->get('bookings', 'StudioController::bookings');
     $routes->get('(:num)/bookings', 'StudioController::bookings/$1');
+    $routes->get('profile', 'StudioController::profile');
     $routes->get('info', 'StudioController::info');
-    $routes->get('profile', 'StudioController::info');
     $routes->post('update-info', 'StudioController::updateInfo');
     $routes->get('gallery', 'StudioController::gallery');
     $routes->get('schedule', 'StudioController::schedule');

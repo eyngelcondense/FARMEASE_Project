@@ -43,6 +43,17 @@ $page_title    = 'Staff Profile - San Isidro Labrador Resort';
 <?= $this->section('content') ?>
 
 <style>
+    body { background:#fbf8f5; }
+    .flash-banner {
+        display:block; padding:12px 18px; background:linear-gradient(90deg,#f6e7cf,#efe0c8); color:#4b2f18; border-radius:12px; margin-bottom:18px; font-weight:700; box-shadow:0 6px 18px rgba(36,27,21,0.06); opacity:1; transition:opacity .4s ease;
+    }
+    .profile-hero {
+        background: linear-gradient(135deg, #7a5536 0%, #b98a63 100%);
+        border-radius: 28px; color:#fff; padding: 28px; box-shadow: 0 20px 40px rgba(122,85,54,.16); margin-bottom: 24px;
+    }
+    .profile-hero .kicker { display:inline-flex; align-items:center; gap:8px; padding:8px 14px; border-radius:999px; background:rgba(255,255,255,.12); font-size:13px; font-weight:700; margin-bottom:12px; }
+    .profile-hero h1 { font-family:'Outfit', sans-serif; font-size:42px; line-height:1.05; font-weight:700; margin:0 0 8px; }
+    .profile-hero p { margin:0; color: rgba(255,255,255,.82); }
   .prof-banner {
     height: 180px; border-radius: var(--radius-md) var(--radius-md) 0 0;
     background-color: var(--primary-color);
@@ -172,6 +183,24 @@ $page_title    = 'Staff Profile - San Isidro Labrador Resort';
 </header>
 
 <div class="dashboard-content">
+    <?php if (session()->getFlashdata('success')): ?>
+        <div class="flash-banner" id="flashBanner"><?= esc(session()->getFlashdata('success')) ?></div>
+    <?php endif; ?>
+    <div class="profile-hero">
+        <div class="row align-items-center g-3">
+            <div class="col-lg-8">
+                <div class="kicker"><i class="fas fa-user-circle"></i> Personal profile</div>
+                <h1>My Profile</h1>
+                <p>Keep your details, role, and assignment overview in a clean, easy-to-scan space.</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a href="<?= base_url('staff/edit/' . $staff['id']) ?>" class="btn btn-light btn-lg rounded-pill px-4 shadow-sm">
+                    <i class="fas fa-pen me-2"></i>Edit Profile
+                </a>
+            </div>
+        </div>
+    </div>
+
     <div class="page-header">
         <h1 class="page-title">My Profile</h1>
         <div class="gold-line"></div>
@@ -195,8 +224,9 @@ $page_title    = 'Staff Profile - San Isidro Labrador Resort';
                 <?php endif; ?>
             </div>
             <div class="avatar-actions">
-                <button class="btn-outline">Edit Profile</button>
-                <button class="btn-gold">Upload Photo</button>
+                <a href="<?= base_url('staff/edit/' . $staff['id']) ?>" class="btn-outline">Edit Profile</a>
+                <button id="uploadPhotoBtn" class="btn-gold">Upload Photo</button>
+                <input type="file" id="photoInput" accept="image/*" style="display:none;">
             </div>
         </div>
 
@@ -217,7 +247,6 @@ $page_title    = 'Staff Profile - San Isidro Labrador Resort';
                         <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#a03020;margin-right:3px;"></span>Inactive
                     <?php endif; ?>
                 </div>
-                <div class="meta-item"><i class="fas fa-calendar-alt"></i> Since <?= $memberSince ?></div>
             </div>
         </div>
 
@@ -252,10 +281,7 @@ $page_title    = 'Staff Profile - San Isidro Labrador Resort';
                 <div class="field-icon">🏷️</div>
                 <div><div class="field-lbl">Role</div><div class="field-val"><?= $roleLabel ?></div></div>
             </div>
-            <div class="field-row">
-                <div class="field-icon">🗓</div>
-                <div><div class="field-lbl">Member Since</div><div class="field-val"><?= $memberSince ?></div></div>
-            </div>
+            
         </div>
 
         <!-- Account -->
@@ -268,10 +294,7 @@ $page_title    = 'Staff Profile - San Isidro Labrador Resort';
                 <span class="acc-key">Account status</span>
                 <span class="acc-val <?= $user['active'] ? 'acc-active' : 'acc-inactive' ?>"><?= $user['active'] ? '● Active' : '● Inactive' ?></span>
             </div>
-            <div class="acc-row">
-                <span class="acc-key">Last active</span>
-                <span class="acc-val"><?= $user['last_active'] ? date('M j, Y g:i A', strtotime($user['last_active'])) : 'Never' ?></span>
-            </div>
+            
             <div class="acc-row">
                 <span class="acc-key">Staff ID</span>
                 <span class="acc-val" style="font-size:12px;color:#7a6a58;">#<?= str_pad($staff['id'], 4, '0', STR_PAD_LEFT) ?></span>
@@ -312,4 +335,54 @@ $page_title    = 'Staff Profile - San Isidro Labrador Resort';
     </div>
 </div>
 
+<?= $this->endSection() ?>
+<?= $this->section('scripts') ?>
+<script>
+    (function(){
+        const uploadBtn = document.getElementById('uploadPhotoBtn');
+        const fileInput = document.getElementById('photoInput');
+        const flash = document.getElementById('flashBanner');
+        if (!uploadBtn || !fileInput) return;
+
+        uploadBtn.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', async function(){
+            const file = this.files && this.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) { alert('Please select an image file.'); this.value = ''; return; }
+
+            const fd = new window.FormData();
+            fd.append('photo', file);
+            fd.append('staff_id', '<?= $staff['id'] ?>');
+            fd.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
+
+            uploadBtn.disabled = true; uploadBtn.textContent = 'Uploading...';
+            try {
+                const res = await fetch('<?= base_url('staff/upload_photo') ?>', { method: 'POST', body: fd, headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                if (!res.ok) throw new Error('Upload failed');
+                const data = await res.json();
+                if (data && data.success && data.path) {
+                    const avatar = document.querySelector('.avatar-large');
+                    if (avatar) avatar.innerHTML = '<img src="'+data.path+'" alt="">';
+                    // Show a subtle flash message instead of alert
+                    if (flash) {
+                        flash.textContent = 'Photo uploaded successfully.';
+                        flash.style.display = 'block';
+                        setTimeout(() => flash.style.opacity = '1', 50);
+                        setTimeout(() => { flash.style.opacity = '0'; setTimeout(()=>flash.style.display='none',400); }, 3500);
+                    } else {
+                        const fb = document.createElement('div'); fb.className='flash-banner'; fb.textContent = 'Photo uploaded successfully.'; document.querySelector('.dashboard-content').prepend(fb);
+                        setTimeout(()=>fb.style.opacity='0',3500); setTimeout(()=>fb.remove(),4000);
+                    }
+                } else {
+                    throw new Error(data?.message || 'Upload failed');
+                }
+            } catch (err) {
+                alert(err.message || 'Upload failed');
+            } finally {
+                uploadBtn.disabled = false; uploadBtn.textContent = 'Upload Photo'; this.value = '';
+            }
+        });
+    })();
+</script>
 <?= $this->endSection() ?>

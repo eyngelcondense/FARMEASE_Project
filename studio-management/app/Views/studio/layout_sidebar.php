@@ -2,30 +2,58 @@
 $current_page = $current_page ?? null;
 
 if ($current_page === null) {
-    $path = trim(service('uri')->getPath(), '/');
-    $segments = $path === '' ? [] : explode('/', $path);
-    $first = $segments[0] ?? '';
-    $second = $segments[1] ?? '';
-    $third = $segments[2] ?? '';
+    if (!function_exists('sidebar_url_segments')) {
+        function sidebar_url_segments(?string $path = null): array
+        {
+            $path = parse_url($path ?? service('uri')->getPath(), PHP_URL_PATH) ?? '';
+            $segments = array_values(array_filter(explode('/', trim($path, '/')), static function (string $segment): bool {
+                $segment = strtolower(trim($segment));
 
-    $inferredPage = match ($first) {
-        'studio' => match ($second) {
-            '', 'dashboard' => 'dashboard',
-            'bookings' => 'bookings',
-            'schedule' => 'schedule',
-            'gallery' => 'gallery',
-            'info' => 'info',
-            'feedback' => 'feedback',
-            'profile' => 'profile',
-            'assignments' => 'assignments',
-            'available' => 'available',
-            'create', 'edit', 'show' => 'index',
-            default => is_numeric($second) && $third === 'bookings' ? 'bookings' : 'index',
-        },
-        default => 'dashboard',
-    };
+                return $segment !== '' && $segment !== 'public' && $segment !== 'index.php';
+            }));
 
-    $current_page = $inferredPage;
+            return $segments;
+        }
+    }
+
+    if (!function_exists('sidebar_route_matches')) {
+        function sidebar_route_matches(string|array $routes, ?string $path = null): bool
+        {
+            $currentSegments = sidebar_url_segments($path);
+
+            foreach ((array) $routes as $route) {
+                $routeSegments = sidebar_url_segments($route);
+
+                if ($routeSegments === [] || count($currentSegments) < count($routeSegments)) {
+                    continue;
+                }
+
+                if (array_slice($currentSegments, -count($routeSegments)) === $routeSegments) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
+    $currentPageMap = [
+        'dashboard' => ['studio/dashboard', 'dashboard', 'studio'],
+        'bookings' => ['studio/bookings', 'bookings'],
+        'schedule' => ['studio/schedule', 'schedule'],
+        'gallery' => ['studio/gallery', 'gallery'],
+        'feedback' => ['studio/feedback', 'feedback'],
+        'profile' => ['studio/profile', 'profile'],
+    ];
+
+    $current_page = 'dashboard';
+
+    foreach ($currentPageMap as $pageName => $routes) {
+        if (sidebar_route_matches($routes)) {
+            $current_page = $pageName;
+            break;
+        }
+    }
 }
 
 $page_title = $page_title ?? 'Studio Management - San Isidro Labrador Resort';

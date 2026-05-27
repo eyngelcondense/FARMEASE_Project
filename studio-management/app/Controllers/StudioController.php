@@ -141,6 +141,7 @@ class StudioController extends BaseController
         $data['todayBookings'] = $dashboardData['today_bookings'];
         $data['upcomingBookings'] = $dashboardData['upcoming_bookings'];
         $data['recentBookings'] = $dashboardData['recent_bookings'];
+        $data['images'] = $dashboardData['images'];
         
         return view('studio/dashboard', $data);
     }
@@ -257,9 +258,14 @@ class StudioController extends BaseController
     
     public function info()
     {
-        $data['title'] = 'Studio Information';
+        return redirect()->to('studio/profile');
+    }
+
+    public function profile()
+    {
+        $data['title'] = 'Studio Profile';
         
-        $studioId = $this->resolveStudioSessionContext('info');
+        $studioId = $this->resolveStudioSessionContext('profile');
         if ($studioId instanceof \CodeIgniter\HTTP\RedirectResponse) {
             return $studioId;
         }
@@ -344,6 +350,11 @@ class StudioController extends BaseController
         });
         $recentBookings = array_slice($recentBookings, 0, 5);
 
+        $images = [];
+        if ($this->imageModel) {
+            $images = $this->imageModel->getStudioImages($studioId);
+        }
+
         $stats = [
             'total_bookings' => count($bookings),
             'today_bookings' => count($todayBookings),
@@ -361,6 +372,7 @@ class StudioController extends BaseController
             'today_bookings' => $todayBookings,
             'upcoming_bookings' => $upcomingBookings,
             'recent_bookings' => $recentBookings,
+            'images' => $images,
             'stats' => $stats,
         ];
     }
@@ -392,13 +404,20 @@ class StudioController extends BaseController
     {
         $data['title'] = 'Studio Feedback';
 
-        // Attempt to load a Feedback model if available in the project
-        $data['feedbacks'] = [];
+        $studioId = $this->resolveStudioSessionContext('feedback');
+        if ($studioId instanceof \CodeIgniter\HTTP\RedirectResponse) {
+            return $studioId;
+        }
+
         try {
-            if (class_exists(\App\Models\FeedbackModel::class)) {
-                $feedbackModel = model(\App\Models\FeedbackModel::class);
-                $data['feedbacks'] = $feedbackModel->orderBy('created_at', 'DESC')->findAll();
-            }
+            $data['feedbacks'] = db_connect()
+                ->table('feedback f')
+                ->select('f.id, f.rating, f.comments as message, f.status, f.created_at, c.fullname as client_name, f.studio_id')
+                ->join('clients c', 'c.id = f.client_id', 'left')
+                ->where('f.studio_id', $studioId)
+                ->orderBy('f.created_at', 'DESC')
+                ->get()
+                ->getResultArray();
         } catch (\Exception $e) {
             $data['feedbacks'] = [];
         }
@@ -417,7 +436,7 @@ class StudioController extends BaseController
         
         if ($this->studioModel) {
             if ($this->studioModel->update($studioId, $data)) {
-                return redirect()->to('studio/info')->with('success', 'Studio information updated successfully!');
+                return redirect()->to('studio/profile')->with('success', 'Studio information updated successfully!');
             } else {
                 return redirect()->back()->with('error', 'Failed to update studio information.');
             }

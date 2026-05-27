@@ -278,8 +278,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?= (uri_string() == 'studio/info' || uri_string() == 'studio/profile') ? 'active' : '' ?>" href="<?= base_url('studio/info') ?>">
-                            <i class="fas fa-building"></i> Studio Info
+                        <a class="nav-link <?= uri_string() == 'studio/profile' ? 'active' : '' ?>" href="<?= base_url('studio/profile') ?>">
+                            <i class="fas fa-user"></i> Profile
                         </a>
                     </li>
                     <li class="nav-item">

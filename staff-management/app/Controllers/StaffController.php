@@ -227,11 +227,58 @@ class StaffController extends BaseController
     {
         $data       = $this->request->getPost();
         $data['id'] = $id;
-
         if ($this->staffModel->save($data)) {
+            $staffId = (int) session()->get('staff_id');
+            // If the logged-in staff updated their own profile, redirect to their profile page
+            if ($staffId === (int) $id) {
+                return redirect()->to('staff/profile')->with('success', 'Profile updated successfully.');
+            }
             return redirect()->to('staff')->with('success', 'Staff member updated successfully.');
         }
         return redirect()->back()->withInput()->with('errors', $this->staffModel->errors());
+    }
+
+    /**
+     * AJAX photo upload endpoint used by the staff profile page.
+     * Expects form field "photo" and returns JSON with { success, path }.
+     */
+    public function uploadPhoto()
+    {
+        if ($r = $this->requireLogin()) return $r;
+
+        $staffId = (int) session()->get('staff_id');
+        $photo = $this->request->getFile('photo');
+
+        if (! $photo || ! $photo->isValid() || $photo->hasMoved()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'No valid file uploaded.'])->setStatusCode(400);
+        }
+
+        $newName = $photo->getRandomName();
+        $target  = ROOTPATH . 'public/uploads/staff/';
+        if (! is_dir($target)) @mkdir($target, 0755, true);
+
+        try {
+            $photo->move($target, $newName);
+        } catch (\Exception $e) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Unable to move uploaded file.'])->setStatusCode(500);
+        }
+
+        $relPath = 'uploads/staff/' . $newName;
+
+        // Persist to DB
+        $save = $this->staffModel->save(['id' => $staffId, 'profile_photo' => $relPath]);
+        if ($save) {
+            session()->set('staff_photo', $relPath);
+            return $this->response->setJSON(['success' => true, 'path' => base_url($relPath)]);
+        }
+
+        return $this->response->setJSON(['success' => false, 'message' => 'Failed to update staff record.'])->setStatusCode(500);
+    }
+
+    // Backwards-compatible snake_case route
+    public function upload_photo()
+    {
+        return $this->uploadPhoto();
     }
 
     public function delete($id)

@@ -26,6 +26,22 @@ $page_title    = 'Staff Schedule - San Isidro Labrador Resort';
 <?= $this->section('content') ?>
 
 <style>
+  :root { --staff-brown:#7a5536; --staff-brown-light:#b98a63; --staff-sand:#f8f3ed; }
+  body { background:#fbf8f5; }
+  .schedule-hero {
+    background: linear-gradient(135deg, var(--staff-brown) 0%, var(--staff-brown-light) 100%);
+    border-radius: 28px; color:#fff; padding: 28px; box-shadow: 0 20px 40px rgba(122,85,54,.16); margin-bottom: 24px;
+  }
+  .schedule-hero .kicker { display:inline-flex; align-items:center; gap:8px; padding:8px 14px; border-radius:999px; background:rgba(255,255,255,.12); font-size:13px; font-weight:700; margin-bottom:12px; }
+  .schedule-hero h1 { font-family:'Outfit', sans-serif; font-size:42px; line-height:1.05; font-weight:700; margin:0 0 8px; }
+  .schedule-hero p { margin:0; color: rgba(255,255,255,.82); }
+  .schedule-summary { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:16px; margin-bottom:24px; }
+  .schedule-summary .s-card { background:#fff; border:1px solid #ebe4db; border-radius:22px; box-shadow:0 12px 26px rgba(36,27,21,.06); padding:18px; display:flex; align-items:center; gap:14px; }
+  .schedule-summary .s-ico { width:52px; height:52px; border-radius:18px; background:#f8f3ed; color:var(--staff-brown); display:flex; align-items:center; justify-content:center; font-size:18px; }
+  .schedule-summary .s-lbl { font-size:12px; color:#7a6a58; text-transform:uppercase; letter-spacing:.04em; font-weight:700; }
+  .schedule-summary .s-val { font-family:'Outfit', sans-serif; font-size:28px; font-weight:700; color:#241b15; line-height:1; }
+  .toolbar { background:#fff; border-radius:22px; box-shadow:0 12px 26px rgba(36,27,21,.06); border:1px solid #ebe4db; }
+  .cal-shell, .drawer { border-color:#ebe4db; }
   .toolbar {
     display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
     background: var(--surface-color); border: 1px solid var(--border-color);
@@ -175,11 +191,32 @@ $page_title    = 'Staff Schedule - San Isidro Labrador Resort';
 </header>
 
 <div class="dashboard-content">
+  <div class="schedule-hero">
+    <div class="row align-items-center g-3">
+      <div class="col-lg-8">
+        <div class="kicker"><i class="fas fa-calendar-alt"></i> Calendar view</div>
+        <h1>Event Schedule</h1>
+        <p>Review your assigned bookings and event flow without losing the bigger picture.</p>
+      </div>
+      <div class="col-lg-4 text-lg-end">
+        <button class="btn btn-light btn-lg rounded-pill px-4 shadow-sm" onclick="goToday()">
+          <i class="fas fa-bullseye me-2"></i>Today
+        </button>
+      </div>
+    </div>
+  </div>
+
     <div class="page-header">
         <h1 class="page-title">Event Schedule</h1>
         <div class="gold-line"></div>
         <p class="page-subtitle">View your assigned bookings and event schedule</p>
     </div>
+
+  <div class="schedule-summary">
+    <div class="s-card"><div class="s-ico"><i class="fas fa-calendar-check"></i></div><div><div class="s-lbl">Assigned</div><div class="s-val"><?= $totalAll ?></div></div></div>
+    <div class="s-card"><div class="s-ico"><i class="fas fa-clock"></i></div><div><div class="s-lbl">Current Month</div><div class="s-val"><?= date('M') ?></div></div></div>
+    <div class="s-card"><div class="s-ico"><i class="fas fa-list"></i></div><div><div class="s-lbl">View</div><div class="s-val">Calendar</div></div></div>
+  </div>
 
     <div class="toolbar">
         <div class="view-tabs">
@@ -283,14 +320,14 @@ const bookings = <?= json_encode(array_values($bookings)) ?>;
 const byDate   = {};
 bookings.forEach(b => { if (!byDate[b.event_date]) byDate[b.event_date]=[]; byDate[b.event_date].push(b); });
 
-let cur = new Date();
+let cur = new window.Date();
 const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 function renderCal() {
   const y = cur.getFullYear(), m = cur.getMonth();
-  const today = new Date();
+  const today = new window.Date();
   document.getElementById('period-lbl').textContent = months[m] + ' ' + y;
-  const first = new Date(y,m,1).getDay(), days = new Date(y,m+1,0).getDate(), prev = new Date(y,m,0).getDate();
+  const first = new window.Date(y,m,1).getDay(), days = new window.Date(y,m+1,0).getDate(), prev = new window.Date(y,m,0).getDate();
   let cells = [];
   for (let i=first-1;i>=0;i--) cells.push({d:prev-i,other:true});
   for (let d=1;d<=days;d++)    cells.push({d,other:false});
@@ -318,7 +355,7 @@ function renderCal() {
 }
 
 function navigate(d) { cur.setMonth(cur.getMonth()+d); renderCal(); }
-function goToday()   { cur=new Date(); renderCal(); }
+function goToday()   { cur=new window.Date(); renderCal(); }
 
 function setView(v) {
   document.getElementById('btn-month').classList.toggle('active',v==='month');
@@ -328,12 +365,12 @@ function setView(v) {
 }
 
 function openDrawer(b) {
-  const fmt = t => new Date('2000-01-01T'+t).toLocaleTimeString('en-PH',{hour:'numeric',minute:'2-digit'});
+  const fmt = t => new window.Date('2000-01-01T'+t).toLocaleTimeString('en-PH',{hour:'numeric',minute:'2-digit'});
   document.getElementById('d-ref').textContent    = b.booking_reference;
   document.getElementById('d-title').textContent  = b.event_type;
   document.getElementById('d-sub').textContent    = b.client_fullname;
   document.getElementById('d-venue').textContent  = b.venue_name;
-  document.getElementById('d-date').textContent   = new Date(b.event_date+'T00:00:00').toLocaleDateString('en-PH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('d-date').textContent   = new window.Date(b.event_date+'T00:00:00').toLocaleDateString('en-PH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   document.getElementById('d-time').textContent   = fmt(b.start_time)+' – '+fmt(b.end_time);
   document.getElementById('d-type').textContent   = b.event_type;
   document.getElementById('d-status').textContent = b.status.charAt(0).toUpperCase()+b.status.slice(1);

@@ -1,4 +1,4 @@
-<?php
+so the process is the same when you are<?php
 $title = 'Studio Gallery | San Isidro Labrador Resort and Leisure Farm';
 include('header.php');
 ?>

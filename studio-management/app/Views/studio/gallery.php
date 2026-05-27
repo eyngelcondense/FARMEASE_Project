@@ -71,7 +71,7 @@ $current_page = 'gallery';
                         <div class="card-img-container position-relative">
                             <img src="<?= base_url($image['image_path']) ?>" class="card-img-top" alt="<?= esc($image['alt_text'] ?? $image['image_name']) ?>" style="height: 200px; object-fit: cover;">
                             <?php if ($image['is_primary']): ?>
-                                <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-2">
+                                <span class="badge rounded-pill border bg-warning bg-opacity-10 text-warning position-absolute top-0 end-0 m-2">
                                     <i class="fas fa-star"></i> Primary
                                 </span>
                             <?php endif; ?>

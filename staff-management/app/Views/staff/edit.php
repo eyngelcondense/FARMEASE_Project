@@ -68,7 +68,7 @@ $page_title   = 'Edit Staff - San Isidro Labrador Resort';
                 <button type="submit" class="btn-primary">
                     <i class="fas fa-save"></i> Update Staff
                 </button>
-                <a href="<?= site_url('staff') ?>" class="btn-secondary">
+                <a href="<?= base_url('staff/profile') ?>" class="btn-secondary">
                     <i class="fas fa-times"></i> Cancel
                 </a>
             </div>

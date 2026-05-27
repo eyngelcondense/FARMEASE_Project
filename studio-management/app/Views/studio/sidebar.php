@@ -1,6 +1,36 @@
 <?php
-if (!isset($current_page)) {
-    $current_page = 'dashboard';
+if (!function_exists('sidebar_url_segments')) {
+    function sidebar_url_segments(?string $path = null): array
+    {
+        $path = parse_url($path ?? service('uri')->getPath(), PHP_URL_PATH) ?? '';
+
+        return array_values(array_filter(explode('/', trim($path, '/')), static function (string $segment): bool {
+            $segment = strtolower(trim($segment));
+
+            return $segment !== '' && $segment !== 'public' && $segment !== 'index.php';
+        }));
+    }
+}
+
+if (!function_exists('sidebar_route_matches')) {
+    function sidebar_route_matches(string|array $routes, ?string $path = null): bool
+    {
+        $currentSegments = sidebar_url_segments($path);
+
+        foreach ((array) $routes as $route) {
+            $routeSegments = sidebar_url_segments($route);
+
+            if ($routeSegments === [] || count($currentSegments) < count($routeSegments)) {
+                continue;
+            }
+
+            if (array_slice($currentSegments, -count($routeSegments)) === $routeSegments) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
 ?>
 
@@ -22,21 +52,21 @@ if (!isset($current_page)) {
         <ul class="nav-menu">
             <li class="nav-item">
                 <a href="<?= site_url('studio/dashboard')?>" 
-                   class="nav-link <?= $current_page === 'dashboard' ? 'active' : '' ?>">
+                   class="nav-link <?= sidebar_route_matches(['studio/dashboard', 'dashboard', 'studio']) ? 'active' : '' ?>">
                     <i class="fas fa-th-large"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="<?= site_url('studio/bookings')?>" 
-                   class="nav-link <?= $current_page === 'bookings' ? 'active' : '' ?>">
+                   class="nav-link <?= sidebar_route_matches(['studio/bookings', 'bookings']) ? 'active' : '' ?>">
                     <i class="fas fa-calendar-check"></i>
                     <span>Bookings</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="<?= site_url('studio/schedule')?>" 
-                   class="nav-link <?= $current_page === 'schedule' ? 'active' : '' ?>">
+                   class="nav-link <?= sidebar_route_matches(['studio/schedule', 'schedule']) ? 'active' : '' ?>">
                     <i class="fas fa-clock"></i>
                     <span>Schedule</span>
                 </a>
@@ -52,21 +82,14 @@ if (!isset($current_page)) {
         <ul class="nav-menu">
             <li class="nav-item">
                 <a href="<?= site_url('studio/gallery')?>" 
-                   class="nav-link <?= $current_page === 'gallery' ? 'active' : '' ?>">
+                   class="nav-link <?= sidebar_route_matches(['studio/gallery', 'gallery']) ? 'active' : '' ?>">
                     <i class="fas fa-images"></i>
                     <span>Gallery</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="<?= site_url('studio/info')?>" 
-                   class="nav-link <?= $current_page === 'info' ? 'active' : '' ?>">
-                    <i class="fas fa-building"></i>
-                    <span>Studio Information</span>
-                </a>
-            </li>
-            <li class="nav-item">
                 <a href="<?= site_url('studio/feedback')?>" 
-                   class="nav-link <?= $current_page === 'feedback' ? 'active' : '' ?>">
+                   class="nav-link <?= sidebar_route_matches(['studio/feedback', 'feedback']) ? 'active' : '' ?>">
                     <i class="fas fa-comment-dots"></i>
                     <span>Reviews & Feedback</span>
                 </a>
@@ -82,7 +105,7 @@ if (!isset($current_page)) {
         <ul class="nav-menu">
             <li class="nav-item">
                 <a href="<?= site_url('studio/profile')?>" 
-                   class="nav-link <?= $current_page === 'profile' ? 'active' : '' ?>">
+                   class="nav-link <?= sidebar_route_matches(['studio/profile', 'profile']) ? 'active' : '' ?>">
                     <i class="fas fa-user-cog"></i>
                     <span>My Profile</span>
                 </a>

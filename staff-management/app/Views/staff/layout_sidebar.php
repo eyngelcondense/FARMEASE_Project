@@ -2,31 +2,59 @@
 $current_page = $current_page ?? null;
 
 if ($current_page === null) {
-    $path = trim(service('uri')->getPath(), '/');
-    $segments = $path === '' ? [] : explode('/', $path);
-    $first = $segments[0] ?? '';
-    $second = $segments[1] ?? '';
+    if (!function_exists('sidebar_url_segments')) {
+        function sidebar_url_segments(?string $path = null): array
+        {
+            $path = parse_url($path ?? service('uri')->getPath(), PHP_URL_PATH) ?? '';
+            $segments = array_values(array_filter(explode('/', trim($path, '/')), static function (string $segment): bool {
+                $segment = strtolower(trim($segment));
 
-    $inferredPage = match ($first) {
-        'staff' => match ($second) {
-            '', 'dashboard' => 'dashboard',
-            'schedule' => 'schedule',
-            'profile' => 'profile',
-            'availability' => 'availability',
-            'assignments' => 'assignments',
-            'assignToBooking' => 'assign-booking',
-            'management' => 'team',
-            'create', 'edit', 'show' => 'staff_list',
-            default => 'staff_list',
-        },
-        'assignment', 'assignments' => 'assignments',
-        'availability' => 'availability',
-        'staff-management' => 'team',
-        'staff' => 'staff_list',
-        default => 'dashboard',
-    };
+                return $segment !== '' && $segment !== 'public' && $segment !== 'index.php';
+            }));
 
-    $current_page = $inferredPage;
+            return $segments;
+        }
+    }
+
+    if (!function_exists('sidebar_route_matches')) {
+        function sidebar_route_matches(string|array $routes, ?string $path = null): bool
+        {
+            $currentSegments = sidebar_url_segments($path);
+
+            foreach ((array) $routes as $route) {
+                $routeSegments = sidebar_url_segments($route);
+
+                if ($routeSegments === [] || count($currentSegments) < count($routeSegments)) {
+                    continue;
+                }
+
+                if (array_slice($currentSegments, -count($routeSegments)) === $routeSegments) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
+    $currentPageMap = [
+        'dashboard' => ['staff/dashboard', 'dashboard'],
+        'schedule' => ['staff/schedule', 'schedule'],
+        'assignments' => ['assignment', 'assignments', 'staff/assignments'],
+        'assign-booking' => ['staff/assignToBooking'],
+        'availability' => ['availability', 'staff/availability'],
+        'profile' => ['staff/profile', 'profile'],
+        'team' => ['staff-management', 'staff/management'],
+    ];
+
+    $current_page = 'dashboard';
+
+    foreach ($currentPageMap as $pageName => $routes) {
+        if (sidebar_route_matches($routes)) {
+            $current_page = $pageName;
+            break;
+        }
+    }
 }
 
 $page_title = $page_title ?? 'Staff Portal';

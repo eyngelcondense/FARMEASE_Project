@@ -49,8 +49,9 @@ $page_title   = 'Staff Management - San Isidro Labrador Resort';
                         <td><?= esc($staff['phone'] ?? '-') ?></td>
                         <td><?= esc($staff['email'] ?? '-') ?></td>
                         <td>
-                            <span class="badge <?= $staff['status'] === 'active' ? 'bg-success' : 'bg-secondary' ?>">
-                                <?= ucfirst($staff['status'] ?? 'inactive') ?>
+                            <?php $status = isset($staff['status']) ? $staff['status'] : (isset($staff['active']) ? ($staff['active'] ? 'active' : 'inactive') : 'inactive'); ?>
+                            <span class="badge <?= $status === 'active' ? 'bg-success' : 'bg-secondary' ?>">
+                                <?= ucfirst($status) ?>
                             </span>
                         </td>
                         <td>

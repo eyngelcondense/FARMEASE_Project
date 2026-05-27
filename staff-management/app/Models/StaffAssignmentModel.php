@@ -49,7 +49,7 @@ class StaffAssignmentModel extends Model
     // ── All assignments for a specific staff member (for schedule/assignment views) ──
     public function getByStaff(int $staffId): array
     {
-        return $this->db->table('staff_assignments sa')
+        $rows = $this->db->table('staff_assignments sa')
             ->select('sa.id, sa.booking_id, sa.role as assigned_role,
                       b.booking_reference, b.event_type, b.event_date,
                       b.start_time, b.end_time, b.total_guests,
@@ -63,6 +63,17 @@ class StaffAssignmentModel extends Model
             ->orderBy('b.event_date', 'DESC')
             ->get()
             ->getResultArray();
+
+        // Deduplicate by booking_id (sometimes joins or duplicate assignment rows cause repeated bookings)
+        $unique = [];
+        foreach ($rows as $r) {
+            $bid = isset($r['booking_id']) ? (string) $r['booking_id'] : null;
+            if ($bid === null) continue;
+            if (isset($unique[$bid])) continue;
+            $unique[$bid] = $r;
+        }
+
+        return array_values($unique);
     }
 
     // ── All bookings this month with is_assigned flag (for schedule calendar) ──
@@ -139,16 +150,20 @@ class StaffAssignmentModel extends Model
     // ── All assignments with staff + booking details (for admin management) ──
     public function getAssignmentsWithDetails(): array
     {
-        return $this->db->table('staff_assignments sa')
-            ->select('sa.*, s.name as staff_name, s.role as staff_role,
+        return $this->db->table('bookings b')
+            ->distinct()
+            ->select('b.id as booking_id,
                       b.booking_reference, b.event_type, b.event_date,
-                      b.start_time, b.end_time, b.status, v.name as venue_name,
-                      c.fullname as client_fullname')
-            ->join('staffs s',   's.id = sa.staff_id',   'left')
-            ->join('bookings b', 'b.id = sa.booking_id', 'left')
+                      b.start_time, b.end_time, b.total_guests,
+                      b.status, b.payment_status, b.special_requests,
+                      v.name as venue_name,
+                      c.fullname as client_fullname, c.phone as client_phone')
+            ->join('staff_assignments sa', 'sa.booking_id = b.id', 'inner')
             ->join('venues v',   'v.id = b.venue_id',    'left')
             ->join('clients c',  'c.id = b.client_id',   'left')
+            ->whereIn('b.status', ['approved', 'confirmed', 'completed'])
             ->orderBy('b.event_date', 'DESC')
+            ->groupBy('b.id')
             ->get()
             ->getResultArray();
     }

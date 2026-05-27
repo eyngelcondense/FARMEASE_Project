@@ -22,6 +22,7 @@ class StaffModel extends Model
     ];
 
     protected $validationRules = [
+        'id'      => 'permit_empty|is_natural_no_zero',
         'user_id' => 'required|is_natural_no_zero',
         'name'    => 'required|min_length[2]|max_length[255]',
         'email'   => 'required|valid_email|is_unique[staffs.email,id,{id}]',

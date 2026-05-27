@@ -81,7 +81,7 @@
     .sidebar-logo-icon {
         width: 40px;
         height: 40px;
-        background: #fff;
+        background: transparent;
         border-radius: 8px;
         overflow: hidden;
         flex-shrink: 0;
@@ -90,8 +90,9 @@
     .sidebar-logo-icon img {
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        object-fit: contain;
         cursor: pointer;
+        background: transparent;
     }
 
     .sidebar-title {

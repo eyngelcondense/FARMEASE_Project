@@ -153,7 +153,7 @@
         .sidebar-logo-icon {
             width: 40px;
             height: 40px;
-            background-color: white;
+            background-color: transparent;
             border-radius: 8px;
             display: flex;
             align-items: center;
@@ -165,7 +165,8 @@
         .sidebar-logo-icon img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
+            background: transparent;
         }
 
         .sidebar-logo-icon i {
